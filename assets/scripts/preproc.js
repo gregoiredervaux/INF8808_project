@@ -21,12 +21,14 @@ function scale_from_GPS(pt_metro, scale_x, scale_y) {
     // console.log(scale_x.domain());
 }
 
-function scale_color(data, color) {
-    color.domain([
-        d3.min(data , station => d3.sum(station.incidents, inci =>  inci.time)),
-        d3.max(data , station => d3.sum(station.incidents, inci =>  inci.time)),
-    ]);
-    console.log(color.domain());
+function scale_incidents(data, color, pipe) {
+
+    var min = d3.min(data , station => d3.sum(station.incidents, inci =>  inci.time));
+    var max = d3.max(data , station => d3.sum(station.incidents, inci =>  inci.time))
+
+    color.domain([min , max]);
+    pipe.domain([min, max]);
+    console.log("color and pipe", pipe.domain());
 }
 
 function normalize_str(strg) {
@@ -68,6 +70,7 @@ function data_per_station(pt_metro, incidents) {
 
     return pt_metro.map(row => {
         return {
+            id: parseInt(row.id),
             name: row.name,
             coordinates: row.coordinates,
             coordinates_map: row.coordinates_map,

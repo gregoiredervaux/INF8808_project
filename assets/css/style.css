@@ -5,26 +5,6 @@ body {
 }
 
 /***** SVG *****/
-.axis {
-  shape-rendering: crispEdges
-}
-
-.axis line {
-  display: none;
-}
-
-.axis path {
-  fill: none;
-  stroke: black;
-  shape-rendering: crispEdges;
-}
-
-.y.axis path {
-  fill: none;
-  stroke: black;
-  stroke-width: 1.5;
-  shape-rendering: crispEdges;
-}
 
 .selected {
   animation: flash-animation 0.8s ease-out infinite;

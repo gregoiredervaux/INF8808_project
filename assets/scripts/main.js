@@ -28,19 +28,24 @@
     var y_map = d3.scaleLinear().range([0, map_height]);
 
     var color_station = d3.scaleLinear().range(["white", "red"]);
+    var pipe_scale = d3.scaleLinear().range([0,20]);
 
     /***** Chargement des données *****/
     var promises = [];
     promises.push(d3.csv("./data/incidents.csv"));
     promises.push(d3.json("./data/pt_metro.json"));
+    promises.push(d3.json("./data/lines.json"));
 
     Promise.all(promises)
         .then(function (results) {
             var incidents = results[0];
             //console.log("liste des incidents", incidents);
 
-            var pt_metro = results[1];
-            //console.log("liste des stations de métro", pt_metro);
+
+            var pt_metro = results[1].sort((a, b) => (parseInt(a.id) > parseInt(b.id)));
+            console.log("liste des stations de métro", pt_metro);
+
+            var lines =  results[2];
 
             clean_data(pt_metro, incidents);
 
@@ -54,7 +59,7 @@
             /***** Prétraitement des données *****/
 
             scale_from_GPS(pt_metro, x_map, y_map);
-            scale_color(data_stations, color_station);
+            scale_incidents(data_stations, color_station, pipe_scale);
 
 
             /***** V1 *****/
@@ -69,7 +74,8 @@
             var metro_map = svg.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            //create_map(metro_map, data_stations, x_map, y_map, color_station, double_lines_st, triple_line_st);
+            create_map(metro_map, data_stations, lines, x_map, y_map, color_station, pipe_scale);
+
 
             /***** V3 *****/
 
