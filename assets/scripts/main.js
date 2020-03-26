@@ -37,19 +37,19 @@
     Promise.all(promises)
         .then(function (results) {
             var incidents = results[0];
-            console.log("liste des incidents", incidents);
+            //console.log("liste des incidents", incidents);
 
             var pt_metro = results[1];
-            console.log("liste des stations de métro", pt_metro);
+            //console.log("liste des stations de métro", pt_metro);
 
             clean_data(pt_metro, incidents);
 
             var data_stations = data_per_station(pt_metro, incidents);
-            console.log("données de travail", data_stations);
+            //console.log("données de travail", data_stations);
 
-            console.log("nombre d'incidants conservés", d3.sum(data_stations.map(data_st => data_st.incidents.length)));
+            //console.log("nombre d'incidants conservés", d3.sum(data_stations.map(data_st => data_st.incidents.length)));
 
-            console.log("moyenne de temps tot d'arret", d3.sum(data_stations.map(data_st => data_st.total_stop_time))/data_stations.length);
+            //console.log("moyenne de temps tot d'arret", d3.sum(data_stations.map(data_st => data_st.total_stop_time))/data_stations.length);
 
             /***** Prétraitement des données *****/
 
@@ -69,7 +69,7 @@
             var metro_map = svg.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            create_map(metro_map, data_stations, x_map, y_map, color_station, double_lines_st, triple_line_st);
+            //create_map(metro_map, data_stations, x_map, y_map, color_station, double_lines_st, triple_line_st);
 
             /***** V3 *****/
 

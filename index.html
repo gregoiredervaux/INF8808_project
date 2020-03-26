@@ -7,6 +7,41 @@
 </head>
 <body>
 
+    <div class="tabbable">
+        <ul class="nav nav-tabs">
+            <li class="active"><a class="V1tab" href="#V1_tab" data-toggle="tab">V1</a></li>
+            <li><a class="V2tab" href="#V2_tab" data-toggle="tab">V2</a></li>
+            <li><a class="V2tab" href="#V3_tab" data-toggle="tab">V3</a></li>
+            <li><a class="V4tab" href="#V4_tab" data-toggle="tab">V4</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="V1_tab">
+                <h1>V1</h1>
+                <V1content></V1content>
+            </div>
+            <div class="tab-pane" id="V2_tab">
+                <h1>V2</h1>
+                <V2content></V2content>
+            </div>
+            <div class="tab-pane" id="V3_tab">
+                <h1>V3</h1>
+                <V3content></V3content>
+            </div>
+            <div class="tab-pane" id="V4_tab">
+                <h1>V4</h1>
+                <V4content></V4content>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
 <!-- <section id="V2">
     <g id="Intersections">
         <circle id="Jean-Talon" class="st1" cx="370.29" cy="224.5" r="8.9"/>
@@ -97,5 +132,34 @@
 <script type="text/javascript" src="assets/scripts/V3.js"></script>
 <script type="text/javascript" src="assets/scripts/V4.js"></script>
 <script type="text/javascript" src="assets/scripts/main.js"></script>
+
+
+<script>
+    $.ajaxSetup ({
+        // Disable caching of AJAX responses
+        // Used when debugging
+        cache: false
+    });
+
+    $(".V1tab").click(function() {
+        $.getScript("V1.js");
+    })
+</script>
+<script>
+    $(".V2tab").click(function() {
+        $.getScript("V2.js");
+    })
+</script>
+<script>
+    $(".V3tab").click(function() {
+        $.getScript("V3.js");
+    })
+</script>
+<script>
+    $(".V4tab").click(function() {
+        $.getScript("V4.js");
+    })
+</script>
+
 </body>
 </html>
