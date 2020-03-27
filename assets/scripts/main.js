@@ -76,15 +76,15 @@
                             .attr('width',map_width + margin.left + margin.right)
                             .attr('height', map_height + margin.top + margin.bottom);
 
-            svg_v1.append("text")
+            /** svg_v1.append("text")
                     .attr("fill", "black")
                     .style("text-anchor", "middle")
                     .attr("y", margin.top +1)
                     .attr('x',margin.left +1) 
                     .text('yoyoyo');
-
-            //var piechart_dataset = [{'nombre_incident_dans_intervalle':123},{'nombre_incident_hors_intervalle'}];
-            //create_piechart(g, piechart_dataset);
+            */
+            var piechart_dataset = [{'nombre_incident_dans_intervalle':123},{'nombre_incident_hors_intervalle':200}];
+            create_piechart(svg_v1, piechart_dataset);
 
 
 
@@ -115,8 +115,21 @@
 
 
             /***** V3 *****/
+            // Mettre la V3 dans l'élément SVG qui se nomme svg_v3
+            var svg_v3 = d3.select('#canvasV3')
+                           .append('svg')
+                           .attr('width',map_width + margin.left + margin.right)
+                           .attr('height', map_height + margin.top + margin.bottom);
+
+
+
 
             /***** V4 *****/
+            // Mettre la V4 dans l'élément SVG qui se nomme svg_v4
+            var svg_v4 = d3.select('#canvasV4')
+                           .append('svg')
+                           .attr('width',map_width + margin.left + margin.right)
+                           .attr('height', map_height + margin.top + margin.bottom);
 
         });
 })(d3);
