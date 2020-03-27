@@ -71,22 +71,9 @@
 
 
             /***** V1 *****/
-            /*
-            var svg_v1 = d3.select('#canvasV1')
-                            .append('svg')
-                            .attr('width',map_width + margin.left + margin.right)
-                            .attr('height', map_height + margin.top + margin.bottom);
-            */
 
-            /** svg_v1.append("text")
-                    .attr("fill", "black")
-                    .style("text-anchor", "middle")
-                    .attr("y", margin.top +1)
-                    .attr('x',margin.left +1) 
-                    .text('yoyoyo');
-            */
             // Eventually, piechart_dataset will be generated with select_begin_end and select_incidents_in_the_timeframe
-            var piechart_dataset = [{'name':'nombre_incident_dans_intervalle', 'number':100},{'name':'nombre_incident_hors_intervalle','number':100}];
+            var piechart_dataset = [{"name":"Incidents dans l'intervalle", 'number':80},{"name":"Incidents hors de l'intervalle",'number':5}];
             create_piechart(piechart_dataset);
 
 

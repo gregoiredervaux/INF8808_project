@@ -31,62 +31,60 @@ function select_incidents_in_the_timeframe(dataset, begin, end){
 // g est le groupe SVG dans lequel le piechart doit être
 function create_piechart(dataset) {
 
-    var width = 300,
-	height = 300,
+    // dimensions du piechart
+    var width = 430,
+	height = 400,
     radius = Math.min(width, height) / 2;
 
-
-
-
-    
+    // configuration de l'échelle de couleur
     var color = d3.scaleOrdinal()
-                  .range(["#2C93E8","#838690"]);
-                  
+                  .range(["#CA290D ","#B4B4B4"]);
 
-
-
-
-
+    // initialisation d'un objet piechart de d3         
     var pie = d3.pie()
                 .value(function(d) { return d.number; })(dataset);
- 
 
-
-
-
-
-
+    // initialisation des arcs
     var arc = d3.arc()
 	            .outerRadius(radius - 10)
 	            .innerRadius(0);
 
+    // initialisation des arcs pour les étiquettes
     var labelArc = d3.arc()
-	                .outerRadius(radius - 40)
-                    .innerRadius(radius - 40);
+	                .outerRadius(radius - 80)
+                    .innerRadius(radius - 80);
 
-
-
-
-
-
-    
+    // création de l'élément SVG qui contient le piechart
+    // ajout d'un g au centre de SVG qui va être le centre du piechart
     var svg = d3.select("#canvasV1")
                 .append("svg")
                 .attr("width", width)
                 .attr("height", height)
                     .append('g')
                     .attr("transform", "translate(" + width/2 + "," + height/2 +")");
-    
+
+    // on ajoute les données du pie sur chacun des arcs
     var g = svg.selectAll("arc")
                 .data(pie)
                 .enter()
                 .append("g")
                     .attr("class", "arc");
 
-    
+    // on trace les arcs (ajout du path)
     g.append("path")
         .attr("d", arc)
         .style("fill", function(d) { return color(d.data.name);});
+
+
+    // ajout des étiquettes
+    g.append("text")
+	 .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
+	 .text(function(d) { 
+         return d.data.number;
+     })
+     .style("fill", "#000")
+     .style("font-size","20px")
+     .attr("text-anchor","middle");
     
     
 
