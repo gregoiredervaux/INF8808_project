@@ -28,7 +28,7 @@ function scale_incidents(data, color, pipe) {
 
     color.domain([min , max]);
     pipe.domain([min, max]);
-    console.log("color and pipe", pipe.domain());
+    //console.log("color and pipe", pipe.domain());
 }
 
 function normalize_str(strg) {

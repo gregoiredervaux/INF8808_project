@@ -61,10 +61,47 @@
             scale_incidents(data_stations, color_station, pipe_scale);
 
 
+
+
+
+
+
+
+
+
+
             /***** V1 *****/
+            var svg_v1 = d3.select('#canvasV1')
+                            .append('svg')
+                            .attr('width',map_width + margin.left + margin.right)
+                            .attr('height', map_height + margin.top + margin.bottom);
+
+            svg_v1.append("text")
+                    .attr("fill", "black")
+                    .style("text-anchor", "middle")
+                    .attr("y", margin.top +1)
+                    .attr('x',margin.left +1) 
+                    .text('yoyoyo');
+
+            //var piechart_dataset = [{'nombre_incident_dans_intervalle':123},{'nombre_incident_hors_intervalle'}];
+            //create_piechart(g, piechart_dataset);
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
 
             /***** V2 *****/
-
+            /** 
             var svg = d3.select("#canvasV2")
                 .append("svg")
                 .attr("width", map_width + margin.left + margin.right)
@@ -74,6 +111,7 @@
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
             create_map(metro_map, data_stations, lines, x_map, y_map, color_station, pipe_scale);
+            */
 
 
             /***** V3 *****/

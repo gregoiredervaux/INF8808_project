@@ -1,6 +1,4 @@
 
-
-
 //http://www.cagrimmett.com/til/2016/08/19/d3-pie-chart.html
 
 
@@ -23,5 +21,6 @@ function select_incidents_in_the_timeframe(dataset, begin, end){
 // g est le groupe SVG dans lequel le piechart doit être
 function create_piechart(g, piechart_dataset) {
     console.log(piechart_dataset);
+    g.text('allo')
 
 };
