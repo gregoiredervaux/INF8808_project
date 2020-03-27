@@ -71,10 +71,12 @@
 
 
             /***** V1 *****/
+            /*
             var svg_v1 = d3.select('#canvasV1')
                             .append('svg')
                             .attr('width',map_width + margin.left + margin.right)
                             .attr('height', map_height + margin.top + margin.bottom);
+            */
 
             /** svg_v1.append("text")
                     .attr("fill", "black")
@@ -83,8 +85,9 @@
                     .attr('x',margin.left +1) 
                     .text('yoyoyo');
             */
-            var piechart_dataset = [{'nombre_incident_dans_intervalle':123},{'nombre_incident_hors_intervalle':200}];
-            create_piechart(svg_v1, piechart_dataset);
+            // Eventually, piechart_dataset will be generated with select_begin_end and select_incidents_in_the_timeframe
+            var piechart_dataset = [{'name':'nombre_incident_dans_intervalle', 'number':100},{'name':'nombre_incident_hors_intervalle','number':100}];
+            create_piechart(piechart_dataset);
 
 
 
@@ -101,13 +104,13 @@
             
 
             /***** V2 *****/
-            /** 
-            var svg = d3.select("#canvasV2")
+            
+            var svg_v2 = d3.select("#canvasV2")
                 .append("svg")
                 .attr("width", map_width + margin.left + margin.right)
                 .attr("height", map_height + margin.top + margin.bottom);
-
-            var metro_map = svg.append("g")
+            /** 
+            var metro_map = svg_v2.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
             create_map(metro_map, data_stations, lines, x_map, y_map, color_station, pipe_scale);
