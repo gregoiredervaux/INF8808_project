@@ -1,8 +1,7 @@
 /**
- * Fichier principal permettant de gérer la carte. Ce fichier utilise les autres fichiers
- * que vous devez compléter.
+ * Fichier principal
  *
- * /!\ Aucune modification n'est nécessaire dans ce fichier!
+ *
  */
 (function (d3) {
     "use strict";
@@ -43,7 +42,7 @@
 
 
             var pt_metro = results[1].sort((a, b) => (parseInt(a.id) > parseInt(b.id)));
-            console.log("liste des stations de métro", pt_metro);
+            //console.log("liste des stations de métro", pt_metro);
 
             var lines =  results[2];
 
@@ -66,7 +65,7 @@
 
             /***** V2 *****/
 
-            var svg = d3.select("body")
+            var svg = d3.select("#canvasV2")
                 .append("svg")
                 .attr("width", map_width + margin.left + margin.right)
                 .attr("height", map_height + margin.top + margin.bottom);

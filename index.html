@@ -1,10 +1,10 @@
 <!--Tabs similar to this? http://bl.ocks.org/widged/4561185-->
+<!--https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_tabs-->
 <!--Need to add one SVG element per tab. V1 will have it's svg, so will V2, etc.-->
 
 
-
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>INF8808 - Projet</title>
@@ -12,42 +12,72 @@
 </head>
 <body>
 
-    <div class="tabbable">
-        <ul class="nav nav-tabs">
-            <li class="active"><a class="V1tab" href="#V1_tab" data-toggle="tab">V1</a></li>
-            <li><a class="V2tab" href="#V2_tab" data-toggle="tab">V2</a></li>
-            <li><a class="V2tab" href="#V3_tab" data-toggle="tab">V3</a></li>
-            <li><a class="V4tab" href="#V4_tab" data-toggle="tab">V4</a></li>
-        </ul>
-        <div class="tab-content">
-            <div class="tab-pane active" id="V1_tab">
-                <h1>V1</h1>
-                <V1content></V1content>
-            </div>
-            <div class="tab-pane" id="V2_tab">
-                <h1>V2</h1>
-                <V2content></V2content>
-            </div>
-            <div class="tab-pane" id="V3_tab">
-                <h1>V3</h1>
-                <V3content></V3content>
-            </div>
-            <div class="tab-pane" id="V4_tab">
-                <h1>V4</h1>
-                <V4content></V4content>
-            </div>
-        </div>
-    </div>
+<h2>Projet de visualisation de données:</h2>
+<h3>Incidents dans le métro de Montréal</h3>
+<p>MISE EN CONTEXTE</p>
+<p>Cliquez sur chacun des onglets pour explorer les visualisations</p>
 
+<div class="tab">
+  <button class="tablinks" onclick="openTab(event, 'V1tab')">V1</button>
+  <button class="tablinks" onclick="openTab(event, 'V2tab')">V2</button>
+  <button class="tablinks" onclick="openTab(event, 'V3tab')">V3</button>
+  <button class="tablinks" onclick="openTab(event, 'V4tab')">V4</button>
+</div>
 
+<div id="V1tab" class="tabcontent">
+  <h3>V1</h3>
+  <p>Mettre la V1 ici.</p>
+  <div id="canvasV1"></div>
+  
+</div>
 
+<div id="V2tab" class="tabcontent">
+  <h3>V2</h3>
+  <p>Mettre la V2 ici.</p> 
+  <div id="canvasV2"></div>
+  
+</div>
 
+<div id="V3tab" class="tabcontent">
+  <h3>V3</h3>
+  <p>Mettre la V3 ici.</p>
+  <div id="canvasV3"></div>
+  
+</div>
 
+<div id="V4tab" class="tabcontent">
+    <h3>V4</h3>
+    <p>Mettre la V4 ici.</p>
+    <div id="canvasV4"></div>
+    
+  </div>
 
+<script>
+function openTab(evt, tabName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+</script>
 
+<script type="text/javascript" src="assets/libs/d3.js"></script>
 
-
-<!-- <section id="V2">
+<script type="text/javascript" src="assets/scripts/preproc.js"></script>
+<script type="text/javascript" src="assets/scripts/V1.js"></script>
+<script type="text/javascript" src="assets/scripts/V2.js"></script>
+<script type="text/javascript" src="assets/scripts/V3.js"></script>
+<script type="text/javascript" src="assets/scripts/V4.js"></script>
+<script type="text/javascript" src="assets/scripts/main.js"></script>
+<!--
+<section id="V2">
     <g id="Intersections">
         <circle id="Jean-Talon" class="st1" cx="370.29" cy="224.5" r="8.9"/>
         <circle id="Snowdon" class="st1" cx="231.52" cy="527" r="8.9"/>
@@ -127,44 +157,9 @@
         <circle id="Côte-Vertu" class="st5" cx="68.32" cy="363.77" r="6.71"/>
     </g>
     </svg>
-</section> -->
-
-<script type="text/javascript" src="assets/libs/d3.js"></script>
-
-<script type="text/javascript" src="assets/scripts/preproc.js"></script>
-<script type="text/javascript" src="assets/scripts/V1.js"></script>
-<script type="text/javascript" src="assets/scripts/V2.js"></script>
-<script type="text/javascript" src="assets/scripts/V3.js"></script>
-<script type="text/javascript" src="assets/scripts/V4.js"></script>
-<script type="text/javascript" src="assets/scripts/main.js"></script>
-
-
-<script>
-    $.ajaxSetup ({
-        // Disable caching of AJAX responses
-        // Used when debugging
-        cache: false
-    });
-
-    $(".V1tab").click(function() {
-        $.getScript("V1.js");
-    })
-</script>
-<script>
-    $(".V2tab").click(function() {
-        $.getScript("V2.js");
-    })
-</script>
-<script>
-    $(".V3tab").click(function() {
-        $.getScript("V3.js");
-    })
-</script>
-<script>
-    $(".V4tab").click(function() {
-        $.getScript("V4.js");
-    })
-</script>
-
+</section>
+-->
+   
 </body>
-</html>
+</html> 
+
