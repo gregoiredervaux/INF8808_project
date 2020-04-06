@@ -2,7 +2,9 @@
 //http://www.cagrimmett.com/til/2016/08/19/d3-pie-chart.html
 
 
-// Fonction qui détecte l'heure de début et de fin sélectionnées par l'utuliateur
+// Fonction qui détecte l'heure de début et de fin sélectionnées par l'utilisateur
+// Défini par le brush sur les 24 carrées
+// Peut être fait en comptant le nombre d'éléments dont la classe est ''sélectionnée''
 // g est l'élément SVG qui contient la V1
 // Retourne l'heure de début et de fin
 function select_begin_end(g){
@@ -10,10 +12,37 @@ function select_begin_end(g){
 };
 
 
-// Fonction pour créer piechart_dataset.
-// g est l'élément SVG qui contient la V1.
+// Fonction qui détermine le nombre d'incidents dans l'intervalle sélectionné
+// On lui fourni l'heure de début (sur 24) et l'heure de fin (sur 24) de l'intervalle
 // Retourne le nombre d'incident dans l'intervalle et hors de l'intervalle sous la forme [{'name':'nombre_incident_dans_intervalle', 'number':123},{'name':'nombre_incident_hors_intervalle','number':844}]
-function select_incidents_in_the_timeframe(dataset, begin, end){
+function count_incidents(dataset, begin, end){
+
+    
+    var hours = new Array();
+
+    // On extrait la colonne d'heure de début des incidents
+    dataset.forEach(row => 
+                        hours.push(parseInt(row["Heure de l'incident"].slice(0,2)))
+                   )
+
+    // On corrige les heures de débuts supérieures à 24
+    hours.some(function(d,i){
+        if(d>24){
+            hours[i] = d-24;
+        };
+    });
+        
+    // Sélectionne les incidents de begin à 24
+    var above = hours.filter(d => begin <= d );
+
+    // Sélectionne les incidents de begin à end
+    var number_in = above.filter(d => d <=end ).length;
+
+    // Détermine le nombre d'incidents à l'extérieur de l'intervalle
+    var number_out = hours.length - number_in;
+
+    // piechart_dataset est pret pour la fonction create_piechart
+    return piechart_dataset = [{"name":"Incidents dans l'intervalle", 'number':number_in},{"name":"Incidents hors de l'intervalle",'number':number_out}];
 
 };
 

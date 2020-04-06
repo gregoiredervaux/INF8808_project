@@ -72,23 +72,15 @@
 
             /***** V1 *****/
 
-            // Eventually, piechart_dataset will be generated with select_begin_end and select_incidents_in_the_timeframe
-            var piechart_dataset = [{"name":"Incidents dans l'intervalle", 'number':80},{"name":"Incidents hors de l'intervalle",'number':5}];
+            // Éventuellement, begin aet end vont être déterminé grâce à la fonction select_begin_end()
+            var begin = 10;
+            var end = 12;
+
+            var piechart_dataset = count_incidents(incidents, begin, end);
             create_piechart(piechart_dataset);
 
 
 
-
-
-
-
-
-
-
-
-
-
-            
 
             /***** V2 *****/
             
