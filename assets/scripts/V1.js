@@ -18,6 +18,7 @@ function select_begin_end(g){
 function count_incidents(dataset, begin, end){
 
     
+    // Initialisation
     var hours = new Array();
 
     // On extrait la colonne d'heure de début des incidents
