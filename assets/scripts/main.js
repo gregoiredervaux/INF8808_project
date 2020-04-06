@@ -72,11 +72,14 @@
 
             /***** V1 *****/
 
-            // Éventuellement, begin aet end vont être déterminé grâce à la fonction select_begin_end()
+            // Éventuellement, begin et end vont être déterminé grâce à la fonction select_begin_end()
+            create_rectangles();
+            
             var begin = 10;
             var end = 12;
 
             var piechart_dataset = count_incidents(incidents, begin, end);
+            
             create_piechart(piechart_dataset);
 
 

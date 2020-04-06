@@ -1,4 +1,22 @@
 
+// Fonction qui crée les 24 rectangles qui désigne les heures
+function create_rectangles(){
+    var svg = d3.select("#canvasV1");
+    var hours_in_a_day = d3.range(1,25);
+    var rectangles = svg.selectAll("circle")
+        .data(hours_in_a_day)
+        .enter()
+        .append("rectangle");
+
+};
+
+
+
+
+
+
+
+
 //http://www.cagrimmett.com/til/2016/08/19/d3-pie-chart.html
 
 
@@ -7,9 +25,20 @@
 // Peut être fait en comptant le nombre d'éléments dont la classe est ''sélectionnée''
 // g est l'élément SVG qui contient la V1
 // Retourne l'heure de début et de fin
+
+//http://bl.ocks.org/paradite/71869a0f30592ade5246
+//https://stackoverflow.com/questions/38155793/d3-js-pie-chart-clock
+//https://bl.ocks.org/matt-mcdaniel/267ba6445f61371012d7/46f983e306527cee788bb0ac632b87faf294d96d
+//http://bl.ocks.org/mbostock/1096355
 function select_begin_end(g){
 
 };
+
+
+
+
+
+
 
 
 // Fonction qui détermine le nombre d'incidents dans l'intervalle sélectionné
@@ -59,12 +88,13 @@ function count_incidents(dataset, begin, end){
 
 // dataset est de la forme [{'name':'nombre_incident_dans_intervalle', 'number':123},{'name':'nombre_incident_hors_intervalle','number':844}]
 // g est le groupe SVG dans lequel le piechart doit être
+//https://observablehq.com/@d3/pie-chart
 function create_piechart(dataset) {
 
     // dimensions du piechart
-    var width = 430,
+    var width = 600,
 	height = 400,
-    radius = Math.min(width, height) / 2;
+    radius = Math.min(width, height) / 2.5;
 
     // configuration de l'échelle de couleur
     var color = d3.scaleOrdinal()
@@ -91,7 +121,7 @@ function create_piechart(dataset) {
                 .attr("width", width)
                 .attr("height", height)
                     .append('g')
-                    .attr("transform", "translate(" + width/2 + "," + height/2 +")");
+                    .attr("transform", "translate(" + width/2 + "," + height/2.5 +")");
 
     // on ajoute les données du pie sur chacun des arcs
     var g = svg.selectAll("arc")
