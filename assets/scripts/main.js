@@ -73,14 +73,39 @@
             /***** V1 *****/
 
             // Éventuellement, begin et end vont être déterminé grâce à la fonction select_begin_end()
-            create_rectangles();
+
+            // dimensions du piechart
+            var width_v1 = 1000,
+	        height_v1 = 400,
+            radius_v1 = Math.min(width_v1, height_v1) / 2.5;
+
+            var svg_1 = d3.select("#canvasV1")
+                        .append("svg")
+                        .attr("width", width_v1)
+                        .attr("height", height_v1);
+
+            create_rectangles(svg_1, width_v1, height_v1);
+            select_rectangles();
+
+
+            
+
+
+
+
+
+            
+
+
             
             var begin = 10;
             var end = 12;
 
             var piechart_dataset = count_incidents(incidents, begin, end);
             
-            create_piechart(piechart_dataset);
+
+
+            create_piechart(piechart_dataset, svg_1, width_v1, height_v1, radius_v1);
 
 
 

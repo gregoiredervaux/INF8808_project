@@ -1,17 +1,30 @@
 
 // Fonction qui crée les 24 rectangles qui désigne les heures
-function create_rectangles(){
-    var svg = d3.select("#canvasV1");
+function create_rectangles(svg_1, width, height){
+
     var hours_in_a_day = d3.range(1,25);
-    var rectangles = svg.selectAll("circle")
+
+    var rectangles = svg_1.selectAll("rect")
         .data(hours_in_a_day)
         .enter()
-        .append("rectangle");
+        .append("rect")
+        .attr("width",20)
+        .attr("height",20)
+        .attr("x",function(d){return (width/30)*d+width/20})
+        .attr("y",0.85*height)
+        .classed("unselected_hour", true)
+        .append("title")
+        .text(function(d){return d}); //Change the tooltip for a hover action
 
+
+/*
+    svg_1.append("rect")
+            .attr("x", 30)
+            .attr("y", 30)
+            .attr("width",20)
+            .attr("height",20);
+* */
 };
-
-
-
 
 
 
@@ -30,8 +43,35 @@ function create_rectangles(){
 //https://stackoverflow.com/questions/38155793/d3-js-pie-chart-clock
 //https://bl.ocks.org/matt-mcdaniel/267ba6445f61371012d7/46f983e306527cee788bb0ac632b87faf294d96d
 //http://bl.ocks.org/mbostock/1096355
-function select_begin_end(g){
+//EXACTEMENT CELA QUE L'ON VEUT FAIRE http://bl.ocks.org/lgersman/5311083 
 
+// Fonction qui change la class de certain rectangle de unselected_hour à selected_hour et vice versa
+// Éventuellement, on veut un drag selection comme http://bl.ocks.org/lgersman/5311083 
+// Pour l'instant, avec le click selection, on pourrait avoir une sélection discontinue 
+// Cela poserait des problèmes pour déterminer le début et la fin de l'intervalle
+function select_rectangles(){
+
+    // On trouve tous les éléments qui sont des rectangles
+    var rectangles = d3.selectAll("rect");
+    // Lorsque l'on clique sur un des rectangles, on change sa classe (sélection ou désélection)
+    rectangles.on("click", function(d,i)
+    {
+        var rectangle = d3.select(this);
+        var current_class = rectangle.attr("class");
+
+        if (current_class == "unselected_hour")
+        {
+            rectangle.attr("class", "selected_hour")
+        }
+        else if (current_class == "selected_hour")
+        {
+            rectangle.attr("class", "unselected_hour")
+        }
+
+        // Affichage du nombre de rectangles sélectionnées
+        var sel_rect = d3.selectAll(".selected_hour")._groups;
+        sel_rect.forEach (row => console.log(row));
+    });
 };
 
 
@@ -89,16 +129,12 @@ function count_incidents(dataset, begin, end){
 // dataset est de la forme [{'name':'nombre_incident_dans_intervalle', 'number':123},{'name':'nombre_incident_hors_intervalle','number':844}]
 // g est le groupe SVG dans lequel le piechart doit être
 //https://observablehq.com/@d3/pie-chart
-function create_piechart(dataset) {
+function create_piechart(dataset, svg_1, width, height, radius)  {
 
-    // dimensions du piechart
-    var width = 600,
-	height = 400,
-    radius = Math.min(width, height) / 2.5;
 
     // configuration de l'échelle de couleur
     var color = d3.scaleOrdinal()
-                  .range(["#CA290D ","#B4B4B4"]);
+                  .range(["#019535 ","#B4B4B4"]);
 
     // initialisation d'un objet piechart de d3         
     var pie = d3.pie()
@@ -114,17 +150,10 @@ function create_piechart(dataset) {
 	                .outerRadius(radius - 80)
                     .innerRadius(radius - 80);
 
-    // création de l'élément SVG qui contient le piechart
-    // ajout d'un g au centre de SVG qui va être le centre du piechart
-    var svg = d3.select("#canvasV1")
-                .append("svg")
-                .attr("width", width)
-                .attr("height", height)
-                    .append('g')
-                    .attr("transform", "translate(" + width/2 + "," + height/2.5 +")");
-
+    var svg_moved = svg_1.append('g')
+                   .attr("transform", "translate(" + width/2 + "," + height/2.5 +")");
     // on ajoute les données du pie sur chacun des arcs
-    var g = svg.selectAll("arc")
+    var g = svg_moved.selectAll("arc")
                 .data(pie)
                 .enter()
                 .append("g")
