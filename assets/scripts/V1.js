@@ -15,7 +15,7 @@ function create_rectangles(svg_1, width, height){
         .attr("id", function(d,i){return "rect_"+d;})
         .classed("unselected_hour", true)
         .append("title")
-        .text(function(d){return d}); //Change the tooltip for a hover action
+        .text(function(d){return d}); // Éventuellement, un vrai tooltip
 
     var opening_hours = d3.range(5,25);
     opening_hours.forEach(function(hour)
@@ -27,15 +27,6 @@ function create_rectangles(svg_1, width, height){
         open_rect.classed("selected_hour", true);
     }
     )
-
-
-/*
-    svg_1.append("rect")
-            .attr("x", 30)
-            .attr("y", 30)
-            .attr("width",20)
-            .attr("height",20);
-* */
 };
 
 
@@ -43,13 +34,6 @@ function create_rectangles(svg_1, width, height){
 
 
 //http://www.cagrimmett.com/til/2016/08/19/d3-pie-chart.html
-
-
-// Fonction qui détecte l'heure de début et de fin sélectionnées par l'utilisateur
-// Défini par le brush sur les 24 carrées
-// Peut être fait en comptant le nombre d'éléments dont la classe est ''sélectionnée''
-// g est l'élément SVG qui contient la V1
-// Retourne l'heure de début et de fin
 
 //http://bl.ocks.org/paradite/71869a0f30592ade5246
 //https://stackoverflow.com/questions/38155793/d3-js-pie-chart-clock
@@ -65,7 +49,9 @@ function select_rectangles(dataset, svg_1, width, height, radius){
 
     // On trouve tous les éléments qui sont des rectangles
     var rectangles = d3.selectAll("rect");
+
     // Lorsque l'on clique sur un des rectangles, on change sa classe (sélection ou désélection)
+    // Et on met à jour le piechart
     rectangles.on("click", function(d,i)
     {
         var rectangle = d3.select(this);
@@ -112,6 +98,8 @@ function select_rectangles(dataset, svg_1, width, height, radius){
 
         // On créer le dataset maintenant que l'on a begin et end
         var piechart_dataset = count_incidents(dataset, begin, end);
+
+        // On update le piechart
         create_piechart(piechart_dataset, svg_1, width, height, radius);
         
 

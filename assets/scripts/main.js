@@ -84,13 +84,16 @@
                         .attr("width", width_v1)
                         .attr("height", height_v1);
 
+            // Heures d'ouvertures du métro           
             var ouverture = 5;
             var fermeture = 24;
+
+            // Création du piechart que l'utilisateur voit lorsqu'il ouvre l'onglet (sélection par défaut)
             var piechart_dataset = count_incidents(incidents, ouverture, fermeture);
             create_rectangles(svg_1, width_v1, height_v1);
             create_piechart(piechart_dataset, svg_1, width_v1, height_v1, radius_v1);
 
-            
+            // Update du piechart selon la sélection de l'utilisateur
             select_rectangles(incidents, svg_1, width_v1, height_v1, radius_v1);
             
             
