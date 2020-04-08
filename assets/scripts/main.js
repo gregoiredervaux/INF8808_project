@@ -84,28 +84,23 @@
                         .attr("width", width_v1)
                         .attr("height", height_v1);
 
+            var ouverture = 5;
+            var fermeture = 24;
+            var piechart_dataset = count_incidents(incidents, ouverture, fermeture);
             create_rectangles(svg_1, width_v1, height_v1);
-            select_rectangles();
-
-
-            
-
-
-
-
-
-            
-
-
-            
-            var begin = 10;
-            var end = 12;
-
-            var piechart_dataset = count_incidents(incidents, begin, end);
-            
-
-
             create_piechart(piechart_dataset, svg_1, width_v1, height_v1, radius_v1);
+
+            
+            select_rectangles(incidents, svg_1, width_v1, height_v1, radius_v1);
+            
+            
+            
+            
+
+
+            
+            
+           
 
 
 

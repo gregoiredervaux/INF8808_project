@@ -12,9 +12,21 @@ function create_rectangles(svg_1, width, height){
         .attr("height",20)
         .attr("x",function(d){return (width/30)*d+width/20})
         .attr("y",0.85*height)
+        .attr("id", function(d,i){return "rect_"+d;})
         .classed("unselected_hour", true)
         .append("title")
         .text(function(d){return d}); //Change the tooltip for a hover action
+
+    var opening_hours = d3.range(5,25);
+    opening_hours.forEach(function(hour)
+    {
+        var rect_name = "rect_"+hour;
+        
+        var open_rect = d3.select("#"+rect_name);
+        open_rect.classed("unselected_hour", false);
+        open_rect.classed("selected_hour", true);
+    }
+    )
 
 
 /*
@@ -49,7 +61,7 @@ function create_rectangles(svg_1, width, height){
 // Éventuellement, on veut un drag selection comme http://bl.ocks.org/lgersman/5311083 
 // Pour l'instant, avec le click selection, on pourrait avoir une sélection discontinue 
 // Cela poserait des problèmes pour déterminer le début et la fin de l'intervalle
-function select_rectangles(){
+function select_rectangles(dataset, svg_1, width, height, radius){
 
     // On trouve tous les éléments qui sont des rectangles
     var rectangles = d3.selectAll("rect");
@@ -69,10 +81,45 @@ function select_rectangles(){
         }
 
         // Affichage du nombre de rectangles sélectionnées
+        // Chaque rectangle possède un id
+        // Ce id est de la forme "rect_HOUR" où HOUR est un chiffre de 1 à 24.
+        // On va chercher tous les id de rectangle sélectionné pour déterminé l'intervalle de temps à considérer
         var sel_rect = d3.selectAll(".selected_hour")._groups;
-        sel_rect.forEach (row => console.log(row));
+        var id_array = new Array();
+        
+        sel_rect.forEach (function (row)
+        {
+            row.forEach(function(rect)
+            {
+                // Le numéro du rectangle se trouve de l'incide 5 à 7 dans le format du id
+                id_array.push(parseInt(rect.id.slice(5,7)));
+            })
+        })
+
+        
+        
+        var nb_select = id_array.length;
+        var begin = d3.min(id_array);
+        var end = d3.max(id_array);
+
+        // Check si la sélection est consécutive (seulement à cause de la sélection par clique)
+        // Éventuellement, le drag va assurer que la sélection est un intervalle continue
+        if (begin + nb_select != end +1 )
+        {
+            console.log("Sélection non-consécutive!!!");
+        };
+        
+
+        // On créer le dataset maintenant que l'on a begin et end
+        var piechart_dataset = count_incidents(dataset, begin, end);
+        create_piechart(piechart_dataset, svg_1, width, height, radius);
+        
+
+        
     });
+
 };
+
 
 
 
