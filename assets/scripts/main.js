@@ -27,7 +27,7 @@
     var y_map = d3.scaleLinear().range([0, map_height]);
 
     var color_station = d3.scaleLinear().range(["white", "red"]);
-    var pipe_scale = d3.scaleLinear().range([0,20]);
+    var pipe_scale = d3.scaleLinear().range([0.2,20]);
 
     /***** Chargement des données *****/
     var promises = [];
@@ -59,15 +59,6 @@
 
             scale_from_GPS(pt_metro, x_map, y_map);
             scale_incidents(data_stations, color_station, pipe_scale);
-
-
-
-
-
-
-
-
-
 
 
             /***** V1 *****/
@@ -114,12 +105,12 @@
                 .append("svg")
                 .attr("width", map_width + margin.left + margin.right)
                 .attr("height", map_height + margin.top + margin.bottom);
-            /** 
+
             var metro_map = svg_v2.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
             create_map(metro_map, data_stations, lines, x_map, y_map, color_station, pipe_scale);
-            */
+
 
 
             /***** V3 *****/

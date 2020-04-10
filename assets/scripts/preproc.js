@@ -23,8 +23,9 @@ function scale_from_GPS(pt_metro, scale_x, scale_y) {
 
 function scale_incidents(data, color, pipe) {
 
-    var min = d3.min(data , station => d3.sum(station.incidents, inci =>  inci.time));
-    var max = d3.max(data , station => d3.sum(station.incidents, inci =>  inci.time))
+    var min = 0;
+    // var min = d3.min(data , station => d3.sum(station.incidents, inci =>  inci.time));
+    var max = d3.max(data , station => d3.sum(station.incidents, inci =>  inci.time));
 
     color.domain([min , max]);
     pipe.domain([min, max]);
