@@ -47,6 +47,20 @@ function clean_data(pt_metro, incidents) {
         inci.debut = new Date(`${inci["Jour calendaire"]}T${inci["Heure de l'incident"]}`);
         inci.fin = new Date(`${inci["Jour calendaire"]}T${inci["Heure de reprise"]}`);
         inci.time = (inci.fin - inci.debut)/60000
+        switch(inci["Ligne"]) {
+            case "Ligne orange":
+                inci.line = "orange";
+                break;
+            case "Ligne verte":
+                inci.line = "green";
+                break;
+            case "Ligne bleue":
+                inci.line = "blue";
+                break;
+            case "Ligne jaune":
+                inci.line = "yellow";
+                break;
+        }
     });
 
     pt_metro.forEach(st => {
@@ -60,14 +74,14 @@ function data_per_station(pt_metro, incidents) {
     var list_station_incidents = d3.set(incidents.map(incidents => incidents["Code de lieu"])).values().sort();
     var list_station_metro = d3.set(pt_metro.map(pt_metro => pt_metro.name_id)).values().sort();
 
-    // console.log(list_station_incidents);
-    // console.log(list_station_metro);
+    console.log("liste station incidents", list_station_incidents);
+    console.log("liste station metro", list_station_metro);
 
     let common = list_station_incidents.filter(x =>  pt_metro.find(stations => new RegExp(stations.name_id, "i").test(x)));
     let difference = list_station_incidents.filter(x =>  pt_metro.every(stations => !new RegExp(stations.name_id, "i").test(x)));
 
-    // console.log(common);
-    // console.log(difference);
+    console.log("commun:", common);
+    console.log("différent", difference);
 
     return pt_metro.map(row => {
         return {
@@ -77,7 +91,8 @@ function data_per_station(pt_metro, incidents) {
             coordinates_map: row.coordinates_map,
             line: row.line,
             populartimes: row.populartimes,
-            incidents: incidents.filter(incident => new RegExp(row.name_id, "i").test(incident["Code de lieu"]))
+            incidents: incidents.filter(incident => new RegExp(row.name_id, "i").test(incident["Code de lieu"]) &&
+                row.line === incident.line)
         }
     }).map(station => {
         station.incidents.forEach(inci => {if(inci["Code de lieu"].includes("/")){inci.time /= 2}});

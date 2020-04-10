@@ -42,14 +42,15 @@
 
 
             var pt_metro = results[1].sort((a, b) => (parseInt(a.id) > parseInt(b.id)));
-            //console.log("liste des stations de métro", pt_metro);
 
             var lines =  results[2];
 
             clean_data(pt_metro, incidents);
 
+            console.log("liste des stations de métro", pt_metro);
+
             var data_stations = data_per_station(pt_metro, incidents);
-            //console.log("données de travail", data_stations);
+            console.log("données de travail", data_stations);
 
             //console.log("nombre d'incidants conservés", d3.sum(data_stations.map(data_st => data_st.incidents.length)));
 
