@@ -100,7 +100,9 @@ function select_rectangles(dataset, svg_1, width, height, radius){
         var piechart_dataset = count_incidents(dataset, begin, end);
 
         // On update le piechart
+        // BESOIN DE FAIRE UNE FONCTION QUI UPDATE!!!!! LE PIECHART ET NON QUI LE RECRÉ
         create_piechart(piechart_dataset, svg_1, width, height, radius);
+        //update_piechart(piechart_dataset,);
         
 
         
@@ -178,8 +180,7 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
     // initialisation des arcs
     var arc = d3.arc()
 	            .outerRadius(radius - 10)
-	            .innerRadius(0);
-
+                .innerRadius(0);
     // initialisation des arcs pour les étiquettes
     var labelArc = d3.arc()
 	                .outerRadius(radius - 80)
@@ -213,5 +214,12 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
     
 
     
+
+};
+
+// Fonction qui update le piechart, avec une transition
+// On ne veut pas refaire tout le piechart à chaque fois que la sélection de l'utiliateur change
+function update_piechart(dataset, pie)
+{
 
 };
