@@ -85,6 +85,8 @@
             create_rectangles(svg_1, width_v1, height_v1);
             create_piechart(piechart_dataset, svg_1, width_v1, height_v1, radius_v1);
 
+            select_drag(svg_1);
+
             // Update du piechart selon la sélection de l'utilisateur
             select_rectangles(incidents, svg_1, width_v1, height_v1, radius_v1);
             

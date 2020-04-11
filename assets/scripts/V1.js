@@ -53,7 +53,7 @@ function select_rectangles(dataset, svg_1, width, height, radius){
 
     // Lorsque l'on clique sur un des rectangles, on change sa classe (sélection ou désélection)
     // Et on met à jour le piechart
-    rectangles.on("click", function(d,i)
+    rectangles.on("click", function()
     {
         var rectangle = d3.select(this);
         var current_class = rectangle.attr("class");
@@ -82,6 +82,9 @@ function select_rectangles(dataset, svg_1, width, height, radius){
                 id_array.push(parseInt(rect.id.slice(5,7)));
             })
         })
+        //var first_rect = d3.selectAll("#rect_"+d3.min(id_array));
+        //var last_rect = d3.selectAll("#rect_"+d3.max(id_array));
+
 
         
         
@@ -111,6 +114,37 @@ function select_rectangles(dataset, svg_1, width, height, radius){
 
 };
 
+
+function select_drag(svg_1)
+{
+    svg_1.on ("mousedown", function()
+    {
+        console.log("down");
+        d3.event.preventDefault();
+        var coords_down = d3.mouse(this);
+        console.log(coords_down);
+        svg_1.on("mousemove", function()
+        {
+            var coords_move = d3.mouse(this);
+            console.log(coords_move);
+        });
+
+    })
+    svg_1.on("mouseup", function()
+    {
+        console.log("up");
+        var coords_up = d3.mouse(this);
+        console.log(coords_up);
+    })
+
+    /*
+    svg_1.on("mousemove", function()
+    {
+        var coords_move = d3.mouse(this);
+        console.log(coords_move);
+    });
+    */
+};
 
 
 
@@ -216,15 +250,22 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
         .style("fill", function(d) { return color(d.data.name);});
     
 
+    // calcul du nombre total d'incident pour déterminer le pourcentage dans l'intervalle
+    var total_incidents = dataset[0]["number"] + dataset[1]["number"];
+    
+
     // ajout des étiquettes
     g.append("text")
 	 .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
 	 .text(function(d) { 
-         return d.data.number;
+         return (Math.round(100*d.data.number/total_incidents)).toString()+"%";
      })
      .style("fill", "#000")
      .style("font-size","20px")
-     .attr("text-anchor","middle");
+     .attr("text-anchor","middle")
+
+
+   
     
     
 
