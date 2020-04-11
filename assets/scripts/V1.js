@@ -17,6 +17,7 @@ function create_rectangles(svg_1, width, height){
         .append("title")
         .text(function(d){return d}); // Éventuellement, un vrai tooltip
 
+
     var opening_hours = d3.range(5,25);
     opening_hours.forEach(function(hour)
     {
@@ -97,12 +98,12 @@ function select_rectangles(dataset, svg_1, width, height, radius){
         
 
         // On créer le dataset maintenant que l'on a begin et end
-        var piechart_dataset = count_incidents(dataset, begin, end);
+        var new_piechart_dataset = count_incidents(dataset, begin, end);
 
         // On update le piechart
         // BESOIN DE FAIRE UNE FONCTION QUI UPDATE!!!!! LE PIECHART ET NON QUI LE RECRÉ
-        create_piechart(piechart_dataset, svg_1, width, height, radius);
-        //update_piechart(piechart_dataset,);
+        create_piechart(new_piechart_dataset, svg_1, width, height, radius);
+        //update_piechart();
         
 
         
@@ -173,9 +174,12 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
     var color = d3.scaleOrdinal()
                   .range(["#019535 ","#B4B4B4"]);
 
-    // initialisation d'un objet piechart de d3         
+    // initialisation d'un objet piechart de d3       
     var pie = d3.pie()
-                .value(function(d) { return d.number; })(dataset);
+                .value(function(d) { return d.number; })(dataset)
+ 
+   
+
 
     // initialisation des arcs
     var arc = d3.arc()
@@ -194,12 +198,23 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
                 .enter()
                 .append("g")
                     .attr("class", "arc");
+    
+
+    // Making sure "incident dans l'intervalle" always starts at angle = 0
+    if (pie[0].startAngle!=0)
+    {   
+        pie[0].startAngle = 0;
+        pie[0].endAngle = 2*Math.PI - pie[1].endAngle;
+        pie[1].startAngle = pie[0].endAngle;
+        pie[1].endAngle = 2*Math.PI;   
+    }
+    
 
     // on trace les arcs (ajout du path)
     g.append("path")
         .attr("d", arc)
         .style("fill", function(d) { return color(d.data.name);});
-
+    
 
     // ajout des étiquettes
     g.append("text")
@@ -217,9 +232,15 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
 
 };
 
+//https://jonsadka.com/blog/how-to-create-adaptive-pie-charts-with-transitions-in-d3
+// Source: https://bl.ocks.org/mbostock/1346410
 // Fonction qui update le piechart, avec une transition
 // On ne veut pas refaire tout le piechart à chaque fois que la sélection de l'utiliateur change
-function update_piechart(dataset, pie)
+// La premiere version de la V1 créer un NOUVEAU piechart à chaque sélection, au lieu de simplement updater
+function update_piechart()
 {
 
 };
+
+
+

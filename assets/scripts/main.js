@@ -47,10 +47,10 @@
 
             clean_data(pt_metro, incidents);
 
-            console.log("liste des stations de métro", pt_metro);
+            //console.log("liste des stations de métro", pt_metro);
 
             var data_stations = data_per_station(pt_metro, incidents);
-            console.log("données de travail", data_stations);
+            //console.log("données de travail", data_stations);
 
             //console.log("nombre d'incidants conservés", d3.sum(data_stations.map(data_st => data_st.incidents.length)));
 
@@ -76,7 +76,7 @@
                         .attr("width", width_v1)
                         .attr("height", height_v1);
 
-            // Heures d'ouvertures du métro           
+            // Heures d'ouvertures du métro        
             var ouverture = 5;
             var fermeture = 24;
 

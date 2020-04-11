@@ -19,7 +19,7 @@ function create_map(g, data, lines,  x, y, color, pipe) {
             })}
     });
 
-    console.log("data par ligne: ", data_by_lines);
+    //console.log("data par ligne: ", data_by_lines);
 
 
     // var line = d3.line()
