@@ -7,6 +7,7 @@ function create_rectangles(svg_1, width, height){
     var rectangles = svg_1.selectAll("rect")
         .data(hours_in_a_day)
         .enter()
+        .append("g")
         .append("rect")
         .attr("width",20)
         .attr("height",20)
@@ -26,6 +27,7 @@ function create_rectangles(svg_1, width, height){
         var open_rect = d3.select("#"+rect_name);
         open_rect.classed("unselected_hour", false);
         open_rect.classed("selected_hour", true);
+        
     }
     )
 };
@@ -34,13 +36,7 @@ function create_rectangles(svg_1, width, height){
 
 
 
-//http://www.cagrimmett.com/til/2016/08/19/d3-pie-chart.html
 
-//http://bl.ocks.org/paradite/71869a0f30592ade5246
-//https://stackoverflow.com/questions/38155793/d3-js-pie-chart-clock
-//https://bl.ocks.org/matt-mcdaniel/267ba6445f61371012d7/46f983e306527cee788bb0ac632b87faf294d96d
-//http://bl.ocks.org/mbostock/1096355
-//EXACTEMENT CELA QUE L'ON VEUT FAIRE http://bl.ocks.org/lgersman/5311083 
 
 // Fonction qui change la class de certain rectangle de unselected_hour à selected_hour et vice versa
 // Éventuellement, on veut un drag selection comme http://bl.ocks.org/lgersman/5311083 
@@ -48,31 +44,48 @@ function create_rectangles(svg_1, width, height){
 // Cela poserait des problèmes pour déterminer le début et la fin de l'intervalle
 function select_rectangles(dataset, svg_1, width, height, radius){
 
+    var tooltip = svg_1
+    .append("div")
+	.style("position", "absolute")
+	.style("z-index", "10")
+	.style("visibility", "hidden")
+	.text("a simple tooltip");
+    
+    // When mouse is down, unselect all hours
+    svg_1.on("mousedown", function() 
+    {
+        d3.event.preventDefault();
+        var hours = d3.range(1,25);
+        hours.forEach(function(hour)
+        {
+            var rect_name = "rect_"+hour;
+            var one_rect = d3.select("#"+rect_name)
+                             .classed("selected_hour", false)
+                             .classed("unselected_hour",true);
+        });
+
+    });
+
+
+    
     // On trouve tous les éléments qui sont des rectangles
     var rectangles = d3.selectAll("rect");
 
-    // Lorsque l'on clique sur un des rectangles, on change sa classe (sélection ou désélection)
-    // Et on met à jour le piechart
-    rectangles.on("click", function()
+
+
+
+
+    rectangles.on("mouseover", function()
     {
-        var rectangle = d3.select(this);
-        var current_class = rectangle.attr("class");
+        d3.select(this)
+          .classed("unselected_hour",false)
+          .classed("selected_hour",true);
 
-        if (current_class == "unselected_hour")
-        {
-            rectangle.attr("class", "selected_hour")
-        }
-        else if (current_class == "selected_hour")
-        {
-            rectangle.attr("class", "unselected_hour")
-        }
+        tooltip.style("visibility","visible");
 
-        // Affichage du nombre de rectangles sélectionnées
-        // Chaque rectangle possède un id
-        // Ce id est de la forme "rect_HOUR" où HOUR est un chiffre de 1 à 24.
-        // On va chercher tous les id de rectangle sélectionné pour déterminé l'intervalle de temps à considérer
+        
         var sel_rect = d3.selectAll(".selected_hour")._groups;
-        var id_array = new Array();
+        var id_array = new Array(); 
         
         sel_rect.forEach (function (row)
         {
@@ -85,9 +98,6 @@ function select_rectangles(dataset, svg_1, width, height, radius){
         //var first_rect = d3.selectAll("#rect_"+d3.min(id_array));
         //var last_rect = d3.selectAll("#rect_"+d3.max(id_array));
 
-
-        
-        
         var nb_select = id_array.length;
         var begin = d3.min(id_array);
         var end = d3.max(id_array);
@@ -115,8 +125,36 @@ function select_rectangles(dataset, svg_1, width, height, radius){
 };
 
 
+
 function select_drag(svg_1)
 {
+    
+
+
+    svg_1.on("mousedown", function() 
+    {
+        d3.event.preventDefault();
+        var hours = d3.range(1,25);
+        hours.forEach(function(hour)
+        {
+            var rect_name = "rect_"+hour;
+            var one_rect = d3.select("#"+rect_name)
+                             .classed("unselected_hour",true);
+        });
+    });
+
+    var rectangles = svg_1.selectAll("rect");
+    rectangles.on("mouseover", function()
+    {
+        console.log(d3.select(this));
+        d3.select(this)
+          .classed("unselected_hour",false)
+          .classed("selected_hour",true);
+    });
+
+
+
+/*
     svg_1.on ("mousedown", function()
     {
         console.log("down");
@@ -130,14 +168,16 @@ function select_drag(svg_1)
         });
 
     })
+    
     svg_1.on("mouseup", function()
     {
         console.log("up");
         var coords_up = d3.mouse(this);
         console.log(coords_up);
     })
+    
 
-    /*
+    
     svg_1.on("mousemove", function()
     {
         var coords_move = d3.mouse(this);
@@ -145,6 +185,12 @@ function select_drag(svg_1)
     });
     */
 };
+
+
+
+
+
+
 
 
 
