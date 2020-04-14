@@ -7,7 +7,6 @@ function create_rectangles(svg_1, width, height){
     var rectangles = svg_1.selectAll("rect")
         .data(hours_in_a_day)
         .enter()
-        .append("g")
         .append("rect")
         .attr("width",20)
         .attr("height",20)
@@ -38,18 +37,8 @@ function create_rectangles(svg_1, width, height){
 
 
 
-// Fonction qui change la class de certain rectangle de unselected_hour à selected_hour et vice versa
-// Éventuellement, on veut un drag selection comme http://bl.ocks.org/lgersman/5311083 
-// Pour l'instant, avec le click selection, on pourrait avoir une sélection discontinue 
-// Cela poserait des problèmes pour déterminer le début et la fin de l'intervalle
 function select_rectangles(dataset, svg_1, width, height, radius){
-
-    var tooltip = svg_1
-    .append("div")
-	.style("position", "absolute")
-	.style("z-index", "10")
-	.style("visibility", "hidden")
-	.text("a simple tooltip");
+    
     
     // When mouse is down, unselect all hours
     svg_1.on("mousedown", function() 
@@ -71,20 +60,39 @@ function select_rectangles(dataset, svg_1, width, height, radius){
     // On trouve tous les éléments qui sont des rectangles
     var rectangles = d3.selectAll("rect");
 
-
-
-
-
     rectangles.on("mouseover", function()
     {
-        d3.select(this)
-          .classed("unselected_hour",false)
-          .classed("selected_hour",true);
+        // Mecanisme pour assurer une sélection consécutive
+        var sel_rect = d3.selectAll(".selected_hour")._groups;
 
-        tooltip.style("visibility","visible");
+        if (sel_rect[0].length == 0)
+        {
+            d3.select(this)
+            .classed("unselected_hour",false)
+            .classed("selected_hour",true);
+        }
+        else
+        {
+            var id_string = this.id;
+            var id_number = parseInt(id_string.slice(5,8));
+            var id_before = "rect_"+parseInt(id_number-1);
+            var id_after = "rect_"+parseInt(id_number+1);
+            var status_before = d3.select("#"+id_before).classed("selected_hour");
+            var status_after = d3.select("#"+id_after).classed("selected_hour");
+
+            if (status_before || status_after)
+            {
+                d3.select(this)
+                  .classed("unselected_hour",false)
+                  .classed("selected_hour",true);
+            };
+            
+        }
+
+
 
         
-        var sel_rect = d3.selectAll(".selected_hour")._groups;
+        sel_rect = d3.selectAll(".selected_hour")._groups;
         var id_array = new Array(); 
         
         sel_rect.forEach (function (row)
@@ -102,12 +110,6 @@ function select_rectangles(dataset, svg_1, width, height, radius){
         var begin = d3.min(id_array);
         var end = d3.max(id_array);
 
-        // Check si la sélection est consécutive (seulement à cause de la sélection par clique)
-        // Éventuellement, le drag va assurer que la sélection est un intervalle continue
-        if (begin + nb_select != end +1 )
-        {
-            console.log("Sélection non-consécutive!!!");
-        };
         
 
         // On créer le dataset maintenant que l'on a begin et end
@@ -126,65 +128,7 @@ function select_rectangles(dataset, svg_1, width, height, radius){
 
 
 
-function select_drag(svg_1)
-{
-    
 
-
-    svg_1.on("mousedown", function() 
-    {
-        d3.event.preventDefault();
-        var hours = d3.range(1,25);
-        hours.forEach(function(hour)
-        {
-            var rect_name = "rect_"+hour;
-            var one_rect = d3.select("#"+rect_name)
-                             .classed("unselected_hour",true);
-        });
-    });
-
-    var rectangles = svg_1.selectAll("rect");
-    rectangles.on("mouseover", function()
-    {
-        console.log(d3.select(this));
-        d3.select(this)
-          .classed("unselected_hour",false)
-          .classed("selected_hour",true);
-    });
-
-
-
-/*
-    svg_1.on ("mousedown", function()
-    {
-        console.log("down");
-        d3.event.preventDefault();
-        var coords_down = d3.mouse(this);
-        console.log(coords_down);
-        svg_1.on("mousemove", function()
-        {
-            var coords_move = d3.mouse(this);
-            console.log(coords_move);
-        });
-
-    })
-    
-    svg_1.on("mouseup", function()
-    {
-        console.log("up");
-        var coords_up = d3.mouse(this);
-        console.log(coords_up);
-    })
-    
-
-    
-    svg_1.on("mousemove", function()
-    {
-        var coords_move = d3.mouse(this);
-        console.log(coords_move);
-    });
-    */
-};
 
 
 
