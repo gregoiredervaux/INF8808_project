@@ -121,9 +121,13 @@
             // Mettre la V3 dans l'élément SVG qui se nomme svg_v3
             var svg_v3 = d3.select('#canvasV3')
                            .append('svg')
-                           .attr('width',map_width + margin.left + margin.right)
+                           .attr('width', map_width + margin.left + margin.right)
                            .attr('height', map_height + margin.top + margin.bottom);
 
+                           var metro_map_zoomed = svg_v3.append("g")
+                           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+           
+                            create_map_zoomed(metro_map_zoomed, data_stations, lines, x_map, y_map);
 
 
 
