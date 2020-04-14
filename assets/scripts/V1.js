@@ -8,8 +8,8 @@ function create_rectangles(svg_1, width, height){
         .data(hours_in_a_day)
         .enter()
         .append("rect")
-        .attr("width",30)
-        .attr("height",30)
+        .attr("width",0.03*width)
+        .attr("height",0.03*width)
         .attr("x",function(d){return (width/30)*d+width/20})
         .attr("y",0.85*height)
         .attr("id", function(d,i){return "rect_"+d;})
@@ -65,20 +65,42 @@ function select_rectangles(dataset, svg_1, width, height, radius){
         // Mecanisme pour assurer une sélection consécutive
         var sel_rect = d3.selectAll(".selected_hour")._groups;
 
+        // Si aucune n'est sélectionnée, on peut sélectionner n'importe quelle heure
         if (sel_rect[0].length == 0)
         {
             d3.select(this)
             .classed("unselected_hour",false)
             .classed("selected_hour",true);
         }
+
+        // Si des heures sont sélectionnées, on regarde les voisins de l'heure que l'on essaie de sélectionner
+        // Si au moins un voisin est déjà sélectionné, alors on peut sélectionner cette heure
+        // Assure une sélection consécutive
+        // Cas spéciaux pour les heures 1 et 24
         else
         {
             var id_string = this.id;
             var id_number = parseInt(id_string.slice(5,8));
+            if (id_number == 1)
+            {
+                var status_before = false;
+                var status_after = d3.select("#rect_2").classed("selected_hour");
+            }
+            else if (id_number == 24)
+            {
+                var status_before = d3.select("#rect_23").classed("selected_hour");
+                var status_after = false;
+            }
+            else
+            {            
             var id_before = "rect_"+parseInt(id_number-1);
             var id_after = "rect_"+parseInt(id_number+1);
             var status_before = d3.select("#"+id_before).classed("selected_hour");
             var status_after = d3.select("#"+id_after).classed("selected_hour");
+            };
+
+
+            
 
             if (status_before || status_after)
             {
@@ -89,7 +111,14 @@ function select_rectangles(dataset, svg_1, width, height, radius){
             
         }
 
-
+        // Affichage du tooltip lors du mouseover
+        var tooltip = d3.selectAll('.toolTip');
+        console.log(tooltip);
+        tooltip
+              .style("left", d3.event.pageX - 50 + "px")
+              .style("top", d3.event.pageY - 70 + "px")
+              .style("display", "inline-block")
+              .html("allo");
 
         
         sel_rect = d3.selectAll(".selected_hour")._groups;
