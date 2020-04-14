@@ -112,13 +112,13 @@ function select_rectangles(dataset, svg_1, width, height, radius){
         }
 
         // Affichage du tooltip lors du mouseover
+        console.log(this.x['baseVal'].value);
         var tooltip = d3.selectAll('.toolTip');
-        console.log(tooltip);
         tooltip
-              .style("left", d3.event.pageX - 50 + "px")
-              .style("top", d3.event.pageY - 70 + "px")
+              .style("left",0+"px")
+              .style("top",0+"px")
               .style("display", "inline-block")
-              .html("allo");
+              .html(parseInt(this.id.slice(5,8))+"h");
 
         
         sel_rect = d3.selectAll(".selected_hour")._groups;
@@ -151,6 +151,12 @@ function select_rectangles(dataset, svg_1, width, height, radius){
         
 
         
+    });
+    
+    // Enlever le tooltip lorsque on ne survol plus les rectangles
+    rectangles.on('mouseout', function()
+    {
+        d3.selectAll('.toolTip').style("display", "none");
     });
 
 };
