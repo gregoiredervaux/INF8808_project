@@ -8,8 +8,8 @@ function create_rectangles(svg_1, width, height){
         .data(hours_in_a_day)
         .enter()
         .append("rect")
-        .attr("width",20)
-        .attr("height",20)
+        .attr("width",30)
+        .attr("height",30)
         .attr("x",function(d){return (width/30)*d+width/20})
         .attr("y",0.85*height)
         .attr("id", function(d,i){return "rect_"+d;})
@@ -132,17 +132,6 @@ function select_rectangles(dataset, svg_1, width, height, radius){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 // Fonction qui détermine le nombre d'incidents dans l'intervalle sélectionné
 // On lui fourni l'heure de début (sur 24) et l'heure de fin (sur 24) de l'intervalle
 // Retourne le nombre d'incident dans l'intervalle et hors de l'intervalle sous la forme [{'name':'nombre_incident_dans_intervalle', 'number':123},{'name':'nombre_incident_hors_intervalle','number':844}]
@@ -177,10 +166,6 @@ function count_incidents(dataset, begin, end){
     return piechart_dataset = [{"name":"Incidents dans l'intervalle", 'number':number_in},{"name":"Incidents hors de l'intervalle",'number':number_out}];
 
 };
-
-
-
-
 
 
 
