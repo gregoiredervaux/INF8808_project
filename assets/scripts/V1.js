@@ -22,7 +22,7 @@ function create_rectangles(svg_1, width, height){
                     .append("text")
                     .text(function(d,i){return d+"h"})
                     .attr("font-family", "sans-serif")
-                    .attr("font-size", "20px")
+                    .attr("font-size", "15px")
                     .attr("fill", "white")
                     .attr("id", function(d,i){return "text_"+d;});
 
@@ -141,10 +141,11 @@ function select_rectangles(dataset, svg_1, width, height, radius){
               .style("left", (d3.event.pageX) + "px")
               .style("top",0+ (696) + "px")
               .style("display", "inline-block")
-              .style("border", "2px solid #009De0")
+              .style("border", "1px solid #009De0")
               .style("min-width", "10px")
               .style("height", "8px")
-              .html("<b>"+parseInt(this.id.slice(5,8))+"h"+"<b>");
+              .text(parseInt(this.id.slice(5,8))+"h")
+              .style("color", "#009De0");
 
 
 
