@@ -76,6 +76,9 @@
                         .attr("width", width_v1)
                         .attr("height", height_v1);
 
+            // Creer le tooltip qui montre l'heure de chaque rectangle
+            var tooltip = d3.select("#canvasV1").append("div").attr("class", "toolTip");
+
             // Heures d'ouvertures du métro        
             var ouverture = 5;
             var fermeture = 24;
@@ -115,9 +118,13 @@
             // Mettre la V3 dans l'élément SVG qui se nomme svg_v3
             var svg_v3 = d3.select('#canvasV3')
                            .append('svg')
-                           .attr('width',map_width + margin.left + margin.right)
+                           .attr('width', map_width + margin.left + margin.right)
                            .attr('height', map_height + margin.top + margin.bottom);
 
+                           var metro_map_zoomed = svg_v3.append("g")
+                           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+           
+                            create_map_zoomed(metro_map_zoomed, data_stations, lines, x_map, y_map);
 
 
 

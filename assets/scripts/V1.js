@@ -8,8 +8,8 @@ function create_rectangles(svg_1, width, height){
         .data(hours_in_a_day)
         .enter()
         .append("rect")
-        .attr("width",20)
-        .attr("height",20)
+        .attr("width",0.03*width)
+        .attr("height",0.03*width)
         .attr("x",function(d){return (width/30)*d+width/20})
         .attr("y",0.85*height)
         .attr("id", function(d,i){return "rect_"+d;})
@@ -65,20 +65,42 @@ function select_rectangles(dataset, svg_1, width, height, radius){
         // Mecanisme pour assurer une sélection consécutive
         var sel_rect = d3.selectAll(".selected_hour")._groups;
 
+        // Si aucune n'est sélectionnée, on peut sélectionner n'importe quelle heure
         if (sel_rect[0].length == 0)
         {
             d3.select(this)
             .classed("unselected_hour",false)
             .classed("selected_hour",true);
         }
+
+        // Si des heures sont sélectionnées, on regarde les voisins de l'heure que l'on essaie de sélectionner
+        // Si au moins un voisin est déjà sélectionné, alors on peut sélectionner cette heure
+        // Assure une sélection consécutive
+        // Cas spéciaux pour les heures 1 et 24
         else
         {
             var id_string = this.id;
             var id_number = parseInt(id_string.slice(5,8));
+            if (id_number == 1)
+            {
+                var status_before = false;
+                var status_after = d3.select("#rect_2").classed("selected_hour");
+            }
+            else if (id_number == 24)
+            {
+                var status_before = d3.select("#rect_23").classed("selected_hour");
+                var status_after = false;
+            }
+            else
+            {            
             var id_before = "rect_"+parseInt(id_number-1);
             var id_after = "rect_"+parseInt(id_number+1);
             var status_before = d3.select("#"+id_before).classed("selected_hour");
             var status_after = d3.select("#"+id_after).classed("selected_hour");
+            };
+
+
+            
 
             if (status_before || status_after)
             {
@@ -89,7 +111,14 @@ function select_rectangles(dataset, svg_1, width, height, radius){
             
         }
 
-
+        // Affichage du tooltip lors du mouseover
+        console.log(this.x['baseVal'].value);
+        var tooltip = d3.selectAll('.toolTip');
+        tooltip
+              .style("left",0+"px")
+              .style("top",0+"px")
+              .style("display", "inline-block")
+              .html(parseInt(this.id.slice(5,8))+"h");
 
         
         sel_rect = d3.selectAll(".selected_hour")._groups;
@@ -123,19 +152,14 @@ function select_rectangles(dataset, svg_1, width, height, radius){
 
         
     });
+    
+    // Enlever le tooltip lorsque on ne survol plus les rectangles
+    rectangles.on('mouseout', function()
+    {
+        d3.selectAll('.toolTip').style("display", "none");
+    });
 
 };
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -177,10 +201,6 @@ function count_incidents(dataset, begin, end){
     return piechart_dataset = [{"name":"Incidents dans l'intervalle", 'number':number_in},{"name":"Incidents hors de l'intervalle",'number':number_out}];
 
 };
-
-
-
-
 
 
 
