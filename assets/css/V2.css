@@ -1,0 +1,82 @@
+.station-lable {
+    font-size: 50%;
+}
+
+#canvasV2 {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#panel {
+    width: 35%;
+    float: right;
+    text-align: left;
+    padding: 10px;
+    border: 1px solid #ccc !important;
+    border-radius: 16px;
+}
+
+#panel button {
+    width: 25px;
+    height: 25px;
+    padding: 0;
+    float: right;
+    background-color: #f0f0f0;
+    border: 1px solid #d0d0d0;
+    border-radius: 50%;
+    cursor: pointer;
+    outline: none;
+}
+
+#panel button:hover {
+    background-color: #ccc;
+}
+
+#panel button img {
+    height: 10px;
+}
+
+#panel h1 {
+    margin-top: 0;
+    font-size: 1em;
+}
+
+#panel h2 {
+    color: #666;
+    font-size: 0.8em;
+    text-transform: uppercase;
+}
+
+#panel p {
+    font-size: 0.7em;
+    font-weight: bold;
+}
+
+#panel hr {
+    border: none;
+    border-top: 1px solid #ccc;
+}
+
+.d3-tip {
+    line-height: 1;
+    padding: 12px;
+    border-radius: 2px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.8);
+    font-size: 0.8em;
+}
+
+.d3-tip:after {
+    display: inline;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    margin: -1px 0 0 0;
+    box-sizing: border-box;
+    font-size: 10px;
+    line-height: 1;
+    color: rgba(0, 0, 0, 0.8);
+    content: "\25BC";
+    position: absolute;
+    text-align: center;
+}

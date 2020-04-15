@@ -27,7 +27,7 @@
     var y_map = d3.scaleLinear().range([0, map_height]);
 
     var color_station = d3.scaleLinear().range(["white", "red"]);
-    var pipe_scale = d3.scaleLinear().range([0.2,20]);
+    var pipe_scale = d3.scaleLinear().range([5, 30]);
 
     /***** Chargement des données *****/
     var promises = [];
@@ -89,32 +89,26 @@
 
             // Update du piechart selon la sélection de l'utilisateur
             select_rectangles(incidents, svg_1, width_v1, height_v1, radius_v1);
-            
-            
-            
-            
-            
-
-
-            
-            
-           
-
-
 
 
             /***** V2 *****/
             
-            var svg_v2 = d3.select("#canvasV2")
-                .append("svg")
+            var svg_v2 = d3.select("#canvasV2 svg")
                 .attr("width", map_width + margin.left + margin.right)
                 .attr("height", map_height + margin.top + margin.bottom);
 
             var metro_map = svg_v2.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            create_map(metro_map, data_stations, lines, x_map, y_map, color_station, pipe_scale);
+            var panel = d3.select("#panel")
+                .style("display", "block");
 
+            panel.select("button")
+                .on("click", function () {
+                    panel.style("display", "none");
+            });
+
+            create_map(metro_map, data_stations, lines, x_map, y_map, color_station, pipe_scale, panel);
 
 
             /***** V3 *****/

@@ -9,6 +9,11 @@
     <meta charset="UTF-8">
     <title>INF8808 - Projet</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/V1.css">
+    <link rel="stylesheet" href="assets/css/V2.css">
+    <link rel="stylesheet" href="assets/css/V3.css">
+    <link rel="stylesheet" href="assets/css/V4.css">
+
 </head>
 <body>
 
@@ -34,7 +39,19 @@
 <div id="V2tab" class="tabcontent">
   <h3>V2</h3>
   <p>Mettre la V2 ici.</p> 
-  <div id="canvasV2"></div>
+  <div id="canvasV2">
+      <svg></svg>
+      <aside id="panel">
+          <button title="Fermer">
+              <img alt="Fermer" src="./assets/img/close.svg">
+          </button>
+          <h1 id="station-name"></h1>
+          <h2>Informations:</h2>
+          <p id="nb-incidents"></p>
+          <p id="tps-moy-arret"></p>
+          <p id="tps-tot-arret"></p>
+      </aside>
+  </div>
   
 </div>
 
@@ -69,6 +86,7 @@ function openTab(evt, tabName) {
 </script>
 
 <script type="text/javascript" src="assets/libs/d3.js"></script>
+<script type="text/javascript" src="assets/libs/d3-tip.js"></script>
 
 <script type="text/javascript" src="assets/scripts/preproc.js"></script>
 <script type="text/javascript" src="assets/scripts/V1.js"></script>
@@ -76,90 +94,6 @@ function openTab(evt, tabName) {
 <script type="text/javascript" src="assets/scripts/V3.js"></script>
 <script type="text/javascript" src="assets/scripts/V4.js"></script>
 <script type="text/javascript" src="assets/scripts/main.js"></script>
-
-<!--
-<section id="V2">
-    <g id="Intersections">
-        <circle id="Jean-Talon" class="st1" cx="370.29" cy="224.5" r="8.9"/>
-        <circle id="Snowdon" class="st1" cx="231.52" cy="527" r="8.9"/>
-        <circle id="Lionel-Groulx" class="st1" cx="362.29" cy="607.67" r="8.9"/>
-        <circle id="Berri-Uqam" class="st1" cx="538.38" cy="387.29" r="8.9"/>
-    </g>
-    <g id="Jaune">
-        <circle id="Jean-Drapeau" class="st2" cx="583.92" cy="396.17" r="6.71"/>
-        <circle id="Longueuil" class="st2" cx="623.52" cy="399.24" r="6.71"/>
-    </g>
-    <g id="Verte">
-        <circle id="Angrignon" class="st3" cx="287.79" cy="746.94" r="6.71"/>
-        <circle id="Monk" class="st3" cx="314.42" cy="720.57" r="6.71"/>
-        <circle id="Jolicoeur" class="st3" cx="342.54" cy="695.35" r="6.71"/>
-        <circle id="Verdun" class="st3" cx="368.29" cy="717.17" r="6.71"/>
-        <circle id="De_L_Église" class="st3" cx="396.62" cy="691.61" r="6.71"/>
-        <circle id="LaSalle" class="st3" cx="422.63" cy="664.82" r="6.71"/>
-        <circle id="Charlevoix" class="st3" cx="396.62" cy="637.64" r="6.71"/>
-        <circle id="Atwater" class="st3" cx="368.29" cy="557.02" r="6.71"/>
-        <circle id="Guy-Concordia" class="st3" cx="396.62" cy="527" r="6.71"/>
-        <circle id="Peel" class="st3" cx="422.63" cy="500.58" r="6.71"/>
-        <circle id="McGill" class="st3" cx="450.62" cy="472.27" r="6.71"/>
-        <circle id="Place-des-Arts" class="st3" cx="480.02" cy="446.19" r="6.71"/>
-        <circle id="Saint-Laurent" class="st3" cx="505.47" cy="417.26" r="6.71"/>
-        <circle id="Beaudry" class="st3" cx="568.83" cy="354.48" r="6.71"/>
-        <circle id="Papineau" class="st3" cx="592.65" cy="332.61" r="6.71"/>
-        <circle id="Frontenac" class="st3" cx="613.78" cy="309.74" r="6.71"/>
-        <circle id="Préfontaine" class="st3" cx="592.65" cy="281.05" r="6.71"/>
-        <circle id="Joliette" class="st3" cx="616.81" cy="252.77" r="6.71"/>
-        <circle id="Pie-IX" class="st3" cx="642.14" cy="226.5" r="6.71"/>
-        <circle id="Viau" class="st3" cx="670.1" cy="198.59" r="6.71"/>
-        <circle id="Assomption" class="st3" cx="644.14" cy="170.82" r="6.71"/>
-        <circle id="Cadillac" class="st3" cx="670.1" cy="144.16" r="6.71"/>
-        <circle id="Langelier_" class="st3" cx="696.48" cy="116.51" r="6.71"/>
-        <circle id="Radisson" class="st3" cx="725.68" cy="87.55" r="6.71"/>
-        <circle id="Honoré-Beaugrand" class="st3" cx="753.69" cy="60.22" r="6.71"/>
-    </g>
-    <g id="Bleue">
-        <circle id="Côte-des-Neiges" class="st4" cx="260.1" cy="500.58" r="6.71"/>
-        <circle id="Université-de-Montréal" class="st4" cx="287.79" cy="472.27" r="6.71"/>
-        <circle id="Édouard-Montpetit_" class="st4" cx="311.92" cy="446.19" r="6.71"/>
-        <circle id="Outremont" class="st4" cx="314.42" cy="391.29" r="6.71"/>
-        <circle id="Acadie" class="st4" cx="314.42" cy="336.02" r="6.71"/>
-        <circle id="Parc" class="st4" cx="315.42" cy="281.05" r="6.71"/>
-        <circle id="De_Castelnau" class="st4" cx="342.54" cy="252.77" r="6.71"/>
-        <circle id="Fabre" class="st4" cx="395.62" cy="198.59" r="6.71"/>
-        <circle id="D_Iberville" class="st4" cx="422.63" cy="170.82" r="6.71"/>
-        <circle id="Saint-Michel_" class="st4" cx="451.62" cy="143.16" r="6.71"/>
-    </g>
-    <g id="Orange">
-        <circle id="Montmorency" class="st5" cx="152.64" cy="88.22" r="6.71"/>
-        <circle id="De_La_Concorde" class="st5" cx="192.05" cy="88.22" r="6.71"/>
-        <circle id="Cartier" class="st5" cx="231.47" cy="88.22" r="6.71"/>
-        <circle id="Henri-Bourassa" class="st5" cx="260.1" cy="116.51" r="6.71"/>
-        <circle id="Sauvé" class="st5" cx="287.79" cy="144.16" r="6.71"/>
-        <circle id="Crémazie" class="st5" cx="315.42" cy="170.82" r="6.71"/>
-        <circle id="Jarry" class="st5" cx="342.54" cy="198.59" r="6.71"/>
-        <circle id="Beaubien" class="st5" cx="396.62" cy="252.77" r="6.71"/>
-        <circle id="Rosemont" class="st5" cx="422.63" cy="279.01" r="6.71"/>
-        <circle id="Laurier" class="st5" cx="446.72" cy="303.02" r="6.71"/>
-        <circle id="Mont-Royal" class="st5" cx="473.31" cy="329.31" r="6.71"/>
-        <circle id="Sherbrooke" class="st5" cx="498.75" cy="354.48" r="6.71"/>
-        <circle id="Champ-de-Mars" class="st5" cx="533.38" cy="446.19" r="6.71"/>
-        <circle id="Place-d_Armes" class="st5" cx="508.62" cy="472.27" r="6.71"/>
-        <circle id="Square-Victoria-OACI" class="st5" cx="480.02" cy="500.58" r="6.71"/>
-        <circle id="Bonaventure" class="st5" cx="453.43" cy="527" r="6.71"/>
-        <circle id="Lucien-L_Allier" class="st5" cx="425.84" cy="554.24" r="6.71"/>
-        <circle id="Georges-Vanier" class="st5" cx="396.62" cy="583.67" r="6.71"/>
-        <circle id="Place-Saint-Henri" class="st5" cx="315.42" cy="610.67" r="6.71"/>
-        <circle id="Vendôme" class="st5" cx="287.79" cy="583.05" r="6.71"/>
-        <circle id="Villa-Maria" class="st5" cx="260.1" cy="554.24" r="6.71"/>
-        <circle id="Côte-Sainte-Catherine" class="st5" cx="204.47" cy="500.58" r="6.71"/>
-        <circle id="Plamondon" class="st5" cx="177.85" cy="472.27" r="6.71"/>
-        <circle id="Namur" class="st5" cx="150.8" cy="446.19" r="6.71"/>
-        <circle id="De_La_Savane" class="st5" cx="122.14" cy="417.26" r="6.71"/>
-        <circle id="Du_Collège" class="st5" cx="95.21" cy="391.29" r="6.71"/>
-        <circle id="Côte-Vertu" class="st5" cx="68.32" cy="363.77" r="6.71"/>
-    </g>
-    </svg>
-</section>
--->
    
 </body>
 </html> 

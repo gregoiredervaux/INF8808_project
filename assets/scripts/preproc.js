@@ -32,6 +32,38 @@ function scale_incidents(data, color, pipe) {
     //console.log("color and pipe", pipe.domain());
 }
 
+function color_value(couleur) {
+
+    switch(couleur) {
+        case "green":
+            return "#009534";
+        case "orange":
+            return "#ff782b";
+        case "blue":
+            return "#009ee0";
+        case "yellow":
+            return "#ffe400";
+        default:
+            return "black"
+    }
+}
+
+function frenchLine(line) {
+
+    switch(line) {
+        case "green":
+            return "verte";
+        case "orange":
+            return "orange";
+        case "blue":
+            return "bleu";
+        case "yellow":
+            return "jaune";
+        default:
+            return "indéfinie"
+    }
+}
+
 function normalize_str(strg) {
 
     return strg.normalize("NFD").replace(/[\u0300-\u036f\^\'\¨]/g, "")
@@ -66,7 +98,24 @@ function clean_data(pt_metro, incidents) {
     pt_metro.forEach(st => {
         st.name_id = normalize_str(st.name);
         st.name_id = st.name_id.normalize("NFD").replace(/[\u0300-\u036f\^\'\¨]/g, "")
+    });
+
+    var staked_station = [];
+    pt_metro.forEach(st => {
+        var neighbour = pt_metro.filter(st_test => st_test.name_id === st.name_id);
+        console.log("neighbour", neighbour);
+        if (!staked_station.includes(st.name_id) && neighbour.length > 1) {
+            console.log("station multiples:", neighbour);
+            staked_station.push(st.name_id);
+            neighbour.forEach((st_neighbour, i) => {
+
+                st_neighbour.coordinates_map.cx += 8 * Math.cos(2 * Math.PI * i / neighbour.length );
+                st_neighbour.coordinates_map.cy += 8 * Math.sin(2 * Math.PI * i / neighbour.length );
+            })
+        }
     })
+
+
 }
 
 
