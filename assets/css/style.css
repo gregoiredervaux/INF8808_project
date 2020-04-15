@@ -72,23 +72,23 @@ body {
   border-top: none;
 
   }
-
-  /* V1 */
   .selected_hour{
-  stroke-width: 2;
-  stroke-opacity:0.6;
-  stroke: #009DE0;
-  fill: #019535;
-  opacity: 1;
-
-  }
-
-  .unselected_hour{
+    stroke-width: 2;
+    stroke-opacity:0.6;
+    stroke: #009DE0;
+    fill: #019535;
+    opacity: 1;
+  
+}
+  
+.unselected_hour{
     stroke-width: 2;
     stroke-opacity:0.6;
     stroke: #009DE0;
     fill: #019535;
     opacity: 0.2;
+    
+}
+
   
-    }
   

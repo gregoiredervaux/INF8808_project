@@ -57,10 +57,11 @@ function select_rectangles(dataset, svg_1, width, height, radius){
 
 
     
-    // On trouve tous les éléments qui sont des rectangles
-    var rectangles = d3.selectAll("rect");
 
-    rectangles.on("mouseover", function()
+
+    // On exécute select_with_mouse() lorsque l'on survol et click un rectangle
+    // Ainsi, lorsque l'on clique pour tout dé-sélectionner, ce rectangle ce sélectionne sans avoir à faire des aller-retours
+    function select_with_mouse()
     {
         // Mecanisme pour assurer une sélection consécutive
         var sel_rect = d3.selectAll(".selected_hour")._groups;
@@ -148,10 +149,13 @@ function select_rectangles(dataset, svg_1, width, height, radius){
         // BESOIN DE FAIRE UNE FONCTION QUI UPDATE!!!!! LE PIECHART ET NON QUI LE RECRÉ
         create_piechart(new_piechart_dataset, svg_1, width, height, radius);
         //update_piechart();
-        
+    };
 
-        
-    });
+
+    // On trouve tous les éléments qui sont des rectangles
+    var rectangles = d3.selectAll("rect");
+    rectangles.on("mouseover", select_with_mouse);
+    rectangles.on("click", select_with_mouse);
     
     // Enlever le tooltip lorsque on ne survol plus les rectangles
     rectangles.on('mouseout', function()
