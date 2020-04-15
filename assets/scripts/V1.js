@@ -8,7 +8,6 @@ function create_rectangles(svg_1, width, height){
         .data(hours_in_a_day)
         .enter()
         .append("g")
-        .text("allo")
         .append("rect")
         .attr("width",0.03*width)
         .attr("height",0.03*width)
@@ -16,10 +15,29 @@ function create_rectangles(svg_1, width, height){
         .attr("y",0.85*height)
         .attr("id", function(d,i){return "rect_"+d;})
         .classed("unselected_hour", true);
-    console.log(svg_1.selectAll("g"));
+
+    var text = svg_1.selectAll("text")
+                    .data(hours_in_a_day)
+                    .enter()
+                    .append("text")
+                    .text(function(d,i){return d+"h"})
+                    .attr("font-family", "sans-serif")
+                    .attr("font-size", "20px")
+                    .attr("fill", "white")
+                    .attr("id", function(d,i){return "text_"+d;});
 
 
+
+    var text_labels = text.attr("x",function(d){return (width/30)*d+width/20})
+                          .attr("y",0.84*height)
+
+
+
+    // Selection initiale
     var opening_hours = d3.range(5,25);
+    d3.select("#text_" + d3.min(opening_hours)).attr("fill", "#009DE0");
+    d3.select("#text_" + d3.max(opening_hours)).attr("fill", "#009DE0");
+
     opening_hours.forEach(function(hour)
     {
         var rect_name = "rect_"+hour;
@@ -113,6 +131,10 @@ function select_rectangles(dataset, svg_1, width, height, radius){
             
         }
 
+
+        
+
+
         // Affichage du tooltip lors du mouseover
         var tooltip = d3.selectAll('.toolTip');
         tooltip
@@ -138,10 +160,19 @@ function select_rectangles(dataset, svg_1, width, height, radius){
                 id_array.push(parseInt(rect.id.slice(5,7)));
             })
         })
-        //var first_rect = d3.selectAll("#rect_"+d3.min(id_array));
-        //var last_rect = d3.selectAll("#rect_"+d3.max(id_array));
 
-        var nb_select = id_array.length;
+        // On veut afficher l'heure du premier et dernier rect de la sélection
+        var first_text = d3.selectAll("#text_"+d3.min(id_array));
+        var last_text = d3.selectAll("#text_"+d3.max(id_array));
+
+
+        var all_text = d3.selectAll("text").filter(function(d){if(Number.isInteger(d)){return d}});
+        all_text.attr("fill", "none");
+        first_text.attr("fill", "#009De0");
+        last_text.attr("fill", "#009De0")
+
+
+
         var begin = d3.min(id_array);
         var end = d3.max(id_array);
 

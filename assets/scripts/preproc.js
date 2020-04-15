@@ -103,9 +103,9 @@ function clean_data(pt_metro, incidents) {
     var staked_station = [];
     pt_metro.forEach(st => {
         var neighbour = pt_metro.filter(st_test => st_test.name_id === st.name_id);
-        console.log("neighbour", neighbour);
+        //console.log("neighbour", neighbour);
         if (!staked_station.includes(st.name_id) && neighbour.length > 1) {
-            console.log("station multiples:", neighbour);
+            //console.log("station multiples:", neighbour);
             staked_station.push(st.name_id);
             neighbour.forEach((st_neighbour, i) => {
 
