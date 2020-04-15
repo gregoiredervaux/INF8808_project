@@ -7,15 +7,16 @@ function create_rectangles(svg_1, width, height){
     var rectangles = svg_1.selectAll("rect")
         .data(hours_in_a_day)
         .enter()
+        .append("g")
+        .text("allo")
         .append("rect")
         .attr("width",0.03*width)
         .attr("height",0.03*width)
         .attr("x",function(d){return (width/30)*d+width/20})
         .attr("y",0.85*height)
         .attr("id", function(d,i){return "rect_"+d;})
-        .classed("unselected_hour", true)
-        .append("title")
-        .text(function(d){return d}); // Éventuellement, un vrai tooltip
+        .classed("unselected_hour", true);
+    console.log(svg_1.selectAll("g"));
 
 
     var opening_hours = d3.range(5,25);
@@ -113,13 +114,17 @@ function select_rectangles(dataset, svg_1, width, height, radius){
         }
 
         // Affichage du tooltip lors du mouseover
-        console.log(this.x['baseVal'].value);
         var tooltip = d3.selectAll('.toolTip');
         tooltip
-              .style("left",0+"px")
-              .style("top",0+"px")
+              .style("left", (d3.event.pageX) + "px")
+              .style("top",0+ (696) + "px")
               .style("display", "inline-block")
-              .html(parseInt(this.id.slice(5,8))+"h");
+              .style("border", "2px solid #009De0")
+              .style("min-width", "10px")
+              .style("height", "8px")
+              .html("<b>"+parseInt(this.id.slice(5,8))+"h"+"<b>");
+
+
 
         
         sel_rect = d3.selectAll(".selected_hour")._groups;
@@ -222,11 +227,17 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
     var color = d3.scaleOrdinal()
                   .range(["#019535 ","#B4B4B4"]);
 
-    // initialisation d'un objet piechart de d3       
+    // initialisation d'un objet piechart de d3 
+    /*      
     var pie = d3.pie()
                 .value(function(d) { return d.number; })(dataset)
- 
-   
+    */
+
+    // sort et sortValue permettent de toujours avoir le pourcentage "dans l'intervalle" commencant à angle=0
+    var pie = d3.pie()
+                .sort(null)
+                .sortValues(null)
+                .value(function(d) { return d.number; })(dataset)
 
 
     // initialisation des arcs
@@ -246,9 +257,18 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
                 .enter()
                 .append("g")
                     .attr("class", "arc");
+
+    // g2 va servire à mettre les étiquettes (pour ne pas être cacher par les path du piechart)
+    var g2 = svg_moved.selectAll("arc2")
+                     .data(pie)
+                     .enter()
+                     .append("g")
+                        .attr("class", "arc");
     
 
     // Making sure "incident dans l'intervalle" always starts at angle = 0
+    // NOT NEEDED ANYMORE BECAUSE OF SORT AND SORTVALUES
+    /*
     if (pie[0].startAngle!=0)
     {   
         pie[0].startAngle = 0;
@@ -256,6 +276,7 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
         pie[1].startAngle = pie[0].endAngle;
         pie[1].endAngle = 2*Math.PI;   
     }
+    */
     
 
     // on trace les arcs (ajout du path)
@@ -266,10 +287,12 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
 
     // calcul du nombre total d'incident pour déterminer le pourcentage dans l'intervalle
     var total_incidents = dataset[0]["number"] + dataset[1]["number"];
+
+
     
 
-    // ajout des étiquettes
-    g.append("text")
+    // ajout des étiquettes sur g2 pour ne pas que les paths cachent les étiquettes
+    g2.append("text")
 	 .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
 	 .text(function(d) { 
          return (Math.round(100*d.data.number/total_incidents)).toString()+"%";

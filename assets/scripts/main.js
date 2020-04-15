@@ -77,7 +77,7 @@
                         .attr("height", height_v1);
 
             // Creer le tooltip qui montre l'heure de chaque rectangle
-            var tooltip = d3.select("#canvasV1").append("div").attr("class", "toolTip");
+            var tooltip = d3.select("#canvasV1").append("div").attr("display", "none").attr("class","toolTip");
 
             // Heures d'ouvertures du métro        
             var ouverture = 5;
