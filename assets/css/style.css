@@ -73,22 +73,36 @@ body {
 
   }
 
-  /* V1 */
+  /* Un rectangle d'heure non-sélectionné */
   .selected_hour{
-  stroke-width: 2;
-  stroke-opacity:0.6;
-  stroke: #009DE0;
-  fill: #019535;
-  opacity: 1;
-
-  }
-
-  .unselected_hour{
+    stroke-width: 2;
+    stroke-opacity:0.6;
+    stroke: #009DE0;
+    fill: #019535;
+    opacity: 1;
+  
+}
+  /* Un rectangle d'heure sélectionné */
+.unselected_hour{
     stroke-width: 2;
     stroke-opacity:0.6;
     stroke: #009DE0;
     fill: #019535;
     opacity: 0.2;
+    
+}
+
+
+.toolTip {
+  position: absolute;
+  display: none;
+  height: 8px;
+  min-width: "10px";
+  background: none repeat scroll 0 0 #ffffff;
+  border: 2px solid #009DE0;
+  padding: 14px;
+  text-align: center;
+}
+
   
-    }
   

@@ -7,18 +7,37 @@ function create_rectangles(svg_1, width, height){
     var rectangles = svg_1.selectAll("rect")
         .data(hours_in_a_day)
         .enter()
+        .append("g")
         .append("rect")
         .attr("width",0.03*width)
         .attr("height",0.03*width)
         .attr("x",function(d){return (width/30)*d+width/20})
         .attr("y",0.85*height)
         .attr("id", function(d,i){return "rect_"+d;})
-        .classed("unselected_hour", true)
-        .append("title")
-        .text(function(d){return d}); // Éventuellement, un vrai tooltip
+        .classed("unselected_hour", true);
+
+    var text = svg_1.selectAll("text")
+                    .data(hours_in_a_day)
+                    .enter()
+                    .append("text")
+                    .text(function(d,i){return d+"h"})
+                    .attr("font-family", "sans-serif")
+                    .attr("font-size", "15px")
+                    .attr("fill", "white")
+                    .attr("id", function(d,i){return "text_"+d;});
 
 
+
+    var text_labels = text.attr("x",function(d){return (width/30)*d+width/20})
+                          .attr("y",0.84*height)
+
+
+
+    // Selection initiale
     var opening_hours = d3.range(5,25);
+    d3.select("#text_" + d3.min(opening_hours)).attr("fill", "#009DE0");
+    d3.select("#text_" + d3.max(opening_hours)).attr("fill", "#009DE0");
+
     opening_hours.forEach(function(hour)
     {
         var rect_name = "rect_"+hour;
@@ -57,10 +76,11 @@ function select_rectangles(dataset, svg_1, width, height, radius){
 
 
     
-    // On trouve tous les éléments qui sont des rectangles
-    var rectangles = d3.selectAll("rect");
 
-    rectangles.on("mouseover", function()
+
+    // On exécute select_with_mouse() lorsque l'on survol et click un rectangle
+    // Ainsi, lorsque l'on clique pour tout dé-sélectionner, ce rectangle ce sélectionne sans avoir à faire des aller-retours
+    function select_with_mouse()
     {
         // Mecanisme pour assurer une sélection consécutive
         var sel_rect = d3.selectAll(".selected_hour")._groups;
@@ -111,14 +131,23 @@ function select_rectangles(dataset, svg_1, width, height, radius){
             
         }
 
+
+        
+
+
         // Affichage du tooltip lors du mouseover
-        console.log(this.x['baseVal'].value);
         var tooltip = d3.selectAll('.toolTip');
         tooltip
-              .style("left",0+"px")
-              .style("top",0+"px")
+              .style("left", (d3.event.pageX) + "px")
+              .style("top",0+ (696) + "px")
               .style("display", "inline-block")
-              .html(parseInt(this.id.slice(5,8))+"h");
+              .style("border", "1px solid #009De0")
+              .style("min-width", "10px")
+              .style("height", "8px")
+              .text(parseInt(this.id.slice(5,8))+"h")
+              .style("color", "#009De0");
+
+        
 
         
         sel_rect = d3.selectAll(".selected_hour")._groups;
@@ -132,10 +161,19 @@ function select_rectangles(dataset, svg_1, width, height, radius){
                 id_array.push(parseInt(rect.id.slice(5,7)));
             })
         })
-        //var first_rect = d3.selectAll("#rect_"+d3.min(id_array));
-        //var last_rect = d3.selectAll("#rect_"+d3.max(id_array));
 
-        var nb_select = id_array.length;
+        // On veut afficher l'heure du premier et dernier rect de la sélection
+        var first_text = d3.selectAll("#text_"+d3.min(id_array));
+        var last_text = d3.selectAll("#text_"+d3.max(id_array));
+
+
+        var all_text = d3.selectAll("text").filter(function(d){if(Number.isInteger(d)){return d}});
+        all_text.attr("fill", "none");
+        first_text.attr("fill", "#009De0");
+        last_text.attr("fill", "#009De0")
+
+
+
         var begin = d3.min(id_array);
         var end = d3.max(id_array);
 
@@ -144,14 +182,22 @@ function select_rectangles(dataset, svg_1, width, height, radius){
         // On créer le dataset maintenant que l'on a begin et end
         var new_piechart_dataset = count_incidents(dataset, begin, end);
 
+
+
+
         // On update le piechart
         // BESOIN DE FAIRE UNE FONCTION QUI UPDATE!!!!! LE PIECHART ET NON QUI LE RECRÉ
-        create_piechart(new_piechart_dataset, svg_1, width, height, radius);
-        //update_piechart();
-        
+        //create_piechart(new_piechart_dataset, svg_1, width, height, radius);
+        update_piechart(new_piechart_dataset, svg_1, width, height, radius);
 
         
-    });
+    };
+
+
+    // On trouve tous les éléments qui sont des rectangles
+    var rectangles = d3.selectAll("rect");
+    rectangles.on("mouseover", select_with_mouse);
+    rectangles.on("click", select_with_mouse);
     
     // Enlever le tooltip lorsque on ne survol plus les rectangles
     rectangles.on('mouseout', function()
@@ -160,6 +206,7 @@ function select_rectangles(dataset, svg_1, width, height, radius){
     });
 
 };
+
 
 
 
@@ -208,21 +255,23 @@ function count_incidents(dataset, begin, end){
 
 
 
+
+
 // dataset est de la forme [{'name':'nombre_incident_dans_intervalle', 'number':123},{'name':'nombre_incident_hors_intervalle','number':844}]
-// g est le groupe SVG dans lequel le piechart doit être
-//https://observablehq.com/@d3/pie-chart
+// Fonction qui crée le piechart la première fois
 function create_piechart(dataset, svg_1, width, height, radius)  {
 
-
+    
     // configuration de l'échelle de couleur
     var color = d3.scaleOrdinal()
-                  .range(["#019535 ","#B4B4B4"]);
+                  .range(["#019535 ","#f2f2f2"]);
 
-    // initialisation d'un objet piechart de d3       
+
+    // sort et sortValue permettent de toujours avoir le pourcentage "dans l'intervalle" commencant à angle=0
     var pie = d3.pie()
+                .sort(null)
+                .sortValues(null)
                 .value(function(d) { return d.number; })(dataset)
- 
-   
 
 
     // initialisation des arcs
@@ -235,23 +284,23 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
                     .innerRadius(radius - 80);
 
     var svg_moved = svg_1.append('g')
-                   .attr("transform", "translate(" + width/2 + "," + height/2.5 +")");
+                   .attr("transform", "translate(" + width/2 + "," + height/2.5 +")")
+                   .attr("id", "the_piechart");
     // on ajoute les données du pie sur chacun des arcs
     var g = svg_moved.selectAll("arc")
                 .data(pie)
                 .enter()
                 .append("g")
                     .attr("class", "arc");
+
+    // g2 va servir à mettre les étiquettes (pour ne pas être cacher par les path du piechart)
+    var g2 = svg_moved.selectAll("arc2")
+                     .data(pie)
+                     .enter()
+                     .append("g")
+                        .attr("class", "arc");
     
 
-    // Making sure "incident dans l'intervalle" always starts at angle = 0
-    if (pie[0].startAngle!=0)
-    {   
-        pie[0].startAngle = 0;
-        pie[0].endAngle = 2*Math.PI - pie[1].endAngle;
-        pie[1].startAngle = pie[0].endAngle;
-        pie[1].endAngle = 2*Math.PI;   
-    }
     
 
     // on trace les arcs (ajout du path)
@@ -262,10 +311,12 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
 
     // calcul du nombre total d'incident pour déterminer le pourcentage dans l'intervalle
     var total_incidents = dataset[0]["number"] + dataset[1]["number"];
+
+
     
 
-    // ajout des étiquettes
-    g.append("text")
+    // ajout des étiquettes sur g2 pour ne pas que les paths cachent les étiquettes
+    g2.append("text")
 	 .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
 	 .text(function(d) { 
          return (Math.round(100*d.data.number/total_incidents)).toString()+"%";
@@ -273,6 +324,8 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
      .style("fill", "#000")
      .style("font-size","20px")
      .attr("text-anchor","middle")
+
+
 
 
    
@@ -283,15 +336,75 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
 
 };
 
-//https://jonsadka.com/blog/how-to-create-adaptive-pie-charts-with-transitions-in-d3
-// Source: https://bl.ocks.org/mbostock/1346410
-// Fonction qui update le piechart, avec une transition
-// On ne veut pas refaire tout le piechart à chaque fois que la sélection de l'utiliateur change
-// La premiere version de la V1 créer un NOUVEAU piechart à chaque sélection, au lieu de simplement updater
-function update_piechart()
-{
 
-};
+// Fonction qui update le piechart
+function update_piechart(dataset, svg_1, width, height, radius)
+    {
+        var old_pie = d3.select("#the_piechart");
+
+        // configuration de l'échelle de couleur
+        var color = d3.scaleOrdinal()
+        .range(["#019535 ","#f2f2f2"]);
+
+        var pie = d3.pie()
+        .sort(null)
+        .sortValues(null)
+        .value(function(d) { return d.number; })(dataset)
+
+        // On enlève les arcs
+        old_pie.selectAll('.arc')
+            .remove()
+            .exit();
+
+         // initialisation des arcs
+        var arc = d3.arc()
+        .outerRadius(radius - 10)
+        .innerRadius(0);
+
+        // initialisation des arcs pour les étiquettes
+        var labelArc = d3.arc()
+                .outerRadius(radius - 80)
+                .innerRadius(radius - 80);
+
+
+        // on ajoute les données du pie sur chacun des arcs
+        var g = old_pie.selectAll("arc")
+            .data(pie)
+            .enter()
+            .append("g")
+                .attr("class", "arc");
+
+        // g2 va servire à mettre les étiquettes (pour ne pas être cacher par les path du piechart)
+        var g2 = old_pie.selectAll("arc2")
+                .data(pie)
+                .enter()
+                .append("g")
+                    .attr("class", "arc");
+
+
+        // on trace les arcs (ajout du path)
+        g.append("path")
+        .attr("d", arc)
+        .style("fill", function(d) { return color(d.data.name);});
+
+
+        // calcul du nombre total d'incident pour déterminer le pourcentage dans l'intervalle
+        var total_incidents = dataset[0]["number"] + dataset[1]["number"];
+
+
+
+
+        // ajout des étiquettes sur g2 pour ne pas que les paths cachent les étiquettes
+        g2.append("text")
+        .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
+        .text(function(d) { 
+        return (Math.round(100*d.data.number/total_incidents)).toString()+"%";
+        })
+        .style("fill", "#000")
+        .style("font-size","20px")
+        .attr("text-anchor","middle")
+
+        };
 
 
 

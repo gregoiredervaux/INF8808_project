@@ -63,11 +63,33 @@
 </div>
 
 <div id="V4tab" class="tabcontent">
-    <h3>V4</h3>
-    <p>Mettre la V4 ici.</p>
-    <div id="canvasV4"></div>
-    
+  
+  
+  <h3>Visualisation des incidents durant lesquels le frein d'urgence a été actionné</h3>
+  <p>Mettre la V4 ici.</p>
+  <div id="canvasV4">
+    <head>
+      <meta charset="UTF-8">
+      <link rel="stylesheet" href="assets/css/V4.css">
+    </head>
+    <body>
+      <div class="tabs">
+        <ul class="header row">
+          <li class="col active">Nombre d'arrêts du service</li>
+          <li class="col">Temps total d'arrêt du service</li>
+        </ul>
+        <div class="content">
+          <section class="tab visible" aria-label="Nombre d'arrêts du service">
+            <svg id="bar-chart-count-svg"></svg>
+          </section>
+          <section class="tab" aria-label="Temps total d'arrêt du service">
+             <svg id="bar-chart-time-svg"></svg>
+          </section>
+        </div>
+      </div>
+    </body>
   </div>
+</div>
 
 <script>
 function openTab(evt, tabName) {
