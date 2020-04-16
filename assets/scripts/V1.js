@@ -266,11 +266,6 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
     var color = d3.scaleOrdinal()
                   .range(["#019535 ","#f2f2f2"]);
 
-    // initialisation d'un objet piechart de d3 
-    /*      
-    var pie = d3.pie()
-                .value(function(d) { return d.number; })(dataset)
-    */
 
     // sort et sortValue permettent de toujours avoir le pourcentage "dans l'intervalle" commencant à angle=0
     var pie = d3.pie()
@@ -298,7 +293,7 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
                 .append("g")
                     .attr("class", "arc");
 
-    // g2 va servire à mettre les étiquettes (pour ne pas être cacher par les path du piechart)
+    // g2 va servir à mettre les étiquettes (pour ne pas être cacher par les path du piechart)
     var g2 = svg_moved.selectAll("arc2")
                      .data(pie)
                      .enter()
