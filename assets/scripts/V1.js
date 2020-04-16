@@ -147,7 +147,7 @@ function select_rectangles(dataset, svg_1, width, height, radius){
               .text(parseInt(this.id.slice(5,8))+"h")
               .style("color", "#009De0");
 
-
+        
 
         
         sel_rect = d3.selectAll(".selected_hour")._groups;
@@ -182,10 +182,15 @@ function select_rectangles(dataset, svg_1, width, height, radius){
         // On créer le dataset maintenant que l'on a begin et end
         var new_piechart_dataset = count_incidents(dataset, begin, end);
 
+
+
+
         // On update le piechart
         // BESOIN DE FAIRE UNE FONCTION QUI UPDATE!!!!! LE PIECHART ET NON QUI LE RECRÉ
-        create_piechart(new_piechart_dataset, svg_1, width, height, radius);
-        //update_piechart();
+        //create_piechart(new_piechart_dataset, svg_1, width, height, radius);
+        update_piechart(new_piechart_dataset, svg_1, width, height, radius);
+
+        
     };
 
 
@@ -201,6 +206,7 @@ function select_rectangles(dataset, svg_1, width, height, radius){
     });
 
 };
+
 
 
 
@@ -249,12 +255,14 @@ function count_incidents(dataset, begin, end){
 
 
 
+
+
 // dataset est de la forme [{'name':'nombre_incident_dans_intervalle', 'number':123},{'name':'nombre_incident_hors_intervalle','number':844}]
 // g est le groupe SVG dans lequel le piechart doit être
 //https://observablehq.com/@d3/pie-chart
 function create_piechart(dataset, svg_1, width, height, radius)  {
 
-
+    
     // configuration de l'échelle de couleur
     var color = d3.scaleOrdinal()
                   .range(["#019535 ","#f2f2f2"]);
@@ -282,7 +290,8 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
                     .innerRadius(radius - 80);
 
     var svg_moved = svg_1.append('g')
-                   .attr("transform", "translate(" + width/2 + "," + height/2.5 +")");
+                   .attr("transform", "translate(" + width/2 + "," + height/2.5 +")")
+                   .attr("id", "the_piechart");
     // on ajoute les données du pie sur chacun des arcs
     var g = svg_moved.selectAll("arc")
                 .data(pie)
@@ -336,10 +345,75 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
 // Fonction qui update le piechart, avec une transition
 // On ne veut pas refaire tout le piechart à chaque fois que la sélection de l'utiliateur change
 // La premiere version de la V1 créer un NOUVEAU piechart à chaque sélection, au lieu de simplement updater
-function update_piechart()
-{
+function update_piechart(dataset, svg_1, width, height, radius)
+    {
+        var old_pie = d3.select("#the_piechart");
 
-};
+        // configuration de l'échelle de couleur
+        var color = d3.scaleOrdinal()
+        .range(["#019535 ","#f2f2f2"]);
+
+        var pie = d3.pie()
+        .sort(null)
+        .sortValues(null)
+        .value(function(d) { return d.number; })(dataset)
+
+        // On enlève les arcs
+        old_pie.selectAll('.arc')
+            .remove()
+            .exit();
+
+         // initialisation des arcs
+        var arc = d3.arc()
+        .outerRadius(radius - 10)
+        .innerRadius(0);
+
+        // initialisation des arcs pour les étiquettes
+        var labelArc = d3.arc()
+                .outerRadius(radius - 80)
+                .innerRadius(radius - 80);
+
+
+        // on ajoute les données du pie sur chacun des arcs
+        var g = old_pie.selectAll("arc")
+            .data(pie)
+            .enter()
+            .append("g")
+                .attr("class", "arc");
+
+        // g2 va servire à mettre les étiquettes (pour ne pas être cacher par les path du piechart)
+        var g2 = old_pie.selectAll("arc2")
+                .data(pie)
+                .enter()
+                .append("g")
+                    .attr("class", "arc");
+
+
+
+
+        // on trace les arcs (ajout du path)
+        g.append("path")
+        .attr("d", arc)
+        .style("fill", function(d) { return color(d.data.name);});
+
+
+        // calcul du nombre total d'incident pour déterminer le pourcentage dans l'intervalle
+        var total_incidents = dataset[0]["number"] + dataset[1]["number"];
+
+
+
+
+        // ajout des étiquettes sur g2 pour ne pas que les paths cachent les étiquettes
+        g2.append("text")
+        .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
+        .text(function(d) { 
+        return (Math.round(100*d.data.number/total_incidents)).toString()+"%";
+        })
+        .style("fill", "#000")
+        .style("font-size","20px")
+        .attr("text-anchor","middle")
+
+        };
 
 
 
