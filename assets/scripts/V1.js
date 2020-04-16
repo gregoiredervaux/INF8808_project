@@ -257,7 +257,7 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
 
     // configuration de l'échelle de couleur
     var color = d3.scaleOrdinal()
-                  .range(["#019535 ","#B4B4B4"]);
+                  .range(["#019535 ","#f2f2f2"]);
 
     // initialisation d'un objet piechart de d3 
     /*      
@@ -298,17 +298,6 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
                         .attr("class", "arc");
     
 
-    // Making sure "incident dans l'intervalle" always starts at angle = 0
-    // NOT NEEDED ANYMORE BECAUSE OF SORT AND SORTVALUES
-    /*
-    if (pie[0].startAngle!=0)
-    {   
-        pie[0].startAngle = 0;
-        pie[0].endAngle = 2*Math.PI - pie[1].endAngle;
-        pie[1].startAngle = pie[0].endAngle;
-        pie[1].endAngle = 2*Math.PI;   
-    }
-    */
     
 
     // on trace les arcs (ajout du path)
