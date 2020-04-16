@@ -258,8 +258,7 @@ function count_incidents(dataset, begin, end){
 
 
 // dataset est de la forme [{'name':'nombre_incident_dans_intervalle', 'number':123},{'name':'nombre_incident_hors_intervalle','number':844}]
-// g est le groupe SVG dans lequel le piechart doit être
-//https://observablehq.com/@d3/pie-chart
+// Fonction qui crée le piechart la première fois
 function create_piechart(dataset, svg_1, width, height, radius)  {
 
     
@@ -332,6 +331,8 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
      .attr("text-anchor","middle")
 
 
+
+
    
     
     
@@ -340,11 +341,8 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
 
 };
 
-//https://jonsadka.com/blog/how-to-create-adaptive-pie-charts-with-transitions-in-d3
-// Source: https://bl.ocks.org/mbostock/1346410
-// Fonction qui update le piechart, avec une transition
-// On ne veut pas refaire tout le piechart à chaque fois que la sélection de l'utiliateur change
-// La premiere version de la V1 créer un NOUVEAU piechart à chaque sélection, au lieu de simplement updater
+
+// Fonction qui update le piechart
 function update_piechart(dataset, svg_1, width, height, radius)
     {
         var old_pie = d3.select("#the_piechart");
@@ -387,8 +385,6 @@ function update_piechart(dataset, svg_1, width, height, radius)
                 .enter()
                 .append("g")
                     .attr("class", "arc");
-
-
 
 
         // on trace les arcs (ajout du path)
