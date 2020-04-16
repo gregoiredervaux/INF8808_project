@@ -40,7 +40,6 @@
             var incidents = results[0];
             //console.log("liste des incidents", incidents);
 
-
             var pt_metro = results[1].sort((a, b) => (parseInt(a.id) > parseInt(b.id)));
 
             var lines =  results[2];
@@ -52,7 +51,16 @@
             var data_stations = data_per_station(pt_metro, incidents);
             //console.log("données de travail", data_stations);
 
-            //console.log("nombre d'incidants conservés", d3.sum(data_stations.map(data_st => data_st.incidents.length)));
+            var KFS = results[0].filter(row => row.KFS == parseInt(1)); //incidents qui ont un enclenchement du frein
+            //console.log("KFS", KFS);
+
+            var data_freins = data_per_station(pt_metro,KFS);
+            console.log("Données de travail Frein",data_freins);
+    
+    
+
+            //console.log("nombre d'incidents conservés", d3.sum(data_stations.map(data_st => data_st.incidents.length)));
+        
 
             //console.log("moyenne de temps tot d'arret", d3.sum(data_stations.map(data_st => data_st.total_stop_time))/data_stations.length);
 
@@ -135,10 +143,27 @@
 
             /***** V4 *****/
             // Mettre la V4 dans l'élément SVG qui se nomme svg_v4
+            
             var svg_v4 = d3.select('#canvasV4')
                            .append('svg')
                            .attr('width',map_width + margin.left + margin.right)
                            .attr('height', map_height + margin.top + margin.bottom);
+                           
+                           
+            /***** Onglets *****/
+            var tabs = d3.selectAll(".tabs li");
+            tabs.on("click", function (d, i) {
+                var self = this;
+                var index = i;
+                tabs.classed("active", function () {
+                    return self === this;
+            });
+            d3.selectAll(".tabs .tab")
+                .classed("visible", function (d, i) {
+                    return index === i;
+             });
+  });
+                           
 
         });
 })(d3);

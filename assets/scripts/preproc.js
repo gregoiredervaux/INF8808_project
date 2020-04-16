@@ -6,7 +6,7 @@
 
 
 /**
- * Précise le domaine et la plage de couleurs pour l'échelle qui est utilisées pour distinguer les partis politiques.
+ * Précise le domaine et la plage de couleurs pour l'échelle qui est utilisées pour distinguer les lignes de métro.
  *
  * @param pt_metro  Les données des stations de métro.
  * @param scale_x   echelle des abscisses
@@ -123,8 +123,8 @@ function data_per_station(pt_metro, incidents) {
     var list_station_incidents = d3.set(incidents.map(incidents => incidents["Code de lieu"])).values().sort();
     var list_station_metro = d3.set(pt_metro.map(pt_metro => pt_metro.name_id)).values().sort();
 
-    //console.log("liste station incidents", list_station_incidents);
-    //console.log("liste station metro", list_station_metro);
+    console.log("liste station incidents", list_station_incidents);
+    console.log("liste station metro", list_station_metro);
 
     let common = list_station_incidents.filter(x =>  pt_metro.find(stations => new RegExp(stations.name_id, "i").test(x)));
     let difference = list_station_incidents.filter(x =>  pt_metro.every(stations => !new RegExp(stations.name_id, "i").test(x)));
@@ -149,3 +149,4 @@ function data_per_station(pt_metro, incidents) {
         return station
     })
 }
+
