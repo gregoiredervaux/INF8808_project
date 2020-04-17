@@ -100,6 +100,7 @@
 
             // Création du piechart que l'utilisateur voit lorsqu'il ouvre l'onglet (sélection par défaut)
             var piechart_dataset = count_incidents(incidents, ouverture, fermeture);
+            rush_hours(incidents, svg_1, width_v1, height_v1);
             create_rectangles(svg_1, width_v1, height_v1);
             create_absolut_display(piechart_dataset, svg_1, width_v1, height_v1);
             create_piechart(piechart_dataset, svg_1, width_v1, height_v1, radius_v1);

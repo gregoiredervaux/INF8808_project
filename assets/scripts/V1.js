@@ -56,7 +56,6 @@ function create_rectangles(svg_1, width, height){
 // fonction qui crée l'affichage du nombre absolut d'incidents
 function create_absolut_display(dataset, svg_1, width, height)
 {
-     console.log(dataset);
      var total = dataset[0]['number']+dataset[1]['number'];
 
 
@@ -67,7 +66,7 @@ function create_absolut_display(dataset, svg_1, width, height)
                       .attr("font-size", "20px")
                       .attr("fill", "#019535")
                       .attr("text-anchor","end")
-                      .attr("x", width/2+200+105)
+                      .attr("x", 880)
                       .attr("y", height/2.5);
 
     var abs_in_context = svg_1.append("text")
@@ -77,7 +76,7 @@ function create_absolut_display(dataset, svg_1, width, height)
                       .attr("font-size", "20px")
                       .attr("fill", "#019535")
                       .attr("text-anchor","end")
-                      .attr("x", width/2+200+105)
+                      .attr("x", 880)
                       .attr("y", height/2.5+30);
 
 };
@@ -87,7 +86,6 @@ function update_absolut_display(dataset)
 {
     var total = dataset[0]["number"]+dataset[1]["number"];
     var to_update = d3.select("#abs_in_number");
-    console.log(to_update);
     to_update.text(dataset[0]["number"]+" / "+total);
 };
 
@@ -180,7 +178,7 @@ function select_rectangles(dataset, svg_1, width, height, radius){
         var tooltip = d3.selectAll('.toolTip');
         tooltip
               .style("left", (d3.event.pageX) + "px")
-              .style("top",0+ (696) + "px")
+              .style("top","835" + "px")
               .style("display", "inline-block")
               .style("border", "1px solid #009De0")
               .style("min-width", "10px")
@@ -198,7 +196,7 @@ function select_rectangles(dataset, svg_1, width, height, radius){
         {
             row.forEach(function(rect)
             {
-                // Le numéro du rectangle se trouve de l'incide 5 à 7 dans le format du id
+                // Le numéro du rectangle se trouve de l'indice 5 à 7 dans le format du id
                 id_array.push(parseInt(rect.id.slice(5,7)));
             })
         })
@@ -206,12 +204,14 @@ function select_rectangles(dataset, svg_1, width, height, radius){
         // On veut afficher l'heure du premier et dernier rect de la sélection
         var first_text = d3.selectAll("#text_"+d3.min(id_array));
         var last_text = d3.selectAll("#text_"+d3.max(id_array));
+        var rush_hour = d3.selectAll(".rush_hour");
 
 
         var all_text = d3.selectAll("text").filter(function(d){if(Number.isInteger(d)){return d}});
         all_text.attr("fill", "none");
         first_text.attr("fill", "#009De0");
-        last_text.attr("fill", "#009De0")
+        last_text.attr("fill", "#009De0");
+        rush_hour.attr("fill","black");
 
 
 
@@ -247,6 +247,48 @@ function select_rectangles(dataset, svg_1, width, height, radius){
         d3.selectAll('.toolTip').style("display", "none");
     });
 
+};
+
+// Fonction qui ajoute l'affichage pour les heures de pointes
+function rush_hours(dataset, svg_1, width, height)
+{
+    var data_morning = count_incidents(dataset, 7, 9);
+    var data_evening = count_incidents(dataset, 16, 18);
+    var total = dataset.length;
+    
+    var rush_hour_text = svg_1
+                        .append("text")
+                        .attr("class","rush_hour")
+                        .attr("text-decoration", "underline")
+                        .text("Heures de pointe")
+                        .attr("font-family", "sans-serif")
+                        .attr("font-size", "20px")
+                        .attr("fill", "black")
+                        .attr("text-anchor","start")
+                        .attr("x","83.333")
+                        .attr("y", height/2.5);
+
+    var morning_text = svg_1
+                        .append("text")
+                        .attr("class","rush_hour")
+                        .text("7h à 9h: "+ Math.round(100*data_morning[0]['number']/total)+"%")
+                        .attr("font-family", "sans-serif")
+                        .attr("font-size", "20px")
+                        .attr("fill", "black")
+                        .attr("text-anchor","start")
+                        .attr("x","83.333")
+                        .attr("y", height/2.5+25);
+
+    var evening_text = svg_1
+                        .append("text")
+                        .attr("class","rush_hour")
+                        .text("16h à 18h: "+ Math.round(100*data_evening[0]['number']/total)+"%")
+                        .attr("font-family", "sans-serif")
+                        .attr("font-size", "20px")
+                        .attr("fill", "black")
+                        .attr("text-anchor","start")
+                        .attr("x","80")
+                        .attr("y", height/2.5+50);
 };
 
 
@@ -445,6 +487,7 @@ function update_piechart(dataset, svg_1, width, height, radius)
         .style("fill", "#000")
         .style("font-size","20px")
         .attr("text-anchor","middle")
+
 
         };
 
