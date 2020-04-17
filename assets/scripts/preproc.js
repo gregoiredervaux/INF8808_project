@@ -149,4 +149,3 @@ function data_per_station(pt_metro, incidents) {
         return station
     })
 }
-
