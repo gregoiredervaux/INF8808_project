@@ -16,6 +16,8 @@ function create_rectangles(svg_1, width, height){
         .attr("id", function(d,i){return "rect_"+d;})
         .classed("unselected_hour", true);
 
+
+
     var text = svg_1.selectAll("text")
                     .data(hours_in_a_day)
                     .enter()
@@ -48,6 +50,45 @@ function create_rectangles(svg_1, width, height){
         
     }
     )
+};
+
+
+// fonction qui crée l'affichage du nombre absolut d'incidents
+function create_absolut_display(dataset, svg_1, width, height)
+{
+     console.log(dataset);
+     var total = dataset[0]['number']+dataset[1]['number'];
+
+
+    var abs_in_number = svg_1.append("text")
+                      .attr("id", "abs_in_number")
+                      .text(dataset[0]["number"]+" / "+total)
+                      .attr("font-family", "sans-serif")
+                      .attr("font-size", "20px")
+                      .attr("fill", "#019535")
+                      .attr("text-anchor","end")
+                      .attr("x", width/2+200+105)
+                      .attr("y", height/2.5);
+
+    var abs_in_context = svg_1.append("text")
+                      .attr("id", "abs_in_context")
+                      .text("incidents")
+                      .attr("font-family", "sans-serif")
+                      .attr("font-size", "20px")
+                      .attr("fill", "#019535")
+                      .attr("text-anchor","end")
+                      .attr("x", width/2+200+105)
+                      .attr("y", height/2.5+30);
+
+};
+
+// Fonction qui met à jour l'affichage du nombre absolut d'incidents
+function update_absolut_display(dataset)
+{
+    var total = dataset[0]["number"]+dataset[1]["number"];
+    var to_update = d3.select("#abs_in_number");
+    console.log(to_update);
+    to_update.text(dataset[0]["number"]+" / "+total);
 };
 
 
@@ -188,6 +229,7 @@ function select_rectangles(dataset, svg_1, width, height, radius){
         // On update le piechart
         // BESOIN DE FAIRE UNE FONCTION QUI UPDATE!!!!! LE PIECHART ET NON QUI LE RECRÉ
         //create_piechart(new_piechart_dataset, svg_1, width, height, radius);
+        update_absolut_display(new_piechart_dataset);
         update_piechart(new_piechart_dataset, svg_1, width, height, radius);
 
         
@@ -264,7 +306,7 @@ function create_piechart(dataset, svg_1, width, height, radius)  {
     
     // configuration de l'échelle de couleur
     var color = d3.scaleOrdinal()
-                  .range(["#019535 ","#f2f2f2"]);
+                  .range(["#019535","#f2f2f2"]);
 
 
     // sort et sortValue permettent de toujours avoir le pourcentage "dans l'intervalle" commencant à angle=0
