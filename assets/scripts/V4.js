@@ -22,7 +22,7 @@ function createSources(data) {
             // on compte le nombre d'incidents à la station
             count: d3.sum(data.filter(row=>row.line ===id).map(d => d.incidents.length)),
             // on filtre les résultats qui correspond uniquement à la circonscription
-            stoptime: d3.sum(data.filter(row=>row.line ===id).map(row => row.total_stop_time)),
+            stoptime: d3.sum(data.filter(row=>row.line ===id).map(d => d.total_stop_time)),
 
             // on classe en fonction du nombre d'arrêt de services
             };
@@ -46,6 +46,7 @@ function createAxes(g, xAxis, yAxis, height) {
 
         .attr("transform", `translate(0,0)`)
         .call(yAxis);
+      
 
 
 }
@@ -64,15 +65,29 @@ function createAxes(g, xAxis, yAxis, height) {
  */
 
 function create_bar_count(g, sources, data, x, y, height) {
-
+  
+  var sclBand  = d3.scaleBand()
+      .domain(x.domain())
+      .range(x.range())
+      .paddingInner(0.05)
+      .paddingOuter(0.05);
   
   g.selectAll("rect")
       .data(sources)
       .enter()
       .append("rect")
-      .attr("x", d => x(d.ligne))
+      .attr("x", d => x(d.ligne) + sclBand.step() * 0.05)
       .attr("y", d => y(d.count))
-      .attr("width", x.bandwidth())
+      .attr("width", sclBand.bandwidth())
       .attr("height", d => height-y(d.count));
+
+  g.selectAll("text")
+      .data(sources)
+      .enter()
+      .append("text")
+      .text("valuetext", d => valuetext(d.count))
+      .attr("x", (d,i) => i*sclBand.bandwidth()/sources.length)
+      .attr("y", d => height - 4*d)
+      .attr("width", sclBand.bandwidth())
 
 }

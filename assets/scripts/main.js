@@ -156,7 +156,7 @@
             };
 
             var barChartWidth = 550 - barChartMargin.left - barChartMargin.right;
-            var barChartHeight = 550 - barChartMargin.top - barChartMargin.bottom;
+            var barChartHeight = 500 - barChartMargin.top - barChartMargin.bottom;
 
             var svg_v4 = d3.select('#canvasV4')
                            .append('svg')
@@ -170,18 +170,17 @@
                           .domain(sources.map(d => d.ligne));
 
             var y_v4 = d3.scaleLinear().range([barChartHeight, 0])
-                          .domain([d3.min(sources.map(d => d.count)),
-                                   d3.max(sources.map(d => d.count))]);
+                          .domain([0, d3.max(sources.map(d => d.count))]);
 
             var xAxis_v4 = d3.axisBottom(x_v4);
             var yAxis_v4 = d3.axisLeft(y_v4);
 
 
             var bar_count = svg_v4.append("g")
-                                //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
             /***** Création du graphique à barres *****/
-            console.log(barChartHeight);
+            console.log(sources.map(d=>d.count));
             createAxes(bar_count, xAxis_v4, yAxis_v4, barChartHeight);
             create_bar_count(bar_count, sources, data_freins, x_v4, y_v4, barChartHeight);
            
