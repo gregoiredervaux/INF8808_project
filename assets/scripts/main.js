@@ -50,24 +50,26 @@
             var data_stations = data_per_station(pt_metro, incidents);
             //console.log("données de travail", data_stations);
 
-            var KFS = results[0].filter(row => row.KFS == parseInt(1)); //incidents qui ont un enclenchement du frein
+            var KFS = results[0].filter(row => row.KFS == parseInt(1)); //Incidents pour lesquels le frein d'urgence a été actionné (KFS=1)
             //console.log("KFS", KFS);
 
-            var data_freins = data_per_station(pt_metro,KFS);
+            var data_freins = data_per_station(pt_metro,KFS); //Données par station pour les incidents pour lesquels KFS = 1
             //console.log("Données de travail Frein", data_freins);
-            //console.log("Stations KFS par ligne", data_freins.filter(row=>row.line ==='orange').map(d=>d.name));
-            //console.log("Nombre d'incidents aux stations", data_freins.filter(row=>row.line ==='orange').map(d=>d.incidents.length));
+            //console.log("Stations KFS par ligne", data_freins.filter(row=>row.line ==='orange').map(d=>d.name));         
+            //console.log("Nombre d'incidents frein (cause: Blessée ou malade) sur la ligne orange", d3.set(data_freins.filter(row=>row.line ==='yellow').map(d=>d.incidents.map(cause => cause['Cause secondaire']))));
+            //console.log("Valeurs des causes d'incidents", d3.set(data_freins.map(row => row.incidents.map(a => a['Cause secondaire']))).values())
             //console.log("Nombre d'incidents frein (cause: Blessée ou malade) sur la ligne orange", d3.sum(data_freins.filter(row=>row.line ==='orange').map(d=>d.incidents.map(cause => cause['Cause secondaire']).filter(k=>k==='Blessée ou malade').length)));
-
-            
+            //console.log("Nombre d'incidents frein sur la ligne jaune: ", d3.sum(data_freins.filter(row=>row.line ==='yellow').map(d=>d.incidents.map(cause => cause['Cause secondaire']).length)));
             //console.log("Temps d'arrêt frein", d3.sum(data_freins.map(d => d.total_stop_time)));
 
             var sources = createSources(data_freins);
-            console.log(sources);
-                      
-            //console.log("nombre d'incidents conservés", d3.sum(data_stations.map(data_st => data_st.incidents.length)));
-        
 
+            //console.log("Sources",sources);
+            //console.log("Ligne: ", sources.map(row=>row.ligne))
+            //console.log("Incidents freins par ligne", sources.map(row=>row.stations.map(k=>k.incidents.length).reduce((a,b)=>a+b)));
+            //console.log("Incidents max par ligne", d3.max(sources.map(row=>row.stations.map(k=>k.incidents.length).reduce((a,b)=>a+b))));
+            //console.log("Nombre d'incidents à la station Beaubien: ", d3.sum(sources.map(row=>row.stations.filter(d=>d.name==="Beaubien").map(k=>k.incidents.length))));          
+            //console.log("nombre d'incidents conservés", d3.sum(data_stations.map(data_st => data_st.incidents.length)));
             //console.log("moyenne de temps tot d'arret", d3.sum(data_stations.map(data_st => data_st.total_stop_time))/data_stations.length);
 
             /***** Prétraitement des données *****/
@@ -178,8 +180,9 @@
                 .offset([-10, 0]);
 
             /***** Création du graphique à barres *****/
-            console.log(sources.map(d=>d.count));
-            createAxes(bar_count, sources, barChartHeight, barChartWidth);
+            console.log("data",sources.map(row=>row.ligne));
+
+            createAxes(bar_count, sources, data_freins, barChartHeight, barChartWidth);
             create_bar_count(bar_count, sources, data_freins, tip_v4, barChartHeight, barChartWidth);
            
             

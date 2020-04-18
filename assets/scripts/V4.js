@@ -3,40 +3,70 @@
  *
  *                  [
  *                    {
- *                      ligne: string,           // La couleur (le nom) de la ligne
- *                      count: number,           // Nombre total d'incidents incluant un enclenchement du frein d'urgence.
- *                      stoptime: number         // Temps total d'arrêt de service dû à un incident incluant un enclenchement du frein d'urgence'.
+ *                      ligne: string,                                          // La couleur (le nom) de la ligne
+ *                      stations:[
+ *                                 {
+ *                                  name: string,                               // Le nom de la station
+ *                                  incidents: [
+ *                                                  {cause: string,             // La cause secondaire de l'incident
+ *                                                   time: number           // Le temps d'arrêt lié à la cause secondaire                           
+ *                                                  },
+ *                                                  ...
+ *                                              ],
+ *                                              ...
+ *                                 },
+ *                                ...  
+ *                              ],
+ *                              ...
  *                    }
  *                  ]
  */
+
 function createSources(data) {
   // Retourner l'objet selon le format énoncé ci-haut.
   
     // on recupère la liste des couleurs des lignes
     var line_set = d3.set(data.map(row => row.line)).values();
+    //console.log(line_set);
+    var cause_set_ghetto = ["Blessée ou malade", "Méfait volontaire","Nuisance involontaire","MR-73","MPM-10","Ligne 1, 2, 4, 5","Contrats Réno-Système",]
+    //var cause_set = data.map(row => row.incidents.map(d=>d['Cause secondaire']));
+    //console.log(cause_set_ghetto)
+
+    //console.log("Nombre d'incidents frein (cause: Blessée ou malade) sur la ligne orange", d3.sum(data_freins.filter(row=>row.line ==='orange').map(d=>d.incidents.map(cause => cause['Cause secondaire']).filter(k=>k==='Blessée ou malade').length)));
 
     // pour chaque ligne, on réalise le traitement
-    return line_set.map(id => {
+    return line_set.map(line => {
         return {
-            ligne: data.find(row => row.line ===id).line,
+            ligne: line,
             // on compte le nombre d'incidents à la station
-            count: d3.sum(data.filter(row=>row.line ===id).map(d => d.incidents.length)),
-            // on filtre les résultats qui correspond uniquement à la circonscription
-            stoptime: d3.sum(data.filter(row=>row.line ===id).map(d => d.total_stop_time)),
+            stations: data.filter(row => row.line === line).map(stat => {
+                return {
+                    name: stat.name,
+                    incidents: stat.incidents.map(inci=>{//.filter(d => d['Cause secondaire'] === stat.incidents['Cause secondaire']).map(inci => {
+                        return {
+                            cause: inci['Cause secondaire'],
+                            time: inci.time
+                            //count: d3.sum(k.filter(b=>b.inci['Cause secondaire']===inci).length),
+                            //timestop: inci.time,
+                        }
+                    }).sort((inc_a, inc_b) => inc_b.time - inc_a.time)  
+                }
+                     //.sort((count_a, count_b) => count_b.count - count_a.count)
 
-            // on classe en fonction du nombre d'arrêt de services
-            };
-        })
-}
+                
+            })
+        }
+    });
+}  
 
-function createAxes(g, data, height, width) {
+function createAxes(g, sources, data_freins, height, width) {
   // Dessiner les axes X et Y du graphique. Assurez-vous d'indiquer un titre pour l'axe Y.
     // ajout du l'axe X
     var x = d3.scaleBand().range([0, width]).round(0.05)
-                 .domain(data.map(d => d.ligne));
+                 .domain(sources.map(row=>row.ligne));
 
     var y = d3.scaleLinear().range([height, 0])
-                 .domain([0, d3.max(data.map(d => d.count))]);
+                 .domain([0, d3.max(sources.map(row=>row.stations.map(k=>k.incidents.length).reduce((a,b)=>a+b)))]);
 
     var xAxis = d3.axisBottom(x);
     var yAxis = d3.axisLeft(y);
@@ -78,7 +108,7 @@ function create_bar_count(g, sources, data, tip, height, width) {
                  .domain(sources.map(d => d.ligne));
 
     var y = d3.scaleLinear().range([height, 0])
-                 .domain([0, d3.max(sources.map(d => d.count))]);
+                 .domain([0, d3.max(sources.map(row=>row.stations.map(k=>k.incidents.length).reduce((a,b)=>a+b)))]);
   
     var sclBand  = d3.scaleBand()
       .domain(x.domain())
@@ -91,9 +121,10 @@ function create_bar_count(g, sources, data, tip, height, width) {
       .enter()
       .append("rect")
       .attr("x", d => x(d.ligne) + sclBand.step() * 0.05)
-      .attr("y", d => y(d.count))
+      .attr("y", d => y(d.stations.map(k=>k.incidents.length).reduce((a,b)=>a+b)))
       .attr("width", sclBand.bandwidth())
-      .attr("height", d => height-y(d.count))
+      .attr("height", d => height-y(d.stations.map(k=>k.incidents.length).reduce((a,b)=>a+b)))
+      .attr("fill", color_value(d.ligne))
       .on('mouseover', tip.show)
       .on('mouseout', tip.hide);   
       
@@ -103,9 +134,9 @@ function create_bar_count(g, sources, data, tip, height, width) {
       .append("text")
       .attr("class","label")
       .attr("x", d => 0.48*sclBand.bandwidth() + x(d.ligne))
-      .attr("y", d => y(d.count)-20)
+      .attr("y", d => y(d.stations.map(k=>k.incidents.length).reduce((a,b)=>a+b))-20)
       .attr("dy", ".75em")
-      .text(d => d.count); 
+      .text(d => d.stations.map(k=>k.incidents.length).reduce((a,b)=>a+b)); 
 
 }
 
