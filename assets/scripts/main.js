@@ -48,15 +48,19 @@
             //console.log("liste des stations de métro", pt_metro);
 
             var data_stations = data_per_station(pt_metro, incidents);
-            console.log("données de travail", data_stations);
+            //console.log("données de travail", data_stations);
 
             var KFS = results[0].filter(row => row.KFS == parseInt(1)); //incidents qui ont un enclenchement du frein
             //console.log("KFS", KFS);
 
             var data_freins = data_per_station(pt_metro,KFS);
-            console.log("Données de travail Frein", data_freins);
-            console.log("Nombre d'incidents frein", d3.sum(data_freins.filter(row=>row.line ==='orange').map(d => d.incidents.length)));
-            console.log("Temps d'arrêt frein", d3.sum(data_freins.map(d => d.total_stop_time)));
+            //console.log("Données de travail Frein", data_freins);
+            //console.log("Stations KFS par ligne", data_freins.filter(row=>row.line ==='orange').map(d=>d.name));
+            //console.log("Nombre d'incidents aux stations", data_freins.filter(row=>row.line ==='orange').map(d=>d.incidents.length));
+            //console.log("Nombre d'incidents frein (cause: Blessée ou malade) sur la ligne orange", d3.sum(data_freins.filter(row=>row.line ==='orange').map(d=>d.incidents.map(cause => cause['Cause secondaire']).filter(k=>k==='Blessée ou malade').length)));
+
+            
+            //console.log("Temps d'arrêt frein", d3.sum(data_freins.map(d => d.total_stop_time)));
 
             var sources = createSources(data_freins);
             console.log(sources);
@@ -164,9 +168,6 @@
                            .append('svg')
                            .attr("width", barChartWidth + barChartMargin.left + barChartMargin.right)
                            .attr("height", barChartHeight + barChartMargin.top + barChartMargin.bottom);
-                           
-
-            /***** Échelles *****/
 
             var bar_count = svg_v4.append("g")
                                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");

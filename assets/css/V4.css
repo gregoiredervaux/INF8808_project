@@ -53,10 +53,9 @@
   padding: 12px;
   border-radius: 8px;
   color: #444;
-  background: #999;
+  background: #fff;
   border: 1.5px solid #666;
   text-align: left;
-  fill-opacity: 0.1;
 }
 
 .d3-tip:after {

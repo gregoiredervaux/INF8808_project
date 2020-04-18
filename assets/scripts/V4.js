@@ -64,12 +64,13 @@ function createAxes(g, data, height, width) {
  * Crée le graphique à bandes.
  *
  * g             Le groupe SVG dans lequel le graphique à bandes doit être dessiné.
+ * 
  * data          Les données à utiliser.
  * x             L'échelle pour l'axe X.
  * y             L'échelle pour l'axe Y.
- * color         L'échelle de couleurs qui est associée à chacune des lignes de métro
  * tip           L'infobulle à afficher lorsqu'une barre est survolée.
  * height        La hauteur du graphique.
+ * width         La largeur du graphique
  */
 
 function create_bar_count(g, sources, data, tip, height, width) {
@@ -113,8 +114,26 @@ function create_bar_count(g, sources, data, tip, height, width) {
 function getToolTipText(d, data) {
     // Retourner le texte à afficher dans l'infobulle selon le format demandé.
     // Assurez-vous d'utiliser la fonction "formatPercent" pour formater le pourcentage correctement.
+
+    
   
       var total = data.map(d=>d.count);
       //var percent = d.count/total;
       return "<span>"+ "test: " +  total + ")</span>";
-  }
+  
+}
+  
+function showPanel(panel, stationId, data) {
+    var station = data.find(d => stationId === d.id);
+    panel.style("display", "block");
+
+    panel.select("#station-name")
+        .text(`${station.name} (ligne ${frenchLine(station.line)})`);
+    panel.select("#nb-incidents")
+        .text(`Incidents sur l'année 2019: ${station.incidents.length}`);
+    panel.select("#tps-moy-arret")
+        .text(`temps moyen d'un incident sur l'année 2019: ${parseInt(station.total_stop_time / station.incidents.length)} minutes`);
+    panel.select("#tps-tot-arret")
+        .text(`temps total d'arret sur l'année 2019: ${parseInt(station.total_stop_time)} minutes`);
+}
+  
