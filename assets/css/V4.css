@@ -43,3 +43,33 @@
     display: block;
   }
   
+
+/***** Tooltip *****/
+.d3-tip {
+  line-height: -5;
+  top: 50%;
+  left: 100%;
+  width: 10%;
+  padding: 12px;
+  border-radius: 8px;
+  color: #444;
+  background: #999;
+  border: 1.5px solid #666;
+  text-align: left;
+  fill-opacity: 0.1;
+}
+
+.d3-tip:after {
+  display: inline;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  margin: -1px 0 0 0;
+  box-sizing: border-box;
+  font-size: 10px;
+  line-height: 1;
+  color: #999;
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}

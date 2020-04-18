@@ -29,9 +29,18 @@ function createSources(data) {
         })
 }
 
-function createAxes(g, xAxis, yAxis, height) {
+function createAxes(g, data, height, width) {
   // Dessiner les axes X et Y du graphique. Assurez-vous d'indiquer un titre pour l'axe Y.
     // ajout du l'axe X
+    var x = d3.scaleBand().range([0, width]).round(0.05)
+                 .domain(data.map(d => d.ligne));
+
+    var y = d3.scaleLinear().range([height, 0])
+                 .domain([0, d3.max(data.map(d => d.count))]);
+
+    var xAxis = d3.axisBottom(x);
+    var yAxis = d3.axisLeft(y);
+
     g.append("g")
 
         .attr("transform", `translate(0,${height - 1})`)
@@ -42,10 +51,9 @@ function createAxes(g, xAxis, yAxis, height) {
         .style("text-anchor", "start");
 
     // ajout de l'axe Y
-    g.append("g")
-
-        .attr("transform", `translate(0,0)`)
-        .call(yAxis);
+    //g.append("g")
+    //   .attr("transform", `translate(0,0)`)
+    //   .call(yAxis);
       
 
 
@@ -64,30 +72,49 @@ function createAxes(g, xAxis, yAxis, height) {
  * height        La hauteur du graphique.
  */
 
-function create_bar_count(g, sources, data, x, y, height) {
+function create_bar_count(g, sources, data, tip, height, width) {
+    var x = d3.scaleBand().range([0, width]).round(0.05)
+                 .domain(sources.map(d => d.ligne));
+
+    var y = d3.scaleLinear().range([height, 0])
+                 .domain([0, d3.max(sources.map(d => d.count))]);
   
-  var sclBand  = d3.scaleBand()
+    var sclBand  = d3.scaleBand()
       .domain(x.domain())
       .range(x.range())
       .paddingInner(0.05)
       .paddingOuter(0.05);
   
-  g.selectAll("rect")
+    g.selectAll("rect")
       .data(sources)
       .enter()
       .append("rect")
       .attr("x", d => x(d.ligne) + sclBand.step() * 0.05)
       .attr("y", d => y(d.count))
       .attr("width", sclBand.bandwidth())
-      .attr("height", d => height-y(d.count));
-
-  g.selectAll("text")
+      .attr("height", d => height-y(d.count))
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide);   
+      
+    g.selectAll(".text")        
       .data(sources)
       .enter()
       .append("text")
-      .text("valuetext", d => valuetext(d.count))
-      .attr("x", (d,i) => i*sclBand.bandwidth()/sources.length)
-      .attr("y", d => height - 4*d)
-      .attr("width", sclBand.bandwidth())
+      .attr("class","label")
+      .attr("x", d => 0.48*sclBand.bandwidth() + x(d.ligne))
+      .attr("y", d => y(d.count)-20)
+      .attr("dy", ".75em")
+      .text(d => d.count); 
 
 }
+
+
+
+function getToolTipText(d, data) {
+    // Retourner le texte à afficher dans l'infobulle selon le format demandé.
+    // Assurez-vous d'utiliser la fonction "formatPercent" pour formater le pourcentage correctement.
+  
+      var total = data.map(d=>d.count);
+      //var percent = d.count/total;
+      return "<span>"+ "test: " +  total + ")</span>";
+  }

@@ -55,8 +55,8 @@
 
             var data_freins = data_per_station(pt_metro,KFS);
             console.log("Données de travail Frein", data_freins);
-            //console.log("Nombre d'incidents frein", d3.sum(data_freins.filter(row=>row.line ==='orange').map(d => d.incidents.length)));
-            //console.log("Temps d'arrêt frein", d3.sum(data_freins.map(d => d.total_stop_time)));
+            console.log("Nombre d'incidents frein", d3.sum(data_freins.filter(row=>row.line ==='orange').map(d => d.incidents.length)));
+            console.log("Temps d'arrêt frein", d3.sum(data_freins.map(d => d.total_stop_time)));
 
             var sources = createSources(data_freins);
             console.log(sources);
@@ -168,24 +168,27 @@
 
             /***** Échelles *****/
 
-            var x_v4 = d3.scaleBand().range([0, barChartWidth]).round(0.05)
-                          .domain(sources.map(d => d.ligne));
-
-            var y_v4 = d3.scaleLinear().range([barChartHeight, 0])
-                          .domain([0, d3.max(sources.map(d => d.count))]);
-
-            var xAxis_v4 = d3.axisBottom(x_v4);
-            var yAxis_v4 = d3.axisLeft(y_v4);
-
-
             var bar_count = svg_v4.append("g")
                                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+            /***Création de l'infobulle***/
+            var tip_v4 = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0]);
+
             /***** Création du graphique à barres *****/
             console.log(sources.map(d=>d.count));
-            createAxes(bar_count, xAxis_v4, yAxis_v4, barChartHeight);
-            create_bar_count(bar_count, sources, data_freins, x_v4, y_v4, barChartHeight);
+            createAxes(bar_count, sources, barChartHeight, barChartWidth);
+            create_bar_count(bar_count, sources, data_freins, tip_v4, barChartHeight, barChartWidth);
            
+            
+            /***** Création de l'infobulle *****/
+            tip_v4.html(function(d) {
+                return getToolTipText.call(this, d, data_freins);
+            });
+            svg_v4.call(tip_v4);
+  
+  
 
         });
 })(d3);
