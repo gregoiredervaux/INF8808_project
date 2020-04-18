@@ -65,7 +65,7 @@
             var sources = createSources(data_freins);
 
             //console.log("Sources",sources);
-            //console.log("Ligne: ", sources.map(row=>row.ligne))
+            console.log("Ligne: ", sources.map(row=>row.ligne))
             //console.log("Incidents freins par ligne", sources.map(row=>row.stations.map(k=>k.incidents.length).reduce((a,b)=>a+b)));
             //console.log("Incidents max par ligne", d3.max(sources.map(row=>row.stations.map(k=>k.incidents.length).reduce((a,b)=>a+b))));
             //console.log("Nombre d'incidents à la station Beaubien: ", d3.sum(sources.map(row=>row.stations.filter(d=>d.name==="Beaubien").map(k=>k.incidents.length))));          
@@ -180,7 +180,7 @@
                 .offset([-10, 0]);
 
             /***** Création du graphique à barres *****/
-            console.log("data",sources.map(row=>row.ligne));
+            console.log("data",sources.map(row=>row.ligne).values());
 
             createAxes(bar_count, sources, data_freins, barChartHeight, barChartWidth);
             create_bar_count(bar_count, sources, data_freins, tip_v4, barChartHeight, barChartWidth);

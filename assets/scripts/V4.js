@@ -71,15 +71,14 @@ function createAxes(g, sources, data_freins, height, width) {
     var xAxis = d3.axisBottom(x);
     var yAxis = d3.axisLeft(y);
 
-    g.append("g")
 
-        .attr("transform", `translate(0,${height - 1})`)
-        .call(xAxis)
-    .selectAll("text")
-        .attr("y", 20)
-        .attr("transform", "rotate(30)")
-        .style("text-anchor", "start");
-
+    
+    //g.append("line")
+    //    .attr("x1",0)
+    //    .attr("x2", width)
+    //    .attr("y1", heigth+10)
+    //    .attr("y2", height+10)
+  
     // ajout de l'axe Y
     //g.append("g")
     //   .attr("transform", `translate(0,0)`)
@@ -115,6 +114,21 @@ function create_bar_count(g, sources, data, tip, height, width) {
       .range(x.range())
       .paddingInner(0.05)
       .paddingOuter(0.05);
+
+      g.append("text")
+      .attr("class", "label")
+      .attr("text-anchor", "middle")
+      .attr("y", height+40)
+      .attr("x", width*0.5)
+      .text('Ligne');
+ 
+     g.append("line")
+         .attr("x1",0)
+         .attr("y1", height+15)
+         .attr("x2", width)
+         .attr("y2", height+15)
+         .attr("stroke", "black")
+         .attr("stroke-width", 1.5)
   
     g.selectAll("rect")
       .data(sources)
@@ -124,7 +138,10 @@ function create_bar_count(g, sources, data, tip, height, width) {
       .attr("y", d => y(d.stations.map(k=>k.incidents.length).reduce((a,b)=>a+b)))
       .attr("width", sclBand.bandwidth())
       .attr("height", d => height-y(d.stations.map(k=>k.incidents.length).reduce((a,b)=>a+b)))
-      .attr("fill", color_value(d.ligne))
+      .attr("fill", d => color_value(d.ligne))
+      .attr("fill-opacity", 0.7)
+      .attr("stroke", d => color_value(d.ligne))
+      .attr("stroke-width", 2.5)
       .on('mouseover', tip.show)
       .on('mouseout', tip.hide);   
       
