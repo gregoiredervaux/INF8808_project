@@ -86,8 +86,6 @@
 
             /***** V1 *****/
 
-            // Éventuellement, begin et end vont être déterminé grâce à la fonction select_begin_end()
-
             // dimensions du piechart
             var width_v1 = 1000,
 	        height_v1 = 400,
@@ -106,21 +104,19 @@
                                                 .style("text-anchor", "middle")
                                                 .append("text");
 
-            // Heures d'ouvertures du métro        
+            // Heures d'ouvertures du métro   
             var ouverture = 5;
             var fermeture = 24;
 
             // Création du piechart que l'utilisateur voit lorsqu'il ouvre l'onglet (sélection par défaut)
             var piechart_dataset = count_incidents(incidents, ouverture, fermeture);
-            rush_hours(incidents, svg_1, width_v1, height_v1);
-            create_rectangles(svg_1, width_v1, height_v1);
-            create_absolut_display(piechart_dataset, svg_1, width_v1, height_v1);
-            create_piechart(piechart_dataset, svg_1, width_v1, height_v1, radius_v1);
-
-            //select_drag(svg_1);
+            rush_hours(incidents, svg_1);
+            create_rectangles(svg_1);
+            create_absolut_display(piechart_dataset, svg_1);
+            create_piechart(piechart_dataset, svg_1, radius_v1);
 
             // Update du piechart selon la sélection de l'utilisateur
-            select_rectangles(incidents, svg_1, width_v1, height_v1, radius_v1);
+            select_rectangles(incidents, svg_1, radius_v1);
 
 
             /***** V2 *****/
