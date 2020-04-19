@@ -64,9 +64,15 @@
 
             var sources = createSources(data_freins);
 
-            //console.log("Sources",sources);
+            console.log("Sources",sources);
             console.log("Ligne: ", sources.map(row=>row.ligne))
-            //console.log("Incidents freins par ligne", sources.map(row=>row.stations.map(k=>k.incidents.length).reduce((a,b)=>a+b)));
+            console.log("Somme des incidents freins par ligne", sources.map(row=>row.stations.map(k=>k.incidents.length).reduce((a,b)=>a+b)));
+            var count_freins_station = sources.map(row=>row.stations.map(k=>k.incidents.length).sort((a,b)=>b-a));
+            console.log("Incidents freins par station", count_freins_station);
+            //Stations par ordre décroissant d'incidents frein
+            var stations_names_count_freins = sources.map(row=>row.stations.sort((a,b)=>b.incidents.length-a.incidents.length));//.map(k=>k.incidents.length).sort((a,b,)=>b-a));
+            console.log("Stations en ordre de count d'incidents",stations_names_count_freins);
+
             //console.log("Incidents max par ligne", d3.max(sources.map(row=>row.stations.map(k=>k.incidents.length).reduce((a,b)=>a+b))));
             //console.log("Nombre d'incidents à la station Beaubien: ", d3.sum(sources.map(row=>row.stations.filter(d=>d.name==="Beaubien").map(k=>k.incidents.length))));          
             //console.log("nombre d'incidents conservés", d3.sum(data_stations.map(data_st => data_st.incidents.length)));
@@ -188,7 +194,7 @@
             
             /***** Création de l'infobulle *****/
             tip_v4.html(function(d) {
-                return getToolTipText.call(this, d, data_freins);
+                return getToolTipText.call(this, d, sources);
             });
             svg_v4.call(tip_v4);
   

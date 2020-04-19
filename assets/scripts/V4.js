@@ -115,20 +115,20 @@ function create_bar_count(g, sources, data, tip, height, width) {
       .paddingInner(0.05)
       .paddingOuter(0.05);
 
-      g.append("text")
-      .attr("class", "label")
-      .attr("text-anchor", "middle")
-      .attr("y", height+40)
-      .attr("x", width*0.5)
-      .text('Ligne');
- 
-     g.append("line")
-         .attr("x1",0)
-         .attr("y1", height+15)
-         .attr("x2", width)
-         .attr("y2", height+15)
-         .attr("stroke", "black")
-         .attr("stroke-width", 1.5)
+        g.append("text")
+     .attr("class", "label")
+     .attr("text-anchor", "middle")
+     .attr("y", height+40)
+     .attr("x", width*0.5)
+     .text('Ligne');
+
+    g.append("line")
+        .attr("x1",0)
+        .attr("y1", height+15)
+        .attr("x2", width)
+        .attr("y2", height+15)
+        .attr("stroke", "black")
+        .attr("stroke-width", 1.5)
   
     g.selectAll("rect")
       .data(sources)
@@ -159,15 +159,32 @@ function create_bar_count(g, sources, data, tip, height, width) {
 
 
 
-function getToolTipText(d, data) {
-    // Retourner le texte à afficher dans l'infobulle selon le format demandé.
-    // Assurez-vous d'utiliser la fonction "formatPercent" pour formater le pourcentage correctement.
+function getToolTipText(d, sources) {
 
+    /**Format à retourner:
+     * Stations avec le plus grand [nombre d'arrêts de service/temps d'arrêt dû à des incidents]
+     * Nom de la station 1: [nombre d'arrêts de service/temps d'arrêt dû à des incidents +"minutes"]
+     * Nom de la station 2: [nombre d'arrêts de service/temps d'arrêt dû à des incidents +"minutes"]
+     * Nom de la station 3: [nombre d'arrêts de service/temps d'arrêt dû à des incidents +"minutes"]
+     */
+
+    //console.log("Incidents freins par ligne", sources.map(row=>row.stations.map(k=>k.incidents.length).reduce((a,b)=>a+b)));
+    //console.log("Incidents max par ligne", d3.max(sources.map(row=>row.stations.map(k=>k.incidents.length).reduce((a,b)=>a+b))));
+    //console.log("Nombre d'incidents à la station Beaubien: ", d3.sum(sources.map(row=>row.stations.filter(d=>d.name==="Beaubien").map(k=>k.incidents.length))));
+    //var count_incidents_station = d3.sum(d.stations.filter(d=>d.name.map(k=>k.incidents.length)));
+
+    var stations_names_count_freins = sources.map(row=>row.stations.filter(d=>d.ligne===d.ligne).sort((a,b)=>b.incidents.length-a.incidents.length));
+    console.log("Stations en ordre de count d'incidents",stations_names_count_freins);     //var percent = d.count/total;
+
+    var stations_names = sources.filter(d=>d.name===d).map(row=>row.stations.sort((a,b)=>b.incidents.length-a.incidents.length));
+     
     
-  
-      var total = data.map(d=>d.count);
-      //var percent = d.count/total;
-      return "<span>"+ "test: " +  total + ")</span>";
+
+    return "<span>"+ "<b>Stations de la ligne"+ frenchLine(d.ligne) + "avec le plus grand nombre d'arrêts de service</b>" 
+    + "<br>1. " + d.stations.map(d=>d.name)[0] +": " + d.stations.map(d=>d.incidents)[0].length
+    + "<br>2. " + d.stations.map(d=>d.name)[1] +": " + d.stations.map(d=>d.incidents)[1].length
+    + "<br>3. " + d.stations.map(d=>d.name)[2] +": " + d.stations.map(d=>d.incidents)[2].length
+    + "</span>";
   
 }
   
