@@ -201,10 +201,12 @@
             var barChartWidth = 550 - barChartMargin.left - barChartMargin.right;
             var barChartHeight = 500 - barChartMargin.top - barChartMargin.bottom;
 
+            
+            // svg_v4 est maintenant deux fois plus large pour permettre 2 bar chart un à coté de l'autre
             var svg_v4 = d3.select('#canvasV4')
                            .append('svg')
                            .attr("width", 2*(barChartWidth + barChartMargin.left + barChartMargin.right))
-                           .attr("height", 2*(barChartHeight + barChartMargin.top + barChartMargin.bottom));
+                           .attr("height", (barChartHeight + barChartMargin.top + barChartMargin.bottom));
 
             var bar_count = svg_v4.append("g")
                                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
@@ -225,6 +227,9 @@
             createAxes(bar_count, sources, data_freins, barChartHeight, barChartWidth);
             create_bar_count(bar_count, sources, data_freins, tip_v4, barChartHeight, barChartWidth);
 
+
+            // Fonction que lorsque l'on clique sur une barre à gauche, faut apparaitre un bar chart à droite
+            // data_freins doit simplement être remplacer par un jeu de données qui a rapport avec les causes secondaires
             display_causes(bar_count_causes, sources, data_freins, barChartHeight, barChartWidth, tip_v4);
 
             

@@ -204,6 +204,8 @@ function showPanel(panel, stationId, data) {
   
 
 
+// Fonction qui affiche un bar chart des causes secondaires pour une ligne en particulier
+// Bar chart s'afficher uniquemment lorsque l'on clique sur une barre du graphique de gauche
 function display_causes(bar_count_causes, sources, data_causes, barChartHeight, barChartWidth, tip_v4)
 {
     // Trouver tous les rectangles du bar chart de gauche
