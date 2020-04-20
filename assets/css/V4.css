@@ -45,7 +45,7 @@
   
 
 /***** Tooltip *****/
-.d3-tip {
+#canvasV4 .d3-tip {
   line-height: -5;
   top: 50%;
   left: 100%;
@@ -58,7 +58,7 @@
   text-align: left;
 }
 
-.d3-tip:after {
+#canvasV4 .d3-tip:after {
   display: inline;
   top: 100%;
   left: 0;

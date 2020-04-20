@@ -14,20 +14,29 @@
     const map_height = 300;
 
 
-    var margin = {
+    var margin_map = {
         top: 50,
         right: 50,
         bottom: 50,
         left: 80
     };
 
+    var barChartMarginV2 = {
+        top: 40,
+        right: 40,
+        bottom: 40,
+        left: 60
+    };
+    var barChartWidthV2 = 400 - barChartMarginV2.left - barChartMarginV2.right;
+    var barChartHeightV2 = 250 - barChartMarginV2.top - barChartMarginV2.bottom;
+
     /***** Échelles utilisées *****/
 
-    var x_map = d3.scaleLinear().range([0, map_width]);
-    var y_map = d3.scaleLinear().range([0, map_height]);
+    var x_map = d3.scaleLinear().range([10, map_width]);
+    var y_map = d3.scaleLinear().range([10, map_height]);
 
     var color_station = d3.scaleLinear().range(["white", "red"]);
-    var pipe_scale = d3.scaleLinear().range([5, 30]);
+    var pipe_scale = d3.scaleLinear().range([2, 40]);
 
     /***** Chargement des données *****/
     var promises = [];
@@ -121,12 +130,11 @@
 
             /***** V2 *****/
             
-            var svg_v2 = d3.select("#canvasV2 svg")
-                .attr("width", map_width + margin.left + margin.right)
-                .attr("height", map_height + margin.top + margin.bottom);
-
-            var metro_map = svg_v2.append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            var metro_map = d3.select("#canvasV2 svg")
+                .attr("width", map_width + margin_map.left + margin_map.right)
+                .attr("height", map_height + margin_map.top + margin_map.bottom)
+                .attr("margin", d3.mean(margin_map))
+                .attr("pointer-events", "visible");
 
             var panel = d3.select("#panel")
                 .style("display", "block");
@@ -136,8 +144,27 @@
                     panel.style("display", "none");
             });
 
-            create_map(metro_map, data_stations, lines, x_map, y_map, color_station, pipe_scale, panel);
+            var data_by_lines = create_map(metro_map, data_stations, lines, x_map, y_map, color_station, pipe_scale, panel);
 
+            var selected_data = Object.keys(lines).map(line => {
+                return {name: line, stations:[]}});
+
+            var x_hour = d3.scaleBand().range([0,barChartWidthV2]);
+            x_hour.domain(d3.range(1, 25));
+            var y_hour = d3.scaleLinear().range([barChartHeightV2, 0]);
+
+            var xAxis = d3.axisBottom(x_hour).tickFormat( d => (`${d}h`));
+            var yAxis = d3.axisLeft(y_hour);
+
+            var day_graph_svg  = panel.select("#day_graph")
+                .attr("width", barChartWidthV2 + barChartMarginV2.left + barChartMarginV2.right)
+                .attr("height", barChartHeightV2 + barChartMarginV2.top + barChartMarginV2.bottom);
+            var day_graph = day_graph_svg.append("g")
+                .attr("transform", "translate(" + barChartMarginV2.left + "," + barChartMarginV2.top + ")");
+
+            create_barChart(day_graph, selected_data, x_hour, y_hour, xAxis, yAxis, barChartWidthV2, barChartHeightV2);
+
+            addSelectionToStations(metro_map, panel, data_stations, data_by_lines, selected_data, x_map, y_map, y_hour, yAxis, barChartHeightV2);
 
             /***** V3 *****/
             // Mettre la V3 dans l'élément SVG qui se nomme svg_v3

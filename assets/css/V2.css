@@ -1,14 +1,28 @@
 .station-lable {
     font-size: 50%;
 }
+g.station.selected {
+    fill: red;
+}
+
+g.station.unselected {
+    fill: black;
+}
 
 #canvasV2 {
     display: flex;
     flex-wrap: wrap;
+
+}
+
+#canvasV2 svg{
+    border: 1px solid #ccc !important;
+    border-radius: 16px;
+
 }
 
 #panel {
-    width: 35%;
+    /*width: 35%;*/
     float: right;
     text-align: left;
     padding: 10px;
@@ -57,7 +71,14 @@
     border-top: 1px solid #ccc;
 }
 
-.d3-tip {
+text.y.axis.legend {
+    font-size: 0.5em;
+}
+
+.tick text {
+    font-size: 0.7em;
+}
+#canvasV2 .d3-tip {
     line-height: 1;
     padding: 12px;
     border-radius: 2px;
@@ -66,7 +87,7 @@
     font-size: 0.8em;
 }
 
-.d3-tip:after {
+#canvasV2  .d3-tip:after {
     display: inline;
     top: 100%;
     left: 0;
@@ -79,4 +100,8 @@
     content: "\25BC";
     position: absolute;
     text-align: center;
+}
+
+.hidden {
+    display: none;
 }

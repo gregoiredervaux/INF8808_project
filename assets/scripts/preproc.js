@@ -78,7 +78,7 @@ function clean_data(pt_metro, incidents) {
         inci["Code de lieu"] = inci["Code de lieu"].normalize("NFD").replace(/[\u0300-\u036f\^\'\¨]/g, "")
         inci.debut = new Date(`${inci["Jour calendaire"]}T${inci["Heure de l'incident"]}`);
         inci.fin = new Date(`${inci["Jour calendaire"]}T${inci["Heure de reprise"]}`);
-        inci.time = (inci.fin - inci.debut)/60000
+        inci.time = (inci.fin - inci.debut)/60000;
         switch(inci["Ligne"]) {
             case "Ligne orange":
                 inci.line = "orange";
@@ -103,14 +103,12 @@ function clean_data(pt_metro, incidents) {
     var staked_station = [];
     pt_metro.forEach(st => {
         var neighbour = pt_metro.filter(st_test => st_test.name_id === st.name_id);
-        //console.log("neighbour", neighbour);
         if (!staked_station.includes(st.name_id) && neighbour.length > 1) {
-            //console.log("station multiples:", neighbour);
             staked_station.push(st.name_id);
             neighbour.forEach((st_neighbour, i) => {
 
-                st_neighbour.coordinates_map.cx += 8 * Math.cos(2 * Math.PI * i / neighbour.length );
-                st_neighbour.coordinates_map.cy += 8 * Math.sin(2 * Math.PI * i / neighbour.length );
+                st_neighbour.coordinates_map.cx += 10 * Math.cos(2 * Math.PI * i / neighbour.length );
+                st_neighbour.coordinates_map.cy += 10 * Math.sin(2 * Math.PI * i / neighbour.length );
             })
         }
     })
