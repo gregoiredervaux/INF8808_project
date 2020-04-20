@@ -167,14 +167,21 @@
             addSelectionToStations(metro_map, panel, data_stations, data_by_lines, selected_data, x_map, y_map, y_hour, yAxis, barChartHeightV2);
 
             /***** V3 *****/
-            // Mettre la V3 dans l'élément SVG qui se nomme svg_v3
-            
+
+            // Ajouter les boutons de sélection du scénario
+            var buttons = d3.select('#canvasV3')
+            .append('div')
+            .attr("transform", "translate(40, 10)");
+
+            // Définir les marges du graphique
             var margin = {
                 top: 40,
                 right: 40,
                 bottom: 40,
                 left: 60
             };
+
+            // Mettre la V3 dans l'élément SVG qui se nomme svg_v3
             var svg_v3 = d3.select('#canvasV3')
                            .append('svg')
                            .attr('width', map_width + margin.left + margin.right)
@@ -183,8 +190,8 @@
                            var metro_map_zoomed = svg_v3.append("g")
                            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
            
-                            create_map_zoomed(metro_map_zoomed, data_stations, lines, x_map, y_map);
-
+            // Création de la carte
+            create_map_zoomed(metro_map_zoomed, data_stations, lines, x_map, y_map, buttons, 0);
 
 
             /***** V4 *****/
