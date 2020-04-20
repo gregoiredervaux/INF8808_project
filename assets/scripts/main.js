@@ -169,6 +169,12 @@
             /***** V3 *****/
             // Mettre la V3 dans l'élément SVG qui se nomme svg_v3
             
+            var margin = {
+                top: 40,
+                right: 40,
+                bottom: 40,
+                left: 60
+            };
             var svg_v3 = d3.select('#canvasV3')
                            .append('svg')
                            .attr('width', map_width + margin.left + margin.right)
@@ -197,11 +203,16 @@
 
             var svg_v4 = d3.select('#canvasV4')
                            .append('svg')
-                           .attr("width", barChartWidth + barChartMargin.left + barChartMargin.right)
-                           .attr("height", barChartHeight + barChartMargin.top + barChartMargin.bottom);
+                           .attr("width", 2*(barChartWidth + barChartMargin.left + barChartMargin.right))
+                           .attr("height", 2*(barChartHeight + barChartMargin.top + barChartMargin.bottom));
 
             var bar_count = svg_v4.append("g")
-                                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                                .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                                .attr("id", "left_bar_chart");
+
+            var bar_count_causes = svg_v4.append("g")
+                                .attr("transform", "translate(" + (margin.left+barChartWidth+barChartMargin.left) + "," + margin.top + ")")
+                                .attr("id","right_bar_chart");
 
             /***Création de l'infobulle***/
             var tip_v4 = d3.tip()
@@ -213,6 +224,10 @@
 
             createAxes(bar_count, sources, data_freins, barChartHeight, barChartWidth);
             create_bar_count(bar_count, sources, data_freins, tip_v4, barChartHeight, barChartWidth);
+
+            display_causes(bar_count_causes, sources, data_freins, barChartHeight, barChartWidth, tip_v4);
+
+            
            
             
             /***** Création de l'infobulle *****/

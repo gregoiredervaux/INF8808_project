@@ -202,3 +202,27 @@ function showPanel(panel, stationId, data) {
         .text(`temps total d'arret sur l'année 2019: ${parseInt(station.total_stop_time)} minutes`);
 }
   
+
+
+function display_causes(bar_count_causes, sources, data_causes, barChartHeight, barChartWidth, tip_v4)
+{
+    // Trouver tous les rectangles du bar chart de gauche
+    var all_rects_left = d3.selectAll("#left_bar_chart").selectAll("rect");
+
+    // Lorsque l'on clique sur un rectangle du bar chart de gauche, le bar chart de droite apparait
+    all_rects_left.on("click", function()
+    {
+        createAxes(bar_count_causes, sources, data_causes, barChartHeight, barChartWidth);
+        create_bar_count(bar_count_causes, sources, data_causes, tip_v4, barChartHeight, barChartWidth);
+
+        // On trouve la couleur de la barre du chart de gauche sur laquelle on a cliqué
+        var color_clicked = d3.select(this).attr("fill"); 
+
+        // On applique cette couleur à toute les barres de droite
+        d3.selectAll("#right_bar_chart").selectAll("rect")
+                                        .attr("fill",color_clicked)
+                                        .attr("stroke", color_clicked);
+    }
+
+    );
+};
