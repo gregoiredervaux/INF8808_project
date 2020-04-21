@@ -13,11 +13,11 @@
 // Ajouter les incidents sur le trajet qui retardent le déplacement
 
 var trajets = [[["Sherbrooke", "Mont-Royal", "Laurier", "Rosemont", "Beaubien", "Jean Talon", "De Castelnau", "Parc", "Acadie", "Outremont", "Édouard-Montpetit", "Université de Montréal"],
-                [          0,            1,         1,          2,          1,            1,              8,      1,        2,           1,                   2,                        1]],
+                [          1,            1,         1,          2,          1,            1,              8,      1,        2,           1,                   2,                        1]],
                [["Sherbrooke", "Berri-UQAM", "Champs-de-Mars", "Place-d'Armes", "Square-Victoria", "Bonaventure", "Lucien L'Allier", "Georges-Vanier", "Lionel Groulx", "Charlevoix", "Lasalle"],
-                [          0,            1,               2,               1,                      1,             1,                 1,                2,               6,            2,         1]],
+                [          1,            1,               2,               1,                      1,             1,                 1,                2,               6,            2,         1]],
                [["Sherbrooke", "Berri-UQAM", "Saint-Laurent", "Place-Des-Arts", "McGill", "Peel", "Guy-Concordia", "Atwater", "Lionel Groulx", "Charlevoix", "Lasalle"],
-                [          0,            1,               6,                1,        1,      2,               1,         1,               2,            2,         1]]]
+                [          1,            1,               6,                1,        1,      2,               1,         1,               2,            2,         1]]]
 
 const multi_lines_stations = ["Lionel Groulx", "Snowdon", "Jean Talon", "Berri-UQAM"];
 
@@ -92,9 +92,10 @@ function create_map_v3(g, data, lines, x, y, buttons)
                     .attr("y1", y(cy1))
                     .attr("x2", x(cx1))
                     .attr("y2", y(cy1))
+                    .attr("name", station.name)
+                    .attr("nextName", c2.name)
                     .attr("stroke-width", 2)
                     .attr("stroke", "black")
-                    .attr("name", station.name)
                     .attr("class", "scenarioLine");
             }
 
@@ -117,6 +118,7 @@ function create_map_v3(g, data, lines, x, y, buttons)
         .enter()
         .append('button')
         .on('click', function(d, i) { init_scenario(i) })
+        //.on('click', function(d, i) { start_scenario(i) })
         .attr('type', 'button')
         .text(function(d, i) { return 'Scénario ' + (1+i) });
 
@@ -131,7 +133,7 @@ function create_map_v3(g, data, lines, x, y, buttons)
         var temps_scenario = trajets[scenario][1];
 
         // Mettre les stations du trajet opaques
-        line_conteneur.selectAll(".scenarioCircle").each(function(d,i) {
+        line_conteneur.selectAll(".scenarioCircle").each(function(d, i) {
             stations_scenario.forEach(station_trajet => {
                 if (d3.select(this).attr("name") === station_trajet)
                     d3.select(this).attr("fill-opacity", 1);
@@ -184,17 +186,63 @@ function create_map_v3(g, data, lines, x, y, buttons)
     } // function initScenario(num)
 
     // Démarre le scénario,
-    function startScenario(num)
+    function start_scenario(scenario)
     {
-        line_conteneur.selectAll(".scenarioLine").each(function(d,i) {
-            stations_scenario.forEach(station_trajet => {
-                //if (d3.select(this).attr("name") === station_trajet)
-                            //TODO: Progressivement augmenter x2 et y2 vers cx et cy, selon le temps assigné à cette station.
-                            //dynamic_line.x2 = 
-                            //dynamic_line.y2 = 
+        // Garder les stations et temps du trajet selon le scénario
+        var stations_scenario = trajets[scenario][0];
+        var temps_scenario = trajets[scenario][1];
 
-                            //TODO: Une fois fini, il faut recommencer pour la prochaine station, ainsi jusqu'au dernier
-                            //TODO: Faire bouger un personnage selon la progression
+        line_conteneur.selectAll(".scenarioLine").each(function(d, i) {
+            stations_scenario.forEach(station => {
+                if (d3.select(this).attr("name") === station) 
+                {
+                    //TODO: Progressivement augmenter x2 et y2 vers cx et cy, selon le temps assigné à cette station.
+                    var index = stations_scenario.indexOf(station);
+                    var deltaT = temps_scenario[index] * 60;
+                    var current_line = this;
+                    
+                    line_conteneur.selectAll(".scenarioLine").select(function(h) {
+                        if (d3.select(this).attr("name") === d3.select(current_line).attr("nextName"))
+                        {
+
+                            var direction_x = d3.select(this).attr("x1") - d3.select(current_line).attr("x1");
+                            var direction_y = d3.select(this).attr("y1") - d3.select(current_line).attr("y1");
+                            var direction_x_t = direction_x / deltaT;
+                            var direction_y_t = direction_y / deltaT;
+    
+                            var current_line_position_x;
+                            var current_line_position_y;
+                            var new_line_position_x;
+                            var new_line_position_y;
+                            console.log(d3.select(current_line).attr("x2") <= parseFloat(d3.select(this).attr("x1")) + 1);
+                            console.log(d3.select(current_line).attr("x2") >= parseFloat(d3.select(this).attr("x1")) - 1);
+                            console.log(d3.select(current_line).attr("y2") <= parseFloat(d3.select(this).attr("y1")) + 1);
+                            console.log(d3.select(current_line).attr("y2") >= parseFloat(d3.select(this).attr("y1")) - 1);
+                            console.log("----------");
+
+                            while ( !(d3.select(current_line).attr("x2") <= parseFloat(d3.select(this).attr("x1")) + 1 && 
+                                    d3.select(current_line).attr("x2") >= parseFloat(d3.select(this).attr("x1")) - 1 && 
+                                    d3.select(current_line).attr("y2") <= parseFloat(d3.select(this).attr("y1")) + 1 &&
+                                    d3.select(current_line).attr("y2") >= parseFloat(d3.select(this).attr("y1")) - 1))
+                            {
+                                console.log("entered");
+                                current_line_position_x = d3.select(current_line).attr("x2");
+                                current_line_position_y = d3.select(current_line).attr("y2");
+                                new_line_position_x = parseFloat(current_line_position_x) + parseFloat(direction_x_t);
+                                new_line_position_y = parseFloat(current_line_position_y) + parseFloat(direction_y_t);
+
+                                console.log(new_line_position_x);
+                                console.log(new_line_position_y);
+                                console.log("-----");
+
+                                d3.select(current_line).attr("x2", new_line_position_x);
+                                d3.select(current_line).attr("y2", new_line_position_y);
+                            }
+                        }
+                    });
+                    //TODO: Une fois fini, il faut recommencer pour la prochaine station, ainsi jusqu'au dernier
+                    //TODO: Faire bouger un personnage selon la progression
+                }
             });
         });
     } // function startScenario(num)
