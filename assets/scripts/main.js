@@ -196,8 +196,7 @@
                            .attr('width', map_width + margin.left + margin.right)
                            .attr('height', map_height + margin.top + margin.bottom);
 
-                           var metro_map_v3 = svg_v3.append("g")
-                           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                           var metro_map_v3 = svg_v3.append("g");
            
             // Création de la carte
             create_map_v3(metro_map_v3, data_stations, lines, x_map, y_map, buttons);
