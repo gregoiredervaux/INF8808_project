@@ -16,6 +16,15 @@ var trajets = [[["Sherbrooke", "Mont-Royal", "Laurier", "Rosemont", "Beaubien", 
                 [          0,            1,         1,          2,          1,            1,              8,      1,        2,           1,                   2,                        1]],
                [["Sherbrooke", "Berri-UQAM", "Champs-de-Mars", "Place-d'Armes", "Square-Victoria", "Bonaventure", "Lucien L'Allier", "Georges-Vanier", "Lionel Groulx", "Charlevoix", "Lasalle"],
                 [          0,            1,               2,               1,                      1,             1,                 1,                2,               6,            2,         1]],
+                // Scénarios temporaires de test, sauf le dernier
+               [["Honoré-Beaugrand", "Radisson"],
+                [0, 1]],
+               [["Côte-Vertu", "Du Collège"],
+                [0, 1]],
+                [["Beaudry", "Berri-UQAM", "Jean-Drapeau", "Longueuil"],
+                [0, 1, 2, 3]],
+               [["Plamondon", "Côte-Ste-Catherine", "Snowdon", "Côte-des-Neiges", "Université de Montréal"],
+                [0, 1, 2, 3, 4]],
                [["Sherbrooke", "Berri-UQAM", "Saint-Laurent", "Place-Des-Arts", "McGill", "Peel", "Guy-Concordia", "Atwater", "Lionel Groulx", "Charlevoix", "Lasalle"],
                 [          0,            1,               6,                1,        1,      2,               1,         1,               2,            2,         1]]]
 
@@ -123,8 +132,8 @@ function create_map_v3(g, data, lines, x, y, buttons)
     // Chargement du scénario
     function init_scenario(scenario)
     {
-        clearScenario();
-        // TODO remettre les boutons à non-clickés
+        // Remettre la carte à son état initial
+        clear_scenario();
 
         // Garder les stations et temps du trajet selon le scénario
         var stations_scenario = trajets[scenario][0];
@@ -181,6 +190,26 @@ function create_map_v3(g, data, lines, x, y, buttons)
                 }
             }); // line.stations.forEach(station =>
         }); // data_by_lines.forEach(line =>
+        
+        // Trouver le ratio de zoom en x et y
+        var scale_x = 600/(max_x-min_x);
+        var scale_y = 600/(max_y-min_y);
+
+        // Maximum scale selon les 2 axes et une valeur max
+        var scale = d3.min([scale_x - 0.5, scale_y- 0.5, 4]);
+
+        // Trouver le centre de la zone d'intérêt selon le scale
+        var x_mid = min_x + (max_x - min_x)/2;
+        var y_mid = min_y + (max_y - min_y)/2;
+
+        // Affecter les transformations de scale et translation
+        // TODO Note: Tout ceci est sans margin left et avec map width / 2 = 300 hardcodé
+        d3.select('#canvasV3')
+            .select('svg')
+            .select('g')
+            .transition()
+            .duration(2000)
+            .attr('transform', 'scale (' + scale + ') translate('+ ((300/scale)-x_mid) + ',' + ((300/scale)-y_mid) + ')');
     } // function initScenario(num)
 
     // Démarre le scénario,
@@ -200,8 +229,11 @@ function create_map_v3(g, data, lines, x, y, buttons)
     } // function startScenario(num)
 
     // Remise à neuf de la carte
-    function clearScenario()
+    function clear_scenario()
     {
+        // TODO remettre les boutons à non-clickés
+        // TODO Attention à ne pas faire en double ce qu'on fait dans init_scenario
+
         line_conteneur.selectAll(".scenarioCircle").each(function(d,i) {
             d3.select(this).attr("fill-opacity", 0.2);
         });
@@ -210,5 +242,5 @@ function create_map_v3(g, data, lines, x, y, buttons)
             d3.select(this).attr("x2", d3.select(this).attr("x1"));
             d3.select(this).attr("y2", d3.select(this).attr("y1"));
         });
-    } // function clearScenario()
+    } // function clear_scenario()
 } // function create_map_v3(g, data, lines, x, y)
