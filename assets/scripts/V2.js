@@ -138,7 +138,7 @@ function create_map(g, data, lines,  x, y, pipe, panel) {
             .attr("class", "end_circle")
             .attr("cx", d => x(d.coordinates_map.cx))
             .attr("cy", d => y(d.coordinates_map.cy))
-            .attr("r", d => pipe(d.total_stop_time / 2))
+            .attr("r", d => pipe(d.total_stop_time / 1.2))
             .attr("fill", color_value(data.name))
             .attr("fill-opacity", 1);
 

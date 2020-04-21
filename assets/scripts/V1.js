@@ -1,9 +1,9 @@
 
 function create_rectangles(svg_1)
 {
-    /*
+    /** 
     Fonction qui crée les 24 rectangles qui désigne les heures
-    svg_1 est l'élément SVG qui contient le piechart
+    @param svg_1: élément SVG qui contient le piechart
     La fonction ne retourne rien. Elle ne fait qu'afficher les rectangles
      */
 
@@ -70,11 +70,10 @@ function create_rectangles(svg_1)
 
 function create_absolut_display(dataset, svg_1)
 {
-    /*
+    /** 
     Fonction qui crée l'affichage du nombre absolut d'incidents dans l'intervalle sélectionné
-    dataset contient le nombre d'incidents dans l'intervalle et hors l'intervalle
-    dataset est la sortie de la fonction count_incidents
-    svg_1 est l'élément SVG qui contient la V1
+    @param dataset: contient le nombre d'incidents dans l'intervalle et hors l'intervalle. dataset est la sortie de la fonction count_incidents
+    @param svg_1: élément SVG qui contient la V1
     La fonction ne retourne rien
      */
 
@@ -114,9 +113,9 @@ function create_absolut_display(dataset, svg_1)
 
 function update_absolut_display(dataset)
 {
-    /*
+    /** 
     Fonction qui met à jour l'affichage du nombre absolut d'incidents
-    dataset est la sortie de count_incidents
+    @param dataset: est la sortie de count_incidents
     La fonction ne retourne rien
      */
 
@@ -134,12 +133,12 @@ function update_absolut_display(dataset)
 
 function select_rectangles(dataset, svg_1, radius)
 {
-    /*
+    /** 
     Fonction qui enregistre la nouvelle sélection de l'utilisateur
     Appel également les fonctions pour mettre à jour les affichages (piechart, pourcentage et nombre d'incidents)
-    dataset est la sortie de count_incidents
-    svg_1 est l'élément SVG contenant le piechart
-    radius est le rayon du piechart
+    @param dataset: est la sortie de count_incidents
+    @param svg_1: est l'élément SVG contenant le piechart
+    @param radius: est le rayon du piechart
     La fonction ne retourne rien
      */
 
@@ -276,10 +275,10 @@ function select_rectangles(dataset, svg_1, radius)
 
 function rush_hours(dataset, svg_1)
 {
-    /*
+    /** 
     Fonction qui ajoute l'affichage pour les heures de pointes
-    dataset est la liste de tous les incidents (chaque ligne est un incident et chaque colonne est un attribut, dont l'heure de début et de fin)
-    svg_1 est l'élément SVG contenant le piechart
+    @param dataset: est la liste de tous les incidents (chaque ligne est un incident et chaque colonne est un attribut, dont l'heure de début et de fin)
+    @param svg_1: est l'élément SVG contenant le piechart
     La fonction ne retourne rien
     */
 
@@ -334,11 +333,11 @@ function rush_hours(dataset, svg_1)
 
 function count_incidents(dataset, begin, end)
 {
-    /*
+    /** 
     Fonction qui détermine le nombre d'incidents dans l'intervalle sélectionné
-    dataset est les données tabulaire dont chaque ligne représente un incident
-    begin est un integer qui détermine le début de l'intervalle
-    end est un integer qui détermine la fin de l'intervalle
+    @param dataset: est les données tabulaire dont chaque ligne représente un incident
+    @param begin: est un integer qui détermine le début de l'intervalle
+    @param end: est un integer qui détermine la fin de l'intervalle
     La fonction retourne le résultat sous la forme [{'name':'nombre_incident_dans_intervalle', 'number':123},{'name':'nombre_incident_hors_intervalle','number':844}]
     */
 
@@ -376,11 +375,11 @@ function count_incidents(dataset, begin, end)
 
 function create_piechart(dataset, svg_1,radius)
 {
-    /*
+    /** 
     Fonction qui crée le premier piechart intial
-    dataset est la sortie de la fonction count_incidents
-    svg_1 est l'élément SVG qui contient le piechart
-    radius est le rayon du piechart
+    @param dataset: est la sortie de la fonction count_incidents
+    @param svg_1: est l'élément SVG qui contient le piechart
+    @param radius: est le rayon du piechart
     La fonction ne retourne rien
     */
 
@@ -453,10 +452,10 @@ function create_piechart(dataset, svg_1,radius)
 
 function update_piechart(dataset, radius)
 {
-        /*
+        /** 
         Fonction qui met à jour le piechart
-        dataset est la sortie de count_incidents
-        radius est le rayon du piechart
+        @param dataset: est la sortie de count_incidents
+        @param radius: est le rayon du piechart
         La fonction ne retourne rien
         */
         
