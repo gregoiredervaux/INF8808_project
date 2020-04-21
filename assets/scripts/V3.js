@@ -71,10 +71,12 @@ function create_map_v3(g, data, lines, x, y, buttons)
                 .attr("r", 5)
                 .attr("fill", line.name)
                 .attr("fill-opacity", 1) // TODO Changer pour un CSS
-                .attr("name", station.name);
+                .attr("name", station.name)
+                .attr("class", "scenarioCircle");
 
-            // Création des lignes entre stations, en gris
+            // Lignes entre les stations
             if (c2!==undefined) {
+                // Création des lignes statiques entre stations, en gris
                 line_conteneur.append("line")
                     .attr("x1", x(cx1))
                     .attr("y1", y(cy1))
@@ -82,7 +84,20 @@ function create_map_v3(g, data, lines, x, y, buttons)
                     .attr("y2", y(cy2))
                     .attr("stroke-width", 1)
                     .attr("stroke", "grey"); // TODO changer pour un CSS
+
+                // Création des lignes dynamiques qui montreront le déplacement
+                // De façon temporaire avec longueur de 0
+                line_conteneur.append("line")
+                    .attr("x1", x(cx1))
+                    .attr("y1", y(cy1))
+                    .attr("x2", x(cx1))
+                    .attr("y2", y(cy1))
+                    .attr("stroke-width", 2)
+                    .attr("stroke", "black")
+                    .attr("name", station.name)
+                    .attr("class", "scenarioLine");
             }
+
             // Création des noms de stations
             line_conteneur.append("text")
                 .attr("x", x(station.coordinates_map.cx) + 5)
@@ -93,39 +108,35 @@ function create_map_v3(g, data, lines, x, y, buttons)
         }); // line.stations.forEach(station =>
     }); // data_by_lines.forEach(line =>
 
+    // Création des boutons de façon dynamique
+    // TODO mettre des espaces entre les boutons avec CSS
+    // TODO mettre les boutons grisés quand ils sont clickés
     buttons
         .selectAll('button')
         .data(trajets)
         .enter()
         .append('button')
+        .on('click', function(d, i) { init_scenario(i) })
         .attr('type', 'button')
         .text(function(d, i) { return 'Scénario ' + (1+i) });
-
-    // TODO À assigner dans une fonction
-    // Assigne des functions aux boutons de scénarios
-    // var scenario_button_1 = document.getElementById("S1");
-    // var scenario_button_2 = document.getElementById("S2");
-    // var scenario_button_3 = document.getElementById("S3");
-    // if (scenario_button_1 != undefined) scenario_button_1.addEventListener("click", function(){initScenario(1);});
-    // if (scenario_button_2 != undefined) scenario_button_2.addEventListener("click", function(){initScenario(2);});
-    // if (scenario_button_3 != undefined) scenario_button_3.addEventListener("click", function(){initScenario(3);});
 
     // Chargement du scénario
     function init_scenario(scenario)
     {
         clearScenario();
-
-        // À voir
-        // line_conteneur.selectAll(".scenarioCircle").each(function(d,i) {
-        //     stations_scenario_1.forEach(station_trajet => {
-        //         if (d3.select(this).attr("name") === station_trajet)
-        //             d3.select(this).attr("fill-opacity", 1);
-        //     });
-        // });
+        // TODO remettre les boutons à non-clickés
 
         // Garder les stations et temps du trajet selon le scénario
         var stations_scenario = trajets[scenario][0];
         var temps_scenario = trajets[scenario][1];
+
+        // Mettre les stations du trajet opaques
+        line_conteneur.selectAll(".scenarioCircle").each(function(d,i) {
+            stations_scenario.forEach(station_trajet => {
+                if (d3.select(this).attr("name") === station_trajet)
+                    d3.select(this).attr("fill-opacity", 1);
+            });
+        });
 
         // Coordonnées minimum et maximum du zoom selon le scénario
         var min_x;
@@ -137,14 +148,14 @@ function create_map_v3(g, data, lines, x, y, buttons)
         var station_existe_dans_trajet;
 
         // Pour chaque lignes du métro
-        data_by_lines.forEach(line => {
-
+        data_by_lines.forEach(line =>
+        {
             // Pour chaque stations de la ligne 
-            line.stations.forEach(station => {
-
-                // Coordonnées de la station
-                var cx1 = station.coordinates_map.cx;
-                var cy1 = station.coordinates_map.cy;
+            line.stations.forEach(station =>
+            {
+                // Coordonnées ajustées de la station
+                var cx1 = x(station.coordinates_map.cx);
+                var cy1 = y(station.coordinates_map.cy);
 
                 // Initialiser à false la station recherchée
                 station_existe_dans_trajet = false;
@@ -168,29 +179,6 @@ function create_map_v3(g, data, lines, x, y, buttons)
                     max_x = Math.max(max_x, cx1);
                     max_y = Math.max(max_y, cy1);
                 }
-
-                console.log(min_x);
-
-                // Modification des points de stations
-                // line_conteneur.append("circle")
-                // .attr("cx", x(cx1))
-                // .attr("cy", y(cy1))
-                // .attr("r", 5)
-                // .attr("fill", line.name)
-                // .attr("fill-opacity", 0.2)
-                // .attr("name", station.name)
-                // .attr("class", station_existe_dans_trajet ? "scenarioCircle" : "");
-
-                // //Dynamique
-                // line_conteneur.append("line")
-                // .attr("x1", x(cx1))
-                // .attr("y1", y(cy1))
-                // .attr("x2", x(cx1))
-                // .attr("y2", y(cy1))
-                // .attr("stroke-width", 1)
-                // .attr("stroke", "black")
-                // .attr("name", station.name)
-                // .attr("class", station_existe_dans_trajet ? "scenarioLine" : "");
             }); // line.stations.forEach(station =>
         }); // data_by_lines.forEach(line =>
     } // function initScenario(num)

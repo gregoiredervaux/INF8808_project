@@ -179,10 +179,10 @@
             /***** V3 *****/
             // Définir les marges du graphique
             var margin = {
-                top: 40,
-                right: 40,
-                bottom: 40,
-                left: 60
+                top: 0,
+                right: 100,
+                bottom: 20,
+                left: 0
             };
 
             // Ajouter les boutons de sélection du scénario
