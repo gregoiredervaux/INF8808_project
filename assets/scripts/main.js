@@ -167,12 +167,6 @@
             addSelectionToStations(metro_map, panel, data_stations, data_by_lines, selected_data, x_map, y_map, y_hour, yAxis, barChartHeightV2);
 
             /***** V3 *****/
-
-            // Ajouter les boutons de sélection du scénario
-            var buttons = d3.select('#canvasV3')
-            .append('div')
-            .attr("transform", "translate(40, 10)");
-
             // Définir les marges du graphique
             var margin = {
                 top: 40,
@@ -191,7 +185,7 @@
                            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
            
             // Création de la carte
-            create_map_zoomed(metro_map_zoomed, data_stations, lines, x_map, y_map, buttons, 0);
+            create_map_zoomed(metro_map_zoomed, data_stations, lines, x_map, y_map, 0);
 
 
             /***** V4 *****/
