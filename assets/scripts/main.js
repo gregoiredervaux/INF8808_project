@@ -185,17 +185,22 @@
                 left: 60
             };
 
+            // Ajouter les boutons de sélection du scénario
+            var buttons = d3.select('#canvasV3')
+                .append('div')
+                .attr('id', 'buttons');
+
             // Mettre la V3 dans l'élément SVG qui se nomme svg_v3
             var svg_v3 = d3.select('#canvasV3')
                            .append('svg')
                            .attr('width', map_width + margin.left + margin.right)
                            .attr('height', map_height + margin.top + margin.bottom);
 
-                           var metro_map_zoomed = svg_v3.append("g")
+                           var metro_map_v3 = svg_v3.append("g")
                            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
            
             // Création de la carte
-            create_map_zoomed(metro_map_zoomed, data_stations, lines, x_map, y_map, 0);
+            create_map_v3(metro_map_v3, data_stations, lines, x_map, y_map, buttons);
 
 
             /***** V4 *****/
