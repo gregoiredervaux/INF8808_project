@@ -21,6 +21,11 @@ g.station.unselected {
 
 }
 
+p.description{
+    text-align: left;
+    padding-left: 20px;
+}
+
 #panel {
     /*width: 35%;*/
     float: right;

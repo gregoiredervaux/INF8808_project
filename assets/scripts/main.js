@@ -10,8 +10,8 @@
 
     const double_lines_st = ["Lionel-Groulx", "Snowdon", "Jean-Talon"];
     const triple_line_st = ["Berri-Uqam"];
-    const map_width = 400;
-    const map_height = 400;
+    const map_width = 600;
+    const map_height = 600;
 
 
     var margin_map = {
@@ -27,8 +27,8 @@
         bottom: 40,
         left: 60
     };
-    var barChartWidthV2 = 350 - barChartMarginV2.left - barChartMarginV2.right;
-    var barChartHeightV2 = 250 - barChartMarginV2.top - barChartMarginV2.bottom;
+    var barChartWidthV2 = 500 - barChartMarginV2.left - barChartMarginV2.right;
+    var barChartHeightV2 = 350 - barChartMarginV2.top - barChartMarginV2.bottom;
 
     /***** Échelles utilisées *****/
 
