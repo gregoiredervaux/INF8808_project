@@ -5,34 +5,45 @@
  */
 
 
-/**
- * Précise le domaine et la plage de couleurs pour l'échelle qui est utilisées pour distinguer les lignes de métro.
- *
- * @param pt_metro  Les données des stations de métro.
- * @param scale_x   echelle des abscisses
- * @param scale_y   echelle des ordonnées
- */
+
 function scale_from_GPS(pt_metro, scale_x, scale_y) {
+
+    /**
+     * Précise le domaine de l'échelle qui est utilisées pour positionner les stations de métro.
+     *
+     * @param pt_metro  Les données des stations de métro.
+     * @param scale_x   echelle des abscisses
+     * @param scale_y   echelle des ordonnées
+     */
 
     scale_x.domain([d3.min(pt_metro, row => row.coordinates_map.cx), d3.max(pt_metro, row => row.coordinates_map.cx)]);
     scale_y.domain([d3.min(pt_metro, row => row.coordinates_map.cy), d3.max(pt_metro, row => (row.coordinates_map.cy))]);
-
-    // console.log(scale_y.domain());
-    // console.log(scale_x.domain());
 }
 
 function scale_incidents(data, color, pipe) {
 
+    /**
+     * Précise le domaine et la plage de couleurs utilisée pour afficher le temps total d'arrets des
+     * stations de métro.
+     *
+     * @param data: Les données des stations de métro.
+     * @param color: echelle des couleurs (plus utilisé dans la version finale)
+     * @param pipe: echelle des aires en fonction du temp total d'arret sur l'année pour chaque station
+     */
+
     var min = 0;
-    // var min = d3.min(data , station => d3.sum(station.incidents, inci =>  inci.time));
     var max = d3.max(data , station => d3.sum(station.incidents, inci =>  inci.time));
 
     color.domain([min , max]);
     pipe.domain([min, max]);
-    //console.log("color and pipe", pipe.domain());
 }
 
 function color_value(couleur) {
+    /**
+     * traduit les couleurs en hex
+     *
+     * @param couleur: str de la couleur: "green, orange, blue, ou yellow"
+     */
 
     switch(couleur) {
         case "green":
@@ -50,6 +61,12 @@ function color_value(couleur) {
 
 function frenchLine(line) {
 
+    /**
+     * traduit les couleurs en francais
+     *
+     * @param couleur: str de la couleur: "green, orange, blue, ou yellow"
+     */
+
     switch(line) {
         case "green":
             return "verte";
@@ -66,6 +83,13 @@ function frenchLine(line) {
 
 function normalize_str(strg) {
 
+    /**
+     * normalise un chaine de caractère (retire les caractères spéciaux et accents)
+     * @param   strg: chaine de caractère a traiter
+     *
+     * @return la même chaine de caractère normalisée
+     */
+
     return strg.normalize("NFD").replace(/[\u0300-\u036f\^\'\¨]/g, "")
         .replace(/[-_]/g, " ")
         .replace(/St/ig, "Saint");
@@ -73,12 +97,26 @@ function normalize_str(strg) {
 
 function clean_data(pt_metro, incidents) {
 
+    /**
+     * Nettoie chaque donnée de station
+     *
+     * @param pt_metro: liste des stations de métro tirées de google maps
+     * @param incidents: données des incidents de stations
+     */
+
     incidents.forEach(inci => {
+        // on normalise les noms des stations
         inci["Code de lieu"] = normalize_str(inci["Code de lieu"]);
-        inci["Code de lieu"] = inci["Code de lieu"].normalize("NFD").replace(/[\u0300-\u036f\^\'\¨]/g, "")
+        inci["Code de lieu"] = inci["Code de lieu"].normalize("NFD").replace(/[\u0300-\u036f\^\'\¨]/g, "");
+
+        // on convertie les dates en objet Date
         inci.debut = new Date(`${inci["Jour calendaire"]}T${inci["Heure de l'incident"]}`);
         inci.fin = new Date(`${inci["Jour calendaire"]}T${inci["Heure de reprise"]}`);
+
+        // on calcule la durée de chaque incident et on l'ajoute aux données des incidents
         inci.time = (inci.fin - inci.debut)/60000;
+
+        // on traduite les ligne de francais à anglais pour simplifier le traitement et l'affichage
         switch(inci["Ligne"]) {
             case "Ligne orange":
                 inci.line = "orange";
@@ -94,12 +132,13 @@ function clean_data(pt_metro, incidents) {
                 break;
         }
     });
-
+    // on normalise le nom des stations de métro tirées de google maps
     pt_metro.forEach(st => {
         st.name_id = normalize_str(st.name);
         st.name_id = st.name_id.normalize("NFD").replace(/[\u0300-\u036f\^\'\¨]/g, "")
     });
 
+    // on gère la positon des stations communes à 2 ou 3 lignes, et décale leurs positions pour former un cercle.
     var staked_station = [];
     pt_metro.forEach(st => {
         var neighbour = pt_metro.filter(st_test => st_test.name_id === st.name_id);
@@ -118,17 +157,15 @@ function clean_data(pt_metro, incidents) {
 
 
 function data_per_station(pt_metro, incidents) {
-    var list_station_incidents = d3.set(incidents.map(incidents => incidents["Code de lieu"])).values().sort();
-    var list_station_metro = d3.set(pt_metro.map(pt_metro => pt_metro.name_id)).values().sort();
 
-    //console.log("liste station incidents", list_station_incidents);
-    //console.log("liste station metro", list_station_metro);
-
-    let common = list_station_incidents.filter(x =>  pt_metro.find(stations => new RegExp(stations.name_id, "i").test(x)));
-    let difference = list_station_incidents.filter(x =>  pt_metro.every(stations => !new RegExp(stations.name_id, "i").test(x)));
-
-    //console.log("commun:", common);
-    //console.log("différent", difference);
+    /**
+     * Ajoute chaque incident aux données de sa station correspondante
+     *
+     * @param pt_metro: liste des stations de métro tirées de google maps
+     * @param incidents: données des incidents de stations
+     *
+     * @return: données des stations fusionnées au incidents
+     */
 
     return pt_metro.map(row => {
         return {
@@ -138,11 +175,14 @@ function data_per_station(pt_metro, incidents) {
             coordinates_map: row.coordinates_map,
             line: row.line,
             populartimes: row.populartimes,
+            // on utilise un expression régulière pour selectionner les stations correspondantes aux incidents
             incidents: incidents.filter(incident => new RegExp(row.name_id, "i").test(incident["Code de lieu"]) &&
                 row.line === incident.line)
         }
     }).map(station => {
+        // On gère les incidents qui ont lieux entre deux stations
         station.incidents.forEach(inci => {if(inci["Code de lieu"].includes("/")){inci.time /= 2}});
+        // Une fois que tout les incidents sont classés, on peut calculer facilement le temps total d'arret pour l'année
         station.total_stop_time = d3.sum(station.incidents, inci => inci.time);
         return station
     })
