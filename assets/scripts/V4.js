@@ -191,7 +191,20 @@ function create_bar_cause(g, d, sources, height, width){
 
         console.log("test x", d3.set(sources.filter(k=>k.ligne === d.ligne).map(row=>row.stations.map(k=>k.incidents.map(c=>c.cause))).flat(2)).values());
         console.log("test y", d3.sum(sources.filter(k=>k.ligne === d.ligne).map(row=>row.stations.map(k=>k.incidents.filter(c=>c.cause==="Nuisance involontaire").map(c=>c.count))).flat(2)));
-        
+    
+    // On retire toutes les barres ************* Addition d'Étienne ***********************
+    // Un peu rough considérant que ca ne fait pas de transition. 
+    // Pour un transition, voir la V2 de greg (ctrl-f pour transition)
+    // Cependant, pour faire des transitions, il faudrait que l'axe en x soit fixe
+    // C'est à dire, que l'on présente toujours les mêmes trois causes par exemple
+    // Ainsi, même si un cause est à zéro pour une ligne, elle serait affiché et la barre grandit ou rétrécit lorsque l'on clique
+    
+    // Ce qui honnetement je trouve serait mieux
+    // En ne gardant que méfait volontaire, nuisance involontaire, blessé ou malade
+    // Mais live c'est good enough. Si tu as encore du temps, c'est plutôt sur le temps total vs nombre de panne qui serait intéressant de faire
+    g.selectAll("rect").remove().exit();
+
+    // On ajoute toutes les barres    
     g.selectAll("rect")
       .data(sources_right)
       .enter()
@@ -203,8 +216,12 @@ function create_bar_cause(g, d, sources, height, width){
       //.attr("fill-opacity", 0.7)
       //.attr("stroke", d => color_value(d.ligne))
       //.attr("stroke-width", 2.5);
-      
-    g.selectAll(".text")        
+    
+    // On retire tout le texte du bar chart (sur l'axe et les chiffres au dessus)
+    g.selectAll("text").text("");
+
+    // On remet les nouveaux chiffres au desuss
+    g.selectAll("label")        
       .data(sources_right)
       .enter()
       .append("text")
@@ -213,6 +230,13 @@ function create_bar_cause(g, d, sources, height, width){
       .attr("y", c => y(c.count)-20)
       .attr("dy", ".75em")
       .text(c => c.count);
+
+    // On remet les noms de causes sur l'axe
+    createAxes(g, d, sources, height, width);
+
+
+
+      
 }
   
 function createAxes(g, d, sources, height, width) {
