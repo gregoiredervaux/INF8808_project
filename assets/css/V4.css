@@ -72,3 +72,12 @@
   position: absolute;
   text-align: center;
 }
+
+/****Hover rectangle****/
+rect {
+  fill-opacity: 0.7;
+}
+
+rect:hover {
+  fill-opacity: 1;
+}

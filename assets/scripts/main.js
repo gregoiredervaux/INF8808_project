@@ -209,6 +209,14 @@
             /***** V4 *****/
             // Mettre la V4 dans l'élément SVG qui se nomme svg_v4
 
+            // Définir les marges du graphique
+            var margin_v4 = {
+                 top: 25,
+                 right: 50,
+                 bottom: 50,
+                 left: 0
+                        };
+
             /***** Configuration *****/
             var barChartMargin = {
                 top: 50,
@@ -228,11 +236,11 @@
                            .attr("height", (barChartHeight + barChartMargin.top + barChartMargin.bottom));
 
             var bar_count = svg_v4.append("g")
-                                .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                                .attr("transform", "translate(" + margin_v4.left + "," + margin_v4.top + ")")
                                 .attr("id", "left_bar_chart");
 
             var bar_count_causes = svg_v4.append("g")
-                                .attr("transform", "translate(" + (margin.left+barChartWidth+barChartMargin.left) + "," + margin.top + ")")
+                                .attr("transform", "translate(" + (margin_v4.left+barChartWidth+barChartMargin.left) + "," + margin_v4.top + ")")
                                 .attr("id","right_bar_chart");
 
             /***Création de l'infobulle***/
@@ -241,10 +249,10 @@
                 .offset([-10, 0]);
 
             /***** Création du graphique à barres *****/
-            create_bar_count(bar_count, sources, data_freins, tip_v4, barChartHeight, barChartWidth);
+            create_bar_count(bar_count, sources, tip_v4, barChartHeight, barChartWidth);
 
             // Fonction que lorsque l'on clique sur une barre à gauche, fait apparaitre un bar chart à droite
-            display_causes(bar_count_causes, sources, data_freins, barChartHeight, barChartWidth, tip_v4);
+            display_causes(bar_count_causes, sources, barChartHeight, barChartWidth);
 
             
             /***** Création de l'infobulle *****/
