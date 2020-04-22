@@ -13,25 +13,38 @@
 // Ajouter les incidents sur le trajet qui retardent le déplacement
 
 var trajets = [[["Sherbrooke", "Mont-Royal", "Laurier", "Rosemont", "Beaubien", "Jean Talon", "De Castelnau", "Parc", "Acadie", "Outremont", "Édouard-Montpetit", "Université de Montréal"],
-                [          0,            1,         1,          2,          1,            1,              8,      1,        2,           1,                   2,                        1]],
-               [["Sherbrooke", "Berri-UQAM", "Champs-de-Mars", "Place-d'Armes", "Square-Victoria", "Bonaventure", "Lucien L'Allier", "Georges-Vanier", "Lionel Groulx", "Charlevoix", "Lasalle"],
-                [          0,            1,               2,               1,                      1,             1,                 1,                2,               6,            2,         1]],
+                [          0,            1,         1,          2,          1,            1,              8,      1,        2,           1,                   2,                        1],
+                [          0,            2,         2,          1,          3,            1,              4,      3,        2,           1,                   2,                        1]],
+                [["Sherbrooke", "Berri-UQAM", "Champs-de-Mars", "Place-d'Armes", "Square-Victoria", "Bonaventure", "Lucien L'Allier", "Georges-Vanier", "Lionel Groulx", "Charlevoix", "Lasalle"],
+                [          0,            1,               2,               1,                      1,             1,                 1,                2,               6,            2,         1],
+                [          0,            3,               1,               2,                      2,             3,                 1,                1,               4,            2,         1]],
                 // Scénarios temporaires de test, sauf le dernier
                [["Honoré-Beaugrand", "Radisson"],
-                [0, 1]],
+                [0, 1],
+                [0, 2]],
                [["Côte-Vertu", "Du Collège"],
-                [0, 1]],
-                [["Beaudry", "Berri-UQAM", "Jean-Drapeau", "Longueuil"],
-                [0, 1, 2, 3]],
+                [0, 1],
+                [0, 2]],
+               [["Beaudry", "Berri-UQAM", "Jean-Drapeau", "Longueuil"],
+                [0, 1, 2, 3],
+                [0, 2, 3, 2]],
                [["Plamondon", "Côte-Ste-Catherine", "Snowdon", "Côte-des-Neiges", "Université de Montréal"],
-                [0, 1, 2, 3, 4]],
+                [0, 1, 2, 3, 4],
+                [0, 1, 3, 1, 5]],
                [["Sherbrooke", "Berri-UQAM", "Saint-Laurent", "Place-Des-Arts", "McGill", "Peel", "Guy-Concordia", "Atwater", "Lionel Groulx", "Charlevoix", "Lasalle"],
-                [          0,            1,               6,                1,        1,      2,               1,         1,               2,            2,         1]]]
+                [          0,            1,               6,                1,        1,      2,               1,         1,               2,            2,         1],
+                [          0,            2,               3,                2,        1,      3,               1,         3,               1,            1,         1]]]
+
+var time = ["8:00 AM", "5:00 PM"]
 
 const multi_lines_stations = ["Lionel Groulx", "Snowdon", "Jean Talon", "Berri-UQAM"];
+var is_multi_line = false;
+var is_multi_line_init = false;
+
+var current_scenario = -1;
 
 // Création d'une carte complète du métro
-function create_map_v3(g, data, lines, x, y, buttons)
+function create_map_v3(g, data, lines, x, y, scenario_buttons, time_buttons)
 {
     var data_by_lines = Object.keys(lines).map(line => {
         return {name: line, stations: lines[line].map(pt_station => {
@@ -73,17 +86,34 @@ function create_map_v3(g, data, lines, x, y, buttons)
                 var cy2 = c2.coordinates_map.cy;
             }
 
-            // Création des points de stations, opaques
-            line_conteneur.append("circle")
+            //Vérifie si une instance de station à multiple ligne est déjà créé ou non
+            is_multi_line = multi_lines_stations.includes(station.name);
+            is_multi_line_init = false;
+
+            if(is_multi_line)
+                is_multi_line_init = !line_conteneur.selectAll(".scenarioCircle").select(function(h, j) {return d3.select(this).attr("name") === station.name}).empty();
+
+            if(!is_multi_line_init)
+            {
+                // Création des points de stations, opaques
+                line_conteneur.append("circle")
                 .attr("cx", x(cx1))
                 .attr("cy", y(cy1))
                 .attr("r", 5)
-                .attr("fill", line.name)
+                .attr("fill", is_multi_line ? "black" : line.name)
                 .attr("fill-opacity", 1) // TODO Changer pour un CSS
                 .attr("name", station.name)
                 .attr("class", "scenarioCircle");
 
-            // Lignes entre les stations
+                // Création des noms de stations
+                line_conteneur.append("text")
+                .attr("x", x(station.coordinates_map.cx) + 5)
+                .attr("y", y(station.coordinates_map.cy))
+                .attr("font-size", "10px")
+                .attr("font-family", "Arial") // TODO Changer pour un CSS
+                .text(station.name);
+            }
+
             if (c2!==undefined) {
                 // Création des lignes statiques entre stations, en gris
                 line_conteneur.append("line")
@@ -93,49 +123,54 @@ function create_map_v3(g, data, lines, x, y, buttons)
                     .attr("y2", y(cy2))
                     .attr("stroke-width", 1)
                     .attr("stroke", "grey"); // TODO changer pour un CSS
+            }
 
-                // Création des lignes dynamiques qui montreront le déplacement
-                // De façon temporaire avec longueur de 0
+            // Création des lignes dynamiques qui montreront le déplacement
+            // De façon temporaire avec longueur de 0
+            if (!is_multi_line_init)
+            {
                 line_conteneur.append("line")
                     .attr("x1", x(cx1))
                     .attr("y1", y(cy1))
                     .attr("x2", x(cx1))
                     .attr("y2", y(cy1))
                     .attr("name", station.name)
-                    .attr("nextName", c2.name)
                     .attr("stroke-width", 2)
                     .attr("stroke", "black")
                     .attr("class", "scenarioLine");
             }
-
-            // Création des noms de stations
-            line_conteneur.append("text")
-                .attr("x", x(station.coordinates_map.cx) + 5)
-                .attr("y", y(station.coordinates_map.cy))
-                .attr("font-size", "10px")
-                .attr("font-family", "Arial") // TODO Changer pour un CSS
-                .text(station.name);
         }); // line.stations.forEach(station =>
     }); // data_by_lines.forEach(line =>
 
     // Création des boutons de façon dynamique
     // TODO mettre des espaces entre les boutons avec CSS
     // TODO mettre les boutons grisés quand ils sont clickés
-    buttons
+    scenario_buttons
         .selectAll('button')
         .data(trajets)
         .enter()
         .append('button')
-        .on('click', function(d, i) { init_scenario(i) })
-        .on('click', function(d, i) { start_scenario(i) })
+        .on('click', function(d, i) { init_scenario(i); })
         .attr('type', 'button')
         .text(function(d, i) { return 'Scénario ' + (1+i) });
+
+    time_buttons
+        .selectAll('button')
+        .data(time)
+        .enter()
+        .append('button')
+        .on('click', function(d, i) { start_scenario(i, current_scenario) })
+        .attr('type', 'button')
+        .text(function(d, i) { return time[i] });
 
     // Chargement du scénario
     function init_scenario(scenario)
     {
         // Remettre la carte à son état initial
         clear_scenario();
+
+        //Prends en note le scénario choisi
+        current_scenario = scenario;
 
         // Garder les stations et temps du trajet selon le scénario
         var stations_scenario = trajets[scenario][0];
@@ -215,48 +250,59 @@ function create_map_v3(g, data, lines, x, y, buttons)
     } // function initScenario(num)
 
     // Démarre le scénario,
-    function start_scenario(scenario)
+    function start_scenario(time, scenario)
     {
+        //Ne pas commencer s'il n'y a pas de scénarios choisis
+        if (scenario === -1) return;
+
+        // Remettre la carte à son état initial
+        clear_lines();
+
         // Garder les stations et temps du trajet selon le scénario
         var stations_scenario = trajets[scenario][0];
-        var temps_scenario = trajets[scenario][1];
+        var all_current_lines = [];
+        var all_next_lines = [];
 
-        line_conteneur.selectAll(".scenarioLine").each(function(d, i) {
-            stations_scenario.forEach(station => {
-                if (d3.select(this).attr("name") === station) 
-                {
-                    //TODO: Progressivement augmenter x2 et y2 vers cx et cy, selon le temps assigné à cette station.
-                    var index = stations_scenario.indexOf(station);
-                    var deltaT = temps_scenario[index + 1] * 1000;
-                    var current_line = this;
-                    
-                    line_conteneur.selectAll(".scenarioLine").select(function(h) {
-                        if (d3.select(this).attr("name") === d3.select(current_line).attr("nextName"))
-                        {
+        stations_scenario.forEach(function(d, i) {
+            var current_line = line_conteneur.selectAll(".scenarioLine").select(function(h, j) { if (d3.select(this).attr("name") === stations_scenario[i]){ return this}});
+            var next_line = line_conteneur.selectAll(".scenarioLine").select(function(h, j) { if (d3.select(this).attr("name") === stations_scenario[i + 1]){ return this}});
 
-                            var direction_x = d3.select(this).attr("x1") - d3.select(current_line).attr("x1");
-                            var direction_y = d3.select(this).attr("y1") - d3.select(current_line).attr("y1");
-                            var direction_x_t = direction_x / deltaT;
-                            var direction_y_t = direction_y / deltaT;
-    
-                            var current_line_position_x;
-                            var current_line_position_y;
-                            var new_line_position_x;
-                            var new_line_position_y;
-
-                            d3.select(current_line)
-                                .transition()
-                                .duration(deltaT)
-                                .attr("x2", parseFloat(d3.select(this).attr("x1")))
-                                .attr("y2", parseFloat(d3.select(this).attr("y1")))
-                        }
-                    });
-                    //TODO: Une fois fini, il faut recommencer pour la prochaine station, ainsi jusqu'au dernier
-                    //TODO: Faire bouger un personnage selon la progression
-                }
-            });
+            all_current_lines.push(current_line);
+            all_next_lines.push(next_line);
         });
-    } // function startScenario(num)
+
+        apply_line_transition(time, scenario, all_current_lines, all_next_lines, 0);
+    }
+
+    function apply_line_transition(time, scenario, all_current_lines, all_next_lines, index)
+    {
+        // Garder les stations et temps du trajet selon le scénario
+        console.log(scenario);
+        var stations_scenario = trajets[scenario][0];
+        var temps_scenario = trajets[scenario][time + 1];
+
+        if (index < all_next_lines.length - 1)
+        {
+            var transition_line = all_current_lines.find( line => line.attr("name") === stations_scenario[index]);
+            //console.log(transition_line);
+            //console.log("trying " + stations_scenario[index]);
+            //console.log("to " + all_next_lines[index].attr("name"));
+    
+            if(transition_line != undefined)
+            {
+                var deltaT = temps_scenario[index + 1] * 1000;
+                //console.log(index + " out of " + stations_scenario.length);
+    
+                transition_line
+                    .transition()
+                    .duration(deltaT)
+                    .attr("x2", parseFloat(all_next_lines[index].attr("x1")))
+                    .attr("y2", parseFloat(all_next_lines[index].attr("y1")))
+                    .on("end", function(){index++; apply_line_transition(time, scenario, all_current_lines, all_next_lines, index) });
+            }
+
+        }
+    }
 
     // Remise à neuf de la carte
     function clear_scenario()
@@ -268,9 +314,15 @@ function create_map_v3(g, data, lines, x, y, buttons)
             d3.select(this).attr("fill-opacity", 0.2);
         });
 
+        clear_lines();
+    }
+
+    function clear_lines()
+    {
         line_conteneur.selectAll(".scenarioLine").each(function(d,i) {
-            d3.select(this).attr("x2", d3.select(this).attr("x1"));
-            d3.select(this).attr("y2", d3.select(this).attr("y1"));
+            d3.select(this).attr("x2", parseFloat(d3.select(this).attr("x1")));
+            d3.select(this).attr("y2", parseFloat(d3.select(this).attr("y1")));
+            d3.select(this).interrupt();
         });
-    } // function clear_scenario()
-} // function create_map_v3(g, data, lines, x, y)
+    }
+}

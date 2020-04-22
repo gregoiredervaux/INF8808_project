@@ -186,7 +186,11 @@
             };
 
             // Ajouter les boutons de sélection du scénario
-            var buttons = d3.select('#canvasV3')
+            var scenario_buttons = d3.select('#canvasV3')
+                .append('div')
+                .attr('id', 'buttons');
+
+            var time_buttons = d3.select('#canvasV3')
                 .append('div')
                 .attr('id', 'buttons');
 
@@ -199,7 +203,7 @@
                            var metro_map_v3 = svg_v3.append("g");
            
             // Création de la carte
-            create_map_v3(metro_map_v3, data_stations, lines, x_map, y_map, buttons);
+            create_map_v3(metro_map_v3, data_stations, lines, x_map, y_map, scenario_buttons, time_buttons);
 
 
             /***** V4 *****/
