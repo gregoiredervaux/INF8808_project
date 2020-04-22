@@ -1,15 +1,15 @@
 // Temps moyen d'un trajet en semaine de A à B à différentes heures
 
 // TODO
-// Créer des boutons pour la sélection des scénarios selon le nombre de trajets
-// Rappeler l'animation de zoom de la carte et reset des données selon click de bouton
+// X Créer des boutons pour la sélection des scénarios selon le nombre de trajets
+// X Rappeler l'animation de zoom de la carte et reset des données selon click de bouton
 // X Créer une liste ordonnée des stations à parcourir avec le temps de déplacement entre
 // X Toutes les stations sont un rond de la couleur de la ligne sauf noir pour double ou Berri-UQAM
 // X Créer une ligne reliant chacune des stations en gris
-// Zoom de la carte pour que toutes les stations de l'itinéraire soient visibles
+// X Zoom de la carte pour que toutes les stations de l'itinéraire soient visibles
 // X Mettre toutes les stations et tunnels non-utilisés en opacité faible
-// Animer le trajet d'une personne en changeant la couleur de sa ligne en noir (1 minute = 1 seconde?)
-// Avoir une sélection de l'heure de départ
+// X Animer le trajet d'une personne en changeant la couleur de sa ligne en noir (1 minute = 1 seconde?)
+// X Avoir une sélection de l'heure de départ
 // Ajouter les incidents sur le trajet qui retardent le déplacement
 
 var trajets = [[["Sherbrooke", "Mont-Royal", "Laurier", "Rosemont", "Beaubien", "Jean Talon", "De Castelnau", "Parc", "Acadie", "Outremont", "Édouard-Montpetit", "Université de Montréal"],
@@ -44,7 +44,7 @@ var is_multi_line_init = false;
 var current_scenario = -1;
 
 // Création d'une carte complète du métro
-function create_map_v3(g, data, lines, x, y, scenario_buttons, time_buttons)
+function create_map_v3(g, data, lines, x, y, button_panel, time_panel)
 {
     var data_by_lines = Object.keys(lines).map(line => {
         return {name: line, stations: lines[line].map(pt_station => {
@@ -143,18 +143,18 @@ function create_map_v3(g, data, lines, x, y, scenario_buttons, time_buttons)
     }); // data_by_lines.forEach(line =>
 
     // Création des boutons de façon dynamique
-    // TODO mettre des espaces entre les boutons avec CSS
-    // TODO mettre les boutons grisés quand ils sont clickés
-    scenario_buttons
+    button_panel
         .selectAll('button')
         .data(trajets)
         .enter()
         .append('button')
-        .on('click', function(d, i) { init_scenario(i); })
         .attr('type', 'button')
+        .attr('style', 'margin: 4px')
+        .attr('id', function(d, i) { return 'scenario_' + i })
+        .on('click', function(d, i) { init_scenario(i); })
         .text(function(d, i) { return 'Scénario ' + (1+i) });
 
-    time_buttons
+    time_panel
         .selectAll('button')
         .data(time)
         .enter()
@@ -169,7 +169,19 @@ function create_map_v3(g, data, lines, x, y, scenario_buttons, time_buttons)
         // Remettre la carte à son état initial
         clear_scenario();
 
-        //Prends en note le scénario choisi
+        // Afficher le panel du temps
+        time_panel.attr('style', 'float: right; visibility: visible');
+
+        // Mettre à jour le style des boutons
+        button_panel
+            .selectAll('button')
+            .attr('style', 'margin: 4px')
+
+        button_panel
+            .select('#scenario_' + scenario)
+            .attr('style', 'margin: 4px; background-color: grey; border: none');
+
+        // Prends en note le scénario choisi
         current_scenario = scenario;
 
         // Garder les stations et temps du trajet selon le scénario
@@ -300,7 +312,6 @@ function create_map_v3(g, data, lines, x, y, scenario_buttons, time_buttons)
                     .attr("y2", parseFloat(all_next_lines[index].attr("y1")))
                     .on("end", function(){index++; apply_line_transition(time, scenario, all_current_lines, all_next_lines, index) });
             }
-
         }
     }
 
