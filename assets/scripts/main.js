@@ -241,22 +241,15 @@
                 .offset([-10, 0]);
 
             /***** Création du graphique à barres *****/
-            console.log("data",sources.map(row=>row.ligne).values());
-
-            createAxes(bar_count, sources, data_freins, barChartHeight, barChartWidth);
             create_bar_count(bar_count, sources, data_freins, tip_v4, barChartHeight, barChartWidth);
 
-
-            // Fonction que lorsque l'on clique sur une barre à gauche, faut apparaitre un bar chart à droite
-            // data_freins doit simplement être remplacer par un jeu de données qui a rapport avec les causes secondaires
+            // Fonction que lorsque l'on clique sur une barre à gauche, fait apparaitre un bar chart à droite
             display_causes(bar_count_causes, sources, data_freins, barChartHeight, barChartWidth, tip_v4);
 
             
-           
-            
             /***** Création de l'infobulle *****/
             tip_v4.html(function(d) {
-                return getToolTipText.call(this, d, sources);
+                return getToolTipText.call(this, d);
             });
             svg_v4.call(tip_v4);
   
