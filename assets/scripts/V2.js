@@ -153,7 +153,6 @@ function create_map(g, data, lines,  x, y, pipe, panel) {
             .attr("stroke-width", 1)
             .attr("opacity", 1)
             .attr("fill", "none");
-
     });
 
     var tip = d3.tip()

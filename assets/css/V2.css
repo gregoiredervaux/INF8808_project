@@ -12,14 +12,11 @@ g.station.unselected {
 #canvasV2 {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
 
 }
 
-#canvasV2 svg{
-    border: 1px solid #ccc !important;
-    border-radius: 16px;
 
-}
 
 p.description{
     text-align: left;
