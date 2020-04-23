@@ -249,22 +249,21 @@
             var textebouton = "Nombre d'arrêts";
             var toggleButtons = d3.selectAll(".toggle-buttons > button");
                 toggleButtons.on("click", function(d, i) {
+
                     textebouton = d3.select(this).text()
                     sources = sources_ct[i];
                 toggleButtons.classed("active", function() {
-            return textebouton === d3.select(this).text();
-            });
+                    return textebouton === d3.select(this).text();
+                });
             bar_count_causes.selectAll("*").remove();
             transition_bar_charts(bar_count, sources, tip_v4, barChartHeight, barChartWidth, bar_count_causes);
-            
-        });
+                });
             
             /***** Création de l'infobulle *****/
             tip_v4.html(function(d) {
                 return getToolTipText.call(this, d, sources);
             });
-            svg_v4.call(tip_v4);
-  
+            svg_v4.call(tip_v4);  
   
 
         });
