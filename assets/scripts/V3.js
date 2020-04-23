@@ -9,12 +9,6 @@ var trajets = [[["Sherbrooke", "Mont-Royal", "Laurier", "Rosemont", "Beaubien", 
                [["Jean-Drapeau", "Berri-UQAM", "Sherbrooke", "Mont-Royal", "Laurier", "Rosemont"],
                 [0, 1, 2, 3, 4, 5],
                 [0, 2, 4, 4, 4, 4]],
-               [["Honoré-Beaugrand", "Radisson"],
-                [0, 1],
-                [0, 2]],
-               [["Côte-Vertu", "Du Collège"],
-                [0, 1],
-                [0, 2]],
                [["Beaudry", "Berri-UQAM", "Jean-Drapeau", "Longueuil"],
                 [0, 1, 2, 3],
                 [0, 2, 3, 2]],
@@ -230,7 +224,7 @@ function create_map_v3(g, map_width, map_height, data, lines, x, y, button_panel
     var incident_info = time_panel.append('div')
         .attr('id', 'incident_info')
         .attr("max-width", "100px")
-        .attr("width", "100%");
+        .attr("width", "100%"); 
 
     // Chargement du scénario
     function init_scenario(scenario)
