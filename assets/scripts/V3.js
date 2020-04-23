@@ -1,23 +1,10 @@
 // Temps moyen d'un trajet en semaine de A à B à différentes heures
-
-// TODO
-// X Créer des boutons pour la sélection des scénarios selon le nombre de trajets
-// X Rappeler l'animation de zoom de la carte et reset des données selon click de bouton
-// X Créer une liste ordonnée des stations à parcourir avec le temps de déplacement entre
-// X Toutes les stations sont un rond de la couleur de la ligne sauf noir pour double ou Berri-UQAM
-// X Créer une ligne reliant chacune des stations en gris
-// X Zoom de la carte pour que toutes les stations de l'itinéraire soient visibles
-// X Mettre toutes les stations et tunnels non-utilisés en opacité faible
-// X Animer le trajet d'une personne en changeant la couleur de sa ligne en noir (1 minute = 1 seconde?)
-// X Avoir une sélection de l'heure de départ
-// Ajouter les incidents sur le trajet qui retardent le déplacement
-
 var trajets = [[["Sherbrooke", "Mont-Royal", "Laurier", "Rosemont", "Beaubien", "Jean Talon", "De Castelnau", "Parc", "Acadie", "Outremont", "Édouard-Montpetit", "Université de Montréal"],
                 [          0,            1,         1,          2,          1,            1,              8,      1,        2,           1,                   2,                        1],
                 [          0,            2,         2,          1,          3,            1,              4,      3,        2,           1,                   2,                        1]],
-                [["Sherbrooke", "Berri-UQAM", "Champs-de-Mars", "Place-d'Armes", "Square-Victoria", "Bonaventure", "Lucien L'Allier", "Georges-Vanier", "Lionel Groulx", "Charlevoix", "Lasalle"],
-                [          0,            1,               2,               1,                      1,             1,                 1,                2,               6,            2,         1],
-                [          0,            3,               1,               2,                      2,             3,                 1,                1,               4,            2,         1]],
+               [["Sherbrooke", "Berri-UQAM", "Champs-de-Mars", "Place-d'Armes", "Square-Victoria", "Bonaventure", "Lucien L'Allier", "Georges-Vanier", "Lionel Groulx", "Charlevoix", "Lasalle"],
+                [          0,            1,                2,               1,                 1,             1,                 1,                2,               6,            2,         1],
+                [          0,            3,                1,               2,                 2,             3,                 1,                1,               4,            2,         1]],
                 // Scénarios temporaires de test, sauf le dernier
                [["Honoré-Beaugrand", "Radisson"],
                 [0, 1],
@@ -63,8 +50,6 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
     console.log(lines);
     // Création du conteneur d'éléments
     var line_conteneur = g.append("g")
-
-
 
     // Pour chaque ligne du métro
     data_by_lines.forEach(line =>
@@ -244,7 +229,7 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
         clear_scenario();
 
         // Prépare les datas liées au scénario
-        calc_incidents(scenario);   
+        calc_incidents(scenario);
 
         // Afficher le panel du temps
         time_panel.attr('style', 'float: right; visibility: visible');
@@ -349,14 +334,12 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
             .transition()
             .duration(2000)
             .attr('transform', 'scale (' + scale + ') translate('+ ((300/scale)-x_mid) + ',' + ((300/scale)-y_mid) + ')');
-
-
     }
 
     // Démarre le scénario
     function start_scenario(time_index, scenario)
     {
-        //Ne pas commencer s'il n'y a pas de scénarios choisis
+        // Ne pas commencer s'il n'y a pas de scénario choisi
         if (scenario === -1) return;
 
         // Mettre le bon bouton de temps sélectionné
@@ -390,6 +373,15 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
         // Garder les stations et temps du trajet selon le scénario
         var stations_scenario = trajets[scenario][0];
         var temps_scenario = trajets[scenario][time_index + 1];
+
+        // Temps de durée du déplacement
+        duration_scenario = d3.sum(temps_scenario.slice(0, index+1));
+
+        // Afficher le temps de la durée
+        time_panel.select('#row_duration')
+            .selectAll('td')
+            .select('#duration_' + time_index)
+            .text(duration_scenario);
 
         if (index < all_next_lines.length - 1)
         {
