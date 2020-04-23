@@ -38,15 +38,15 @@
 <p align="left">Cliquez sur chacun des onglets pour explorer les visualisations</p>
 
 <div class="tab">
-    <button class="tablinks" onclick="openTab(event, 'V1tab')">V1</button>
-    <button class="tablinks" onclick="openTab(event, 'V2tab')">V2</button>
-    <button class="tablinks" onclick="openTab(event, 'V3tab')">V3</button>
-    <button class="tablinks" onclick="openTab(event, 'V4tab')">V4</button>
+    <button class="tablinks" onclick="openTab(event, 'V1tab')">Visualisation 1</button>
+    <button class="tablinks" onclick="openTab(event, 'V2tab')">Visualisation 2</button>
+    <button class="tablinks" onclick="openTab(event, 'V3tab')">Visualisation 3</button>
+    <button class="tablinks" onclick="openTab(event, 'V4tab')">Visualisation 4</button>
 </div>
 
 <div id="V1tab" class="tabcontent">
     <h3>Répartition des incidents selon l'heure de la journée</h3>
-    <p>Le survol d'un carré sélectionne l'heure. Un clique de souris sur la page vide la sélection.</p>
+    <p>Le survol d'un carré sélectionne l'heure. Un clic de souris sur la page vide la sélection.</p>
     <div id="canvasV1"></div>
 
 </div>
@@ -56,10 +56,10 @@
     <p class = "description">Pour la carte: la largeur de la bande de couleur d'une ligne
         représente la somme du temps d'arrêt pour la station.</p>
     <p class = "description">Un survol de la station permet d'afficher des informations globales sur la station</p>
-    <p class = "description">Un clique permet de sélectionner un trajet
+    <p class = "description">Un clic permet de sélectionner un trajet
         et affiche un histogramme de la somme des temps d'arrets
         pour chaque heure de la journée sur les stations sélectionnées</p>
-    <p class = "description">Un deuxième clique permet de repasser en mode survol des stations</p>
+    <p class = "description">Un deuxième clic permet de repasser en mode survol des stations</p>
     <div id="canvasV2">
         <svg></svg>
         <aside id="panel">
