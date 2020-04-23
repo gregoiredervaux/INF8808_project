@@ -75,6 +75,13 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
                 return st.id === lines[line.name][lines[line.name].indexOf(parseInt(station.id)) + 1]
             });
 
+            //Vérifie si une instance de station à multiple ligne est déjà créé ou non
+            is_multi_line = multi_lines_stations.includes(station.name);
+            is_multi_line_init = false;
+
+            if(is_multi_line)
+                is_multi_line_init = !line_conteneur.selectAll(".scenarioLine").select(function(h, j) {return d3.select(this).attr("name") === station.name}).empty();
+
             // Trouver les coordonnées de la station précédente et suivante si elles existent
             if (c0!==undefined) {
                 var cx0 = c0.coordinates_map_stacked ? c0.coordinates_map_stacked.cx : c0.coordinates_map.cx;
