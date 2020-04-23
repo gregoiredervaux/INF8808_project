@@ -179,7 +179,7 @@ function create_map_v3(g, map_width, map_height, data, lines, x, y, button_panel
         .data(time)
         .enter()
         .append('td')
-        .attr('width', '60px')
+        .attr('width', '100px')
         .append('button')
         .attr('id', function(d, i) { return 'start_button_' + i })
         .on('click', function(d, i) { start_scenario(i, current_scenario) })
