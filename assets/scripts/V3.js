@@ -121,8 +121,8 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
             {
                 // Création des points de stations, opaques
                 line_conteneur.append("circle")
-                .attr("cx", x(station.coordinates_map.cx))
-                .attr("cy", y(station.coordinates_map.cy))
+                .attr("cx", (station.coordinates_map_stacked ? x(station.coordinates_map_stacked.cx):x(station.coordinates_map.cx)))
+                .attr("cy", (station.coordinates_map_stacked ? y(station.coordinates_map_stacked.cy):y(station.coordinates_map.cy)))
                 .attr("r", 5)
                 .attr("fill", is_multi_line ? "grey" : line.name)
                 .attr("fill-opacity", 1)
@@ -131,8 +131,8 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
 
                 // Création des noms de stations
                 line_conteneur.append("text")
-                .attr("x", x(station.coordinates_map.cx) + 6)
-                .attr("y", y(station.coordinates_map.cy) + 4)
+                .attr("x", (station.coordinates_map_stacked ? x(station.coordinates_map_stacked.cx):x(station.coordinates_map.cx)) + 6)
+                .attr("y", (station.coordinates_map_stacked ? y(station.coordinates_map_stacked.cy):y(station.coordinates_map.cy)) + 4)
                 .attr("font-size", "9px")
                 .attr("font-family", "Arial")
                 .text(station.name);
@@ -293,8 +293,8 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
             line.stations.forEach(station =>
             {
                 // Coordonnées ajustées de la station
-                var cx1 = x(station.coordinates_map.cx);
-                var cy1 = y(station.coordinates_map.cy);
+                var cx1 = (station.coordinates_map_stacked ? y(station.coordinates_map_stacked.cy):y(station.coordinates_map.cy));
+                var cy1 = (station.coordinates_map_stacked ? y(station.coordinates_map_stacked.cy):y(station.coordinates_map.cy));
 
                 // Initialiser à false la station recherchée
                 station_existe_dans_trajet = false;

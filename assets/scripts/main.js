@@ -127,6 +127,8 @@
             // on crée la carte des stations
             var data_by_lines = create_map(metro_map, data_stations, lines, x_map, y_map, pipe_scale, panel);
 
+            console.log("data_by_line", data_by_lines);
+
             // on intialise les données des stations selectionnées
             var selected_data = Object.keys(lines).map(line => {
                 return {name: line, stations:[]}});
