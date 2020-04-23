@@ -35,7 +35,10 @@ var trajets = [[["Sherbrooke", "Mont-Royal", "Laurier", "Rosemont", "Beaubien", 
                 [          0,            1,               6,                1,        1,      2,               1,         1,               2,            2,         1],
                 [          0,            2,               3,                2,        1,      3,               1,         3,               1,            1,         1]]]
 
-var time = ["8:00 AM", "5:00 PM"]
+var format_time = d3.timeFormat("%H:%M");
+var parse_time = d3.timeParse("%H:%M");
+
+var time = [parse_time('9:00'), parse_time('17:00')];
 
 const multi_lines_stations = ["Lionel Groulx", "Snowdon", "Jean Talon", "Berri-UQAM"];
 var is_multi_line = false;
@@ -154,14 +157,77 @@ function create_map_v3(g, data, lines, x, y, button_panel, time_panel)
         .on('click', function(d, i) { init_scenario(i); })
         .text(function(d, i) { return 'Scénario ' + (1+i) });
 
-    time_panel
-        .selectAll('button')
+    // Ajout de la table qui contient les éléments du temps
+    time_panel.append('table')
+        .attr('id', 'table_time')
+        .append('tr')
+        .attr('id', 'row_start')
+        .append('th')
+        .text('Départ :');
+
+    // Rangée pour le temps de départ
+    time_panel.select('#row_start')
+        .selectAll('td')
         .data(time)
         .enter()
+        .append('td')
+        .attr('width', '60px')
         .append('button')
+        .attr('id', function(d, i) { return 'start_button_' + i })
         .on('click', function(d, i) { start_scenario(i, current_scenario) })
         .attr('type', 'button')
-        .text(function(d, i) { return time[i] });
+        .text(function(d, i) { return format_time(time[i]) });
+
+    // Header pour la durée
+    time_panel.select('#table_time')
+        .append('tr')
+        .attr('id', 'row_duration')
+        .append('th')
+        .text('Durée (min) :');
+
+    // Rangée pour la durée
+    time_panel.select('#row_duration')
+        .selectAll('td')
+        .data(time)
+        .enter()
+        .append('td')
+        .append('span')
+        .attr('id', function(d, i) { return 'duration_' + i })
+        .text('0');
+
+    // Header pour le temps d'arrivée
+    time_panel.select('#table_time')
+        .append('tr')
+        .attr('id', 'row_end')
+        .append('th')
+        .text('Arrivée :');
+
+    // Rangée pour le temps d'arrivée
+    time_panel.select('#row_end')
+        .selectAll('td')
+        .data(time)
+        .enter()
+        .append('td')
+        .append('span')
+        .attr('id', function(d, i) { return 'end_time_' + i })
+        .text(function(d, i) { return format_time(time[i]) });
+
+    // Header pour la durée moyenne
+    time_panel.select('#table_time')
+        .append('tr')
+        .attr('id', 'row_mean')
+        .append('th')
+        .text('Moyenne (min) :');
+
+    // Rangée pour la durée moyenne
+    time_panel.select('#row_mean')
+        .selectAll('td')
+        .data(time)
+        .enter()
+        .append('td')
+        .append('span')
+        .attr('id', function(d, i) { return 'mean_time_' + i })
+        .text('0')
 
     // Chargement du scénario
     function init_scenario(scenario)
@@ -171,6 +237,20 @@ function create_map_v3(g, data, lines, x, y, button_panel, time_panel)
 
         // Afficher le panel du temps
         time_panel.attr('style', 'float: right; visibility: visible');
+
+        // Mettre à jour le tableau des temps
+        time_panel
+            .data(time)
+            .enter()
+            .select('#row_end')
+            .selectAll('td span')
+            // On ajoute tous les temps avec offset de l'heure de départ selon le scénario et le temps de départ
+            .text(function(d, i) { return format_time(d3.timeMinute.offset(d, d3.sum(trajets[scenario][(i+1)]))) });
+
+        // Réinitialiser les boutons de temps
+        d3.select('#row_start')
+            .selectAll('td button')
+            .attr('style', '');
 
         // Mettre à jour le style des boutons
         button_panel
@@ -186,7 +266,6 @@ function create_map_v3(g, data, lines, x, y, button_panel, time_panel)
 
         // Garder les stations et temps du trajet selon le scénario
         var stations_scenario = trajets[scenario][0];
-        var temps_scenario = trajets[scenario][1];
 
         // Mettre les stations du trajet opaques
         line_conteneur.selectAll(".scenarioCircle").each(function(d, i) {
@@ -261,11 +340,18 @@ function create_map_v3(g, data, lines, x, y, button_panel, time_panel)
             .attr('transform', 'scale (' + scale + ') translate('+ ((300/scale)-x_mid) + ',' + ((300/scale)-y_mid) + ')');
     } // function initScenario(num)
 
-    // Démarre le scénario,
-    function start_scenario(time, scenario)
+    // Démarre le scénario
+    function start_scenario(time_index, scenario)
     {
         //Ne pas commencer s'il n'y a pas de scénarios choisis
         if (scenario === -1) return;
+
+        // Mettre le bon bouton de temps sélectionné
+        d3.select('#row_start')
+            .data(time)
+            .enter()
+            .selectAll('td button')
+            .attr('style', function(d, i) { return time_index===i ? 'margin: 4px; background-color: grey; border: none' : '' });
 
         // Remettre la carte à son état initial
         clear_lines();
@@ -283,15 +369,14 @@ function create_map_v3(g, data, lines, x, y, button_panel, time_panel)
             all_next_lines.push(next_line);
         });
 
-        apply_line_transition(time, scenario, all_current_lines, all_next_lines, 0);
+        apply_line_transition(time_index, scenario, all_current_lines, all_next_lines, 0);
     }
 
-    function apply_line_transition(time, scenario, all_current_lines, all_next_lines, index)
+    function apply_line_transition(time_index, scenario, all_current_lines, all_next_lines, index)
     {
         // Garder les stations et temps du trajet selon le scénario
-        console.log(scenario);
         var stations_scenario = trajets[scenario][0];
-        var temps_scenario = trajets[scenario][time + 1];
+        var temps_scenario = trajets[scenario][time_index + 1];
 
         if (index < all_next_lines.length - 1)
         {
@@ -310,7 +395,7 @@ function create_map_v3(g, data, lines, x, y, button_panel, time_panel)
                     .duration(deltaT)
                     .attr("x2", parseFloat(all_next_lines[index].attr("x1")))
                     .attr("y2", parseFloat(all_next_lines[index].attr("y1")))
-                    .on("end", function(){index++; apply_line_transition(time, scenario, all_current_lines, all_next_lines, index) });
+                    .on("end", function(){index++; apply_line_transition(time_index, scenario, all_current_lines, all_next_lines, index) });
             }
         }
     }
