@@ -50,21 +50,45 @@ function create_SourcesCount(data_freins) {
                         })
                     }
 
-                }).sort((a,b)=>b.totalcount-a.totalcount) 
+                }).sort((a,b)=>b.totalcount-a.totalcount),
             }
         })
 }
 
+/**
+ * Réorganise les données afin de combiner les nombre d'arrêts  pour une même ligne/station.
+ *
+ *                  [
+ *                    {
+ *                      ligne: string,                                          // La couleur (le nom) de la ligne
+ *                      stations:[
+ *                                 {
+ *                                  name: string,                               // Le nom de la station
+ *                                  totalcount: number,                         // Le temps total d'arrêt à la station
+ *                                  incidents: [
+ *                                                  {cause: string,             // La cause secondaire de l'incident
+ *                                                   count: number,             // Le temps total d'arrêt associé à la cause secondaire                        
+ *                                                  },
+ *                                                  ...
+ *                                              ],
+ *                                              ...
+ *                                 },
+ *                                ...  
+ *                              ],
+ *                              ...
+ *                    }
+ *                  ]
+ */
+
 function create_SourcesTime(data_freins) {
     // Retourner l'objet selon le format énoncé ci-haut.
     
-      // on recupère la liste des couleurs des lignes
-
       var cause_set = ["Blessée ou malade","Méfait volontaire","Nuisance involontaire"];
 
+      // On recupère la liste des couleurs des lignes.
       var line_set = d3.set(data_freins.map(row => row.line)).values();
       
-      // pour chaque ligne, on réalise le traitement
+      // Pour chaque ligne, on réalise le traitement
       return line_set.map(line => {
           return {
               ligne: line,
@@ -84,7 +108,7 @@ function create_SourcesTime(data_freins) {
                         })
                     }
 
-                }).sort((a,b)=>b.totalcount-a.totalcount) 
+                }).sort((a,b)=>b.totalcount-a.totalcount),
             }
         })
 }
@@ -103,6 +127,7 @@ function create_SourcesTime(data_freins) {
 
 function create_bar_count(g, sources, tip, height, width) {
     
+    // On définit les échelles
     var x = d3.scaleBand().range([0, width]).round(0.05)
                  .domain(sources.map(d => d.ligne));
 
@@ -115,6 +140,7 @@ function create_bar_count(g, sources, tip, height, width) {
       .paddingInner(0.05)
       .paddingOuter(0.05);
 
+    // On ajoute une ligne qui rappelle un axe xe.
     g.append("line")
         .attr("x1",0)
         .attr("y1", height+15)
@@ -122,7 +148,8 @@ function create_bar_count(g, sources, tip, height, width) {
         .attr("y2", height+15)
         .attr("stroke", "black")
         .attr("stroke-width", 2)
-  
+
+    // On rajoute les bandes du diagramme
     g.selectAll("rect")
       .data(sources)
       .enter()
@@ -136,7 +163,8 @@ function create_bar_count(g, sources, tip, height, width) {
       .attr("stroke-width", 2)
       .on('mouseover', tip.show)
       .on('mouseout', tip.hide);   
-      
+    
+    // On ajoute la valeur y sous forme d'étiquette
     g.selectAll(".text")        
       .data(sources)
       .enter()
@@ -153,7 +181,7 @@ function create_bar_count(g, sources, tip, height, width) {
 function getToolTipText(d) {
 
     /**Format à retourner:
-     * Stations sur la ligne [couleur de la ligne en français] avec le plus grand nombre d'arrêts de service]
+     * Top 3 des stations de la ligne [couleur de la ligne]
      * 1. [Nom de la station 1]: [nombre d'arrêts de service/temps d'arrêt dû à des incidents +"minutes"]
      * 2. [Nom de la station 2]: [nombre d'arrêts de service/temps d'arrêt dû à des incidents +"minutes"]
      * 3. [Nom de la station] 3: [nombre d'arrêts de service/temps d'arrêt dû à des incidents +"minutes"]
@@ -205,6 +233,7 @@ function create_bar_cause(g, d, sources, height, width) {
     var sources2 = sources.filter(k=>k.ligne === d.ligne);
     var sources_right = createSources_rightbar(cause_set, sources2);
 
+    // On définit les échelles
     var x = d3.scaleBand().range([0, width]).round(0.05)
                    .domain(cause_set);
     
@@ -217,6 +246,7 @@ function create_bar_cause(g, d, sources, height, width) {
         .paddingInner(0.05)
         .paddingOuter(0.05);
 
+    // On ajoute une ligne pour uniformiser avec le graphique de gauche.
     g.append("line")
       .attr("x1",0)
       .attr("y1", height+15)
@@ -246,9 +276,6 @@ function create_bar_cause(g, d, sources, height, width) {
       .attr("x", c => 0.48*sclBand.bandwidth() + x(c.name))
       .attr("y", c => height - y(c.count)-20)
       .text(c => Math.round(c.count));
-
-    // On remet les noms de causes sur l'axe
-    //createAxes(g, height, width);
 } 
 
 
@@ -297,13 +324,14 @@ function transition_bar_charts(g, sources, tip, height, width, bar_count_causes)
 };
 
 
-
+// Fonction qui met à jour le diagramme à bande gauche
 function update_bar_cause(g, d, sources, height, width) {
 
     var cause_set = ["Blessée ou malade","Méfait volontaire","Nuisance involontaire"];
     var sources2 = sources.filter(k=>k.ligne === d.ligne);
     var sources_right = createSources_rightbar(cause_set, sources2);
 
+    // On définit les échelles
     var x = d3.scaleBand().range([0, width]).round(0.05)
                    .domain(cause_set);
     
@@ -316,7 +344,7 @@ function update_bar_cause(g, d, sources, height, width) {
         .paddingInner(0.05)
         .paddingOuter(0.05);  
 
-    // On ajoute toutes les barres    
+    // On fait transitionner la hauteur des barres    
     g.selectAll("rect")
       .data(sources_right)
       .attr("x", c => x(c.name) + sclBand.step() * 0.05)
@@ -328,7 +356,7 @@ function update_bar_cause(g, d, sources, height, width) {
         .attr("height", c => y(c.count))
     
     
-    // On remet les nouveaux chiffres au-dessus
+    // On fait transitionner la position des étiquettes et leur valeur
     g.selectAll("labels")        
       .data(sources_right)
       .attr("class","label")
@@ -345,7 +373,7 @@ function update_bar_cause(g, d, sources, height, width) {
   
 function createAxes(g, height, width) {
 
-    // Ajout du l'axe X
+    // Ajout de l'axe X
     var cause_set = ["Blessée ou malade","Méfait volontaire","Nuisance involontaire"];
 
     var x = d3.scaleBand().range([0, width]).round(0.05)
@@ -353,7 +381,7 @@ function createAxes(g, height, width) {
     
     var xAxis = d3.axisBottom(x);
 
-    
+    // On ajoute l'axe et les étiquettes en x
     g.append("g")
         .attr("class", "x axis")
         .attr("transform", `translate(0,${height+15})`)
@@ -364,6 +392,7 @@ function createAxes(g, height, width) {
         .style("font-size", 16);
 }
 
+//Fonction simple qui retourne une structure de données simple pour le diagramme à bande de gauche
 function createSources_rightbar(cause_set, sources2){
     return cause_set.map(causes =>{
         return{
