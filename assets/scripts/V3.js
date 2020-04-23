@@ -6,6 +6,9 @@ var trajets = [[["Sherbrooke", "Mont-Royal", "Laurier", "Rosemont", "Beaubien", 
                 [          0,            1,                2,               1,                 1,             1,                 1,                2,               6,            2,         1],
                 [          0,            3,                1,               2,                 2,             3,                 1,                1,               4,            2,         1]],
                 // Scénarios temporaires de test, sauf le dernier
+               [["Jean-Drapeau", "Berri-UQAM", "Sherbrooke", "Mont-Royal", "Laurier", "Rosemont"],
+                [0, 1, 2, 3, 4, 5],
+                [0, 2, 4, 4, 4, 4]],
                [["Honoré-Beaugrand", "Radisson"],
                 [0, 1],
                 [0, 2]],
@@ -61,8 +64,8 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
         line.stations.forEach(station =>
         {
             // Coordonnées de la station
-            var cx1 = station.coordinates_map.cx;
-            var cy1 = station.coordinates_map.cy;
+            var cx1 = station.coordinates_map_stacked ? station.coordinates_map_stacked.cx : station.coordinates_map.cx;
+            var cy1 = station.coordinates_map_stacked ? station.coordinates_map_stacked.cy : station.coordinates_map.cy;
 
             // Trouver la station précédente c0 et suivante c2
             var c0 = line.stations.find(st => {
@@ -74,12 +77,12 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
 
             // Trouver les coordonnées de la station précédente et suivante si elles existent
             if (c0!==undefined) {
-                var cx0 = c0.coordinates_map.cx;
-                var cy0 = c0.coordinates_map.cy;
+                var cx0 = c0.coordinates_map_stacked ? c0.coordinates_map_stacked.cx : c0.coordinates_map.cx;
+                var cy0 = c0.coordinates_map_stacked ? c0.coordinates_map_stacked.cy : c0.coordinates_map.cy;
             }
             if (c2!==undefined) {
-                var cx2 = c2.coordinates_map.cx;
-                var cy2 = c2.coordinates_map.cy;
+                var cx2 = c2.coordinates_map_stacked ? c2.coordinates_map_stacked.cx : c2.coordinates_map.cx;
+                var cy2 = c2.coordinates_map_stacked ? c2.coordinates_map_stacked.cy : c2.coordinates_map.cy;
             }
 
             if (c2!==undefined) {
@@ -293,7 +296,7 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
             line.stations.forEach(station =>
             {
                 // Coordonnées ajustées de la station
-                var cx1 = (station.coordinates_map_stacked ? y(station.coordinates_map_stacked.cy):y(station.coordinates_map.cy));
+                var cx1 = (station.coordinates_map_stacked ? y(station.coordinates_map_stacked.cx):y(station.coordinates_map.cx));
                 var cy1 = (station.coordinates_map_stacked ? y(station.coordinates_map_stacked.cy):y(station.coordinates_map.cy));
 
                 // Initialiser à false la station recherchée
