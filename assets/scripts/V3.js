@@ -35,7 +35,8 @@ var trajets = [[["Sherbrooke", "Mont-Royal", "Laurier", "Rosemont", "Beaubien", 
                 [          0,            1,               6,                1,        1,      2,               1,         1,               2,            2,         1],
                 [          0,            2,               3,                2,        1,      3,               1,         3,               1,            1,         1]]]
 
-var time = ["8:00 AM", "5:00 PM"]
+var time_str = ["8:00 AM", "5:00 PM"];
+var time_int = [8, 17];
 
 const multi_lines_stations = ["Lionel Groulx", "Snowdon", "Jean Talon", "Berri-UQAM"];
 var is_multi_line = false;
@@ -43,8 +44,11 @@ var is_multi_line_init = false;
 
 var current_scenario = -1;
 
+// Data utilisé à l'affichage
+var actual_incident = [[], []];
+
 // Création d'une carte complète du métro
-function create_map_v3(g, data, lines, x, y, scenario_buttons, time_buttons)
+function create_map_v3(g, info_box, data, lines, x, y, scenario_buttons, time_buttons)
 {
     var data_by_lines = Object.keys(lines).map(line => {
         return {name: line, stations: lines[line].map(pt_station => {
@@ -54,6 +58,8 @@ function create_map_v3(g, data, lines, x, y, scenario_buttons, time_buttons)
 
     // Création du conteneur d'éléments
     var line_conteneur = g.append("g")
+
+
 
     // Pour chaque ligne du métro
     data_by_lines.forEach(line =>
@@ -156,12 +162,27 @@ function create_map_v3(g, data, lines, x, y, scenario_buttons, time_buttons)
 
     time_buttons
         .selectAll('button')
-        .data(time)
+        .data(time_str)
         .enter()
         .append('button')
         .on('click', function(d, i) { start_scenario(i, current_scenario) })
         .attr('type', 'button')
-        .text(function(d, i) { return time[i] });
+        .text(function(d, i) { return time_str[i] });
+
+
+    // Création de la zone d'information
+    info_box.append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", 200)
+        .attr("height", 100)
+
+    info_box.append("text")
+        .attr("font-size", "10px")
+        .attr("font-family", "Arial") // TODO Changer pour un CSS
+        .text("test");
+
+
 
     // Chargement du scénario
     function init_scenario(scenario)
@@ -169,7 +190,10 @@ function create_map_v3(g, data, lines, x, y, scenario_buttons, time_buttons)
         // Remettre la carte à son état initial
         clear_scenario();
 
-        //Prends en note le scénario choisi
+        // Prépare les datas liées au scénario
+        calc_incidents(scenario);   
+
+        // Prends en note le scénario choisi
         current_scenario = scenario;
 
         // Garder les stations et temps du trajet selon le scénario
@@ -247,7 +271,9 @@ function create_map_v3(g, data, lines, x, y, scenario_buttons, time_buttons)
             .transition()
             .duration(2000)
             .attr('transform', 'scale (' + scale + ') translate('+ ((300/scale)-x_mid) + ',' + ((300/scale)-y_mid) + ')');
-    } // function initScenario(num)
+
+
+    }
 
     // Démarre le scénario,
     function start_scenario(time, scenario)
@@ -277,7 +303,7 @@ function create_map_v3(g, data, lines, x, y, scenario_buttons, time_buttons)
     function apply_line_transition(time, scenario, all_current_lines, all_next_lines, index)
     {
         // Garder les stations et temps du trajet selon le scénario
-        console.log(scenario);
+        //console.log(scenario);
         var stations_scenario = trajets[scenario][0];
         var temps_scenario = trajets[scenario][time + 1];
 
@@ -290,8 +316,15 @@ function create_map_v3(g, data, lines, x, y, scenario_buttons, time_buttons)
     
             if(transition_line != undefined)
             {
-                var deltaT = temps_scenario[index + 1] * 1000;
-                //console.log(index + " out of " + stations_scenario.length);
+                var deltaT = 0;
+                if (index === actual_incident[time][0])
+                {
+                    deltaT = (temps_scenario[index + 1] + actual_incident[time][1]) * 1000;
+                    console.log("INCIDENT AT : " + actual_incident[time][0]);
+                    g.append("rect");
+                }
+                else
+                    deltaT = temps_scenario[index + 1] * 1000;
     
                 transition_line
                     .transition()
@@ -323,6 +356,123 @@ function create_map_v3(g, data, lines, x, y, scenario_buttons, time_buttons)
             d3.select(this).attr("x2", parseFloat(d3.select(this).attr("x1")));
             d3.select(this).attr("y2", parseFloat(d3.select(this).attr("y1")));
             d3.select(this).interrupt();
+        });
+    }
+
+    function calc_incidents(scenario)
+    {        
+        var stations_scenario = trajets[scenario][0];
+        var nb_incidents_scenario = [[[ ], [ ]], [[ ], [ ]]];
+        var nb_incidents_total = [];
+        var total_station = 0;
+        var roll = 0;
+        var index = 0;
+        var index_time = 0;
+        var current_station = "";
+
+        var moy_retard_station = []; // temps total/nb incidents at time
+        var per_incidents_at_time = []; // nb incidents at time/nb incidents total
+        var per_incident_at_station = []; // nb incidents at time/total nb incidents at time    
+
+
+        // Pour chacun des temps
+        time_int.forEach(time => {
+
+            index = 0;
+            total_station = 0;
+            current_station = "";
+
+            // Pour chacune des stations
+            data.forEach(station => {
+                // Pour chacune des stations d'un scénario
+                stations_scenario.forEach(station_scenario => {
+                    if (station.name === station_scenario)
+                    {
+                        // Afin de regrouper les stations à multi-lignes en une
+                        if(current_station != station.name && current_station != "")
+                            index++;
+
+
+                        if (isNaN(nb_incidents_scenario[index_time][0][index]) || isNaN(nb_incidents_scenario[index_time][1][index]))
+                        {
+                            nb_incidents_scenario[index_time][0][index] = 0;
+                            nb_incidents_scenario[index_time][1][index] = 0;
+                        }
+                        
+                        // Pour chacun des incidents d'une station
+                        station.incidents.forEach(incident => {
+                            var incident_start = new Date();
+                            incident_start = incident.debut;
+    
+                            // Incrémente le nombre d'incident d'une station de scénario à un temps donné ; Cumule le temps de ces incidents
+                            if (!isNaN(incident_start.getHours()))
+                            {
+                                if (incident_start.getHours() === time)
+                                {
+                                    nb_incidents_scenario[index_time][0][index]++;
+                                    nb_incidents_scenario[index_time][1][index] += incident.time;
+                                }
+                            }
+
+                            // Incrémente le nombre total d'incident d'une station de scénario
+                            if (isNaN(nb_incidents_total[index])) 
+                                nb_incidents_total[index] = 0;
+                            nb_incidents_total[index]++;
+                        });
+    
+                        current_station = station.name;
+                    }
+                });
+            });
+            
+            index = 0;
+            nb_incidents_scenario[index_time][0].forEach(station => {
+                if (station === 0)
+                    moy_retard_station[index] = 0;
+                else
+                    moy_retard_station[index] = nb_incidents_scenario[index_time][1][index] / station;
+
+
+                if (nb_incidents_total[index] === 0)
+                    per_incidents_at_time[index] = 0;
+                else
+                    per_incidents_at_time[index] = station / nb_incidents_total[index] * 100;
+
+
+
+                
+                total_station += station;
+                index++;
+            });
+
+            index = 0;
+            nb_incidents_scenario[index_time][0].forEach(station => {
+                per_incident_at_station[index] = station / total_station * 100;
+
+                index++;
+            });
+
+            var found_incident = false;
+            total_station -= nb_incidents_scenario[index_time][0][nb_incidents_scenario[index_time][0].length - 1];
+            roll = Math.floor(Math.random() * total_station);
+            index = 0;
+            nb_incidents_scenario[index_time][0].forEach(station => {
+
+                if(roll < station && !found_incident && index < nb_incidents_scenario[index_time][0].length)
+                {
+                    actual_incident[index_time][0] = index;
+                    actual_incident[index_time][1] = moy_retard_station[index];
+                    actual_incident[index_time][2] = per_incidents_at_time[index];
+                    actual_incident[index_time][3] = per_incident_at_station[index];
+                    found_incident = true;
+                }
+                else
+                    roll -= station;
+
+                index++;
+            });
+
+            index_time++;
         });
     }
 }

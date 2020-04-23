@@ -194,16 +194,18 @@
                 .append('div')
                 .attr('id', 'buttons');
 
+            var info_box = d3.select('#canvasV3').append("g");
+
             // Mettre la V3 dans l'élément SVG qui se nomme svg_v3
             var svg_v3 = d3.select('#canvasV3')
                            .append('svg')
                            .attr('width', map_width + margin.left + margin.right)
                            .attr('height', map_height + margin.top + margin.bottom);
 
-                           var metro_map_v3 = svg_v3.append("g");
+            var metro_map_v3 = svg_v3.append("g");
            
             // Création de la carte
-            create_map_v3(metro_map_v3, data_stations, lines, x_map, y_map, scenario_buttons, time_buttons);
+            create_map_v3(metro_map_v3, info_box, data_stations, lines, x_map, y_map, scenario_buttons, time_buttons);
 
 
             /***** V4 *****/
