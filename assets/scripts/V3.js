@@ -411,6 +411,7 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
     
                 transition_line
                     .transition()
+                    .ease(d3.easeSin)
                     .duration(deltaT)
                     .attr("x2", parseFloat(all_next_lines[index].attr("x1")))
                     .attr("y2", parseFloat(all_next_lines[index].attr("y1")))
@@ -422,16 +423,19 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
     // Remise à neuf de la carte
     function clear_scenario()
     {
-        // Toutes les lignes en gris
+        clear_lines();
+
+        line_conteneur.selectAll(".scenarioCircle").each(function(d,i) {
+            d3.select(this).attr("fill-opacity", 0.2);
+        });
+    }
+
+    function clear_lines()
+    {
         line_conteneur.selectAll(".scenarioLine").each(function(d,i) {
             d3.select(this).attr("x2", parseFloat(d3.select(this).attr("x1")));
             d3.select(this).attr("y2", parseFloat(d3.select(this).attr("y1")));
             d3.select(this).interrupt();
-        });
-
-        // Toutes les stations en opacité faible
-        line_conteneur.selectAll(".scenarioCircle").each(function(d,i) {
-            d3.select(this).attr("fill-opacity", 0.2);
         });
     }
 
