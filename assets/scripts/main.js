@@ -52,10 +52,10 @@
 
             /***** Prétraitement des données *****/
 
-            // on nettoye les données
+            // On nettoie les données
             clean_data(pt_metro, incidents);
 
-            // on attribue à chaque stations les incidents qui la concerne
+            // On attribue à chaque stations les incidents qui la concerne
             var data_stations = data_per_station(pt_metro, incidents);
 
             var KFS = results[0].filter(row => row.KFS == parseInt(1)); //Incidents pour lesquels le frein d'urgence a été actionné (KFS=1)
@@ -72,7 +72,7 @@
 
             /***** V1 *****/
 
-            // dimensions du piechart
+            // Dimensions du piechart
             var width_v1 = 1000,
 	        height_v1 = 400,
             radius_v1 = Math.min(width_v1, height_v1) / 2.5;
@@ -82,7 +82,7 @@
                         .attr("width", width_v1)
                         .attr("height", height_v1);
 
-            // Creer le tooltip qui montre l'heure de chaque rectangle
+            // Créer l'infobulle qui montre l'heure de chaque rectangle
             var tooltip = d3.select("#canvasV1").append("div")
                                                 .attr("display", "none")
                                                 .attr("class","toolTip")
@@ -90,7 +90,7 @@
                                                 .style("text-anchor", "middle")
                                                 .append("text");
 
-            // Heures d'ouvertures du métro   
+            // Heures d'ouverture du métro   
             var ouverture = 5;
             var fermeture = 24;
 
@@ -107,52 +107,50 @@
 
             /***** V2 *****/
 
-            // on créé un conteneur pour la carte des stations de métro
+            // On crée un conteneur pour la carte des stations de métro
             var metro_map = d3.select("#canvasV2 svg")
                 .attr("width", map_width + margin_map.left + margin_map.right)
                 .attr("height", map_height + margin_map.top + margin_map.bottom)
                 .attr("margin", d3.mean(margin_map))
                 .attr("pointer-events", "visible");
 
-            // on créé un conteneur pour le panneau d'information
+            // On crée un conteneur pour le panneau d'information
             var panel = d3.select("#panel")
                 .style("display", "block");
 
-            // on ajoute un bouton de fermeture
+            // On ajoute un bouton de fermeture
             panel.select("button")
                 .on("click", function () {
                     panel.style("display", "none");
             });
 
-            // on crée la carte des stations
+            // On crée la carte des stations
             var data_by_lines = create_map(metro_map, data_stations, lines, x_map, y_map, pipe_scale, panel);
 
-            console.log("data_by_line", data_by_lines);
-
-            // on intialise les données des stations selectionnées
+            // On intialise les données des stations selectionnées
             var selected_data = Object.keys(lines).map(line => {
                 return {name: line, stations:[]}});
 
-            // on defini les scales nécessaires à l'affichage du bar-chart
+            // On définit les échelles nécessaires à l'affichage du bar chart
             var x_hour = d3.scaleBand().range([0,barChartWidthV2]);
             x_hour.domain(d3.range(1, 25));
             var y_hour = d3.scaleLinear().range([barChartHeightV2, 0]);
 
-            // on défini les axes du bar-chart
+            // On définit les axes du bar chart
             var xAxis = d3.axisBottom(x_hour).tickFormat( d => (`${d}h`));
             var yAxis = d3.axisLeft(y_hour);
 
-            // on définie un conteneur pour le bar-chart
+            // On définit un conteneur pour le bar chart
             var day_graph_svg  = panel.select("#day_graph")
                 .attr("width", barChartWidthV2 + barChartMarginV2.left + barChartMarginV2.right)
                 .attr("height", barChartHeightV2 + barChartMarginV2.top + barChartMarginV2.bottom);
             var day_graph = day_graph_svg.append("g")
                 .attr("transform", "translate(" + barChartMarginV2.left + "," + barChartMarginV2.top + ")");
 
-            // on créé le bar-chart
+            // On crée le bar-chart
             create_barChart(day_graph, selected_data, x_hour, y_hour, xAxis, yAxis, barChartWidthV2, barChartHeightV2);
 
-            // on ajoute les evenements de selection aux stations
+            // On ajoute les événements de sélection aux stations
             addSelectionToStations(metro_map, panel, data_stations, data_by_lines, selected_data, x_map, y_map, y_hour, yAxis, barChartHeightV2);
 
             /***** V3 *****/
@@ -199,7 +197,7 @@
                  left: 0
                         };
 
-            /***** Configuration *****/
+            /***** Définition des marges *****/
             var barChartMargin = {
                 top: 50,
                 right: 50,
@@ -211,7 +209,7 @@
             var barChartHeight = 500 - barChartMargin.top - barChartMargin.bottom;
 
             
-            // svg_v4 est maintenant deux fois plus large pour permettre 2 bar chart un à coté de l'autre
+            // svg_v4 est deux fois plus large pour permettre 2 bar chart un à coté de l'autre
             var svg_v4 = d3.select('#canvasV4')
                            .append('svg')
                            .attr("width", 2*(barChartWidth + barChartMargin.left + barChartMargin.right))
