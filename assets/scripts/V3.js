@@ -55,6 +55,8 @@ function create_map_v3(g, data, lines, x, y, button_panel, time_panel)
         })}
     });
 
+    console.log(data);
+    console.log(lines);
     // Création du conteneur d'éléments
     var line_conteneur = g.append("g")
 
@@ -103,16 +105,16 @@ function create_map_v3(g, data, lines, x, y, button_panel, time_panel)
                 .attr("cx", x(cx1))
                 .attr("cy", y(cy1))
                 .attr("r", 5)
-                .attr("fill", is_multi_line ? "black" : line.name)
+                .attr("fill", is_multi_line ? "grey" : line.name)
                 .attr("fill-opacity", 1) // TODO Changer pour un CSS
                 .attr("name", station.name)
                 .attr("class", "scenarioCircle");
 
                 // Création des noms de stations
                 line_conteneur.append("text")
-                .attr("x", x(station.coordinates_map.cx) + 5)
-                .attr("y", y(station.coordinates_map.cy))
-                .attr("font-size", "10px")
+                .attr("x", x(station.coordinates_map.cx) + 6)
+                .attr("y", y(station.coordinates_map.cy) + 4)
+                .attr("font-size", "9px")
                 .attr("font-family", "Arial") // TODO Changer pour un CSS
                 .text(station.name);
             }

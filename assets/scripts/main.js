@@ -5,14 +5,11 @@
  */
 (function (d3) {
     "use strict";
-
+    
     /***** Configuration *****/
 
-    const double_lines_st = ["Lionel-Groulx", "Snowdon", "Jean-Talon"];
-    const triple_line_st = ["Berri-Uqam"];
     const map_width = 600;
     const map_height = 600;
-
 
     var margin_map = {
         top: 50,
