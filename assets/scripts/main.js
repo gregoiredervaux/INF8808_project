@@ -59,32 +59,12 @@
             var data_stations = data_per_station(pt_metro, incidents);
 
             var KFS = results[0].filter(row => row.KFS == parseInt(1)); //Incidents pour lesquels le frein d'urgence a été actionné (KFS=1)
-            //console.log("KFS", KFS);
 
             var data_freins = data_per_station(pt_metro,KFS); //Données par station pour les incidents pour lesquels KFS = 1
-            //console.log("Données de travail Frein", data_freins);
-            //console.log("Stations KFS par ligne", data_freins.filter(row=>row.line ==='orange').map(d=>d.name));         
-            //console.log("Nombre d'incidents frein (cause: Blessée ou malade) sur la ligne orange", d3.set(data_freins.filter(row=>row.line ==='yellow').map(d=>d.incidents.map(cause => cause['Cause secondaire']))));
-            //console.log("Valeurs des causes d'incidents", d3.set(data_freins.map(row => row.incidents.map(a => a['Cause secondaire']))).values())
-            //console.log("Nombre d'incidents frein (cause: Blessée ou malade) sur la ligne orange", d3.sum(data_freins.filter(row=>row.line ==='orange').map(d=>d.incidents.map(cause => cause['Cause secondaire']).filter(k=>k==='Blessée ou malade').length)));
-            //console.log("Nombre d'incidents frein sur la ligne jaune: ", d3.sum(data_freins.filter(row=>row.line ==='yellow').map(d=>d.incidents.map(cause => cause['Cause secondaire']).length)));
-            //console.log("Temps d'arrêt frein", d3.sum(data_freins.map(d => d.total_stop_time)));
-
-            var sources = createSources(data_freins);
-
-            console.log("Sources",sources);
-            console.log("Ligne: ", sources.map(row=>row.ligne));
-            console.log("Somme des incidents freins par ligne", sources.map(row=>row.stations.map(k=>k.incidents.length).reduce((a,b)=>a+b)));
-            var count_freins_station = sources.map(row=>row.stations.map(k=>k.incidents.length).sort((a,b)=>b-a));
-            console.log("Incidents freins par station", count_freins_station);
-            //Stations par ordre décroissant d'incidents frein
-            var stations_names_count_freins = sources.map(row=>row.stations.sort((a,b)=>b.incidents.length-a.incidents.length));//.map(k=>k.incidents.length).sort((a,b,)=>b-a));
-            console.log("Stations en ordre de count d'incidents",stations_names_count_freins);
-
-            //console.log("Incidents max par ligne", d3.max(sources.map(row=>row.stations.map(k=>k.incidents.length).reduce((a,b)=>a+b))));
-            //console.log("Nombre d'incidents à la station Beaubien: ", d3.sum(sources.map(row=>row.stations.filter(d=>d.name==="Beaubien").map(k=>k.incidents.length))));          
-            //console.log("nombre d'incidents conservés", d3.sum(data_stations.map(data_st => data_st.incidents.length)));
-            //console.log("moyenne de temps tot d'arret", d3.sum(data_stations.map(data_st => data_st.total_stop_time))/data_stations.length);
+            var sources_ct = []
+            sources_ct[0] = create_SourcesCount(data_freins);
+            sources_ct[1] = create_SourcesTime(data_freins);
+            var sources = sources_ct[0];
 
             scale_from_GPS(pt_metro, x_map, y_map);
             scale_incidents(data_stations, color_station, pipe_scale);
@@ -236,6 +216,7 @@
                            .append('svg')
                            .attr("width", 2*(barChartWidth + barChartMargin.left + barChartMargin.right))
                            .attr("height", (barChartHeight + barChartMargin.top + barChartMargin.bottom));
+          
 
             var bar_count = svg_v4.append("g")
                                 .attr("transform", "translate(" + margin_v4.left + "," + margin_v4.top + ")")
@@ -247,19 +228,33 @@
 
             /***Création de l'infobulle***/
             var tip_v4 = d3.tip()
-                .attr('class', 'd3-tip')
+                .attr('class', 'd3-tip-v4')
                 .offset([-10, 0]);
 
             /***** Création du graphique à barres *****/
             create_bar_count(bar_count, sources, tip_v4, barChartHeight, barChartWidth);
 
-            // Fonction que lorsque l'on clique sur une barre à gauche, fait apparaitre un bar chart à droite
+            // Fonction que lorsque l'on clique sur une barre à gauche, fait apparaitre le bar chart par cause droite
             display_causes(bar_count_causes, sources, barChartHeight, barChartWidth);
 
+
+            /***** Transition entre les unités de comparaison d'incidents: nombre et temps *****/
+            var textebouton = "Nombre d'arrêts";
+            var toggleButtons = d3.selectAll(".toggle-buttons > button");
+                toggleButtons.on("click", function(d, i) {
+                    textebouton = d3.select(this).text()
+                    sources = sources_ct[i];
+                toggleButtons.classed("active", function() {
+            return textebouton === d3.select(this).text();
+            });
+            bar_count_causes.selectAll("*").remove();
+            transition_bar_charts(bar_count, sources, tip_v4, barChartHeight, barChartWidth, bar_count_causes);
+            
+        });
             
             /***** Création de l'infobulle *****/
             tip_v4.html(function(d) {
-                return getToolTipText.call(this, d);
+                return getToolTipText.call(this, d, sources);
             });
             svg_v4.call(tip_v4);
   
