@@ -28,8 +28,8 @@ var trajets = [[["Sherbrooke", "Mont-Royal", "Laurier", "Rosemont", "Beaubien", 
 var format_time = d3.timeFormat("%H:%M");
 var parse_time = d3.timeParse("%H:%M");
 
-var time = [parse_time('9:00'), parse_time('17:00')];
-var time_int = [9, 17];
+var time = [parse_time('8:00'), parse_time('10:00')];
+var time_int = [8, 10];
 
 const multi_lines_stations = ["Lionel Groulx", "Snowdon", "Jean Talon", "Berri-UQAM"];
 var is_multi_line = false;
@@ -41,7 +41,7 @@ var current_scenario = -1;
 var actual_incident = [[], []];
 
 // Création d'une carte complète du métro
-function create_map_v3(g, map_width, map_height, info_box, data, lines, x, y, button_panel, time_panel)
+function create_map_v3(g, map_width, map_height, data, lines, x, y, button_panel, time_panel)
 {
     var data_by_lines = Object.keys(lines).map(line => {
         return {name: line, stations: lines[line].map(pt_station => {
@@ -214,7 +214,7 @@ function create_map_v3(g, map_width, map_height, info_box, data, lines, x, y, bu
         .append('tr')
         .attr('id', 'row_end')
         .append('th')
-        .text('Arrivée :');
+        .text('Arrivée prévue :');
 
     // Rangée pour le temps d'arrivée
     time_panel.select('#row_end')
@@ -226,32 +226,20 @@ function create_map_v3(g, map_width, map_height, info_box, data, lines, x, y, bu
         .attr('id', function(d, i) { return 'end_time_' + i })
         .text(function(d, i) { return format_time(time[i]) });
 
-    // Header pour la durée moyenne
-    time_panel.select('#table_time')
-        .append('tr')
-        .attr('id', 'row_mean')
-        .append('th')
-        .text('Moyenne (min) :');
-
-    // Rangée pour la durée moyenne
-    time_panel.select('#row_mean')
-        .selectAll('td')
-        .data(time)
-        .enter()
-        .append('td')
-        .append('span')
-        .attr('id', function(d, i) { return 'mean_time_' + i })
-        .text('0')
-
     // Affichage de l'info-bulle des incidents
-    time_panel.append('div')
-        .attr('id', 'incident_info');
+    var incident_info = time_panel.append('div')
+        .attr('id', 'incident_info')
+        .attr("max-width", "100px")
+        .attr("width", "100%");
 
     // Chargement du scénario
     function init_scenario(scenario)
     {
         // Remettre la carte à son état initial
         clear_scenario();
+
+        // Supprime les lignes d'info
+        d3.select("#incident_info").selectAll("p").remove();
 
         // Prépare les datas liées au scénario
         calc_incidents(scenario);
@@ -363,6 +351,9 @@ function create_map_v3(g, map_width, map_height, info_box, data, lines, x, y, bu
     // Démarre le scénario
     function start_scenario(time_index, scenario)
     {
+        // Supprime les lignes d'info
+        d3.select("#incident_info").selectAll("p").remove();
+
         // Ne pas commencer s'il n'y a pas de scénario choisi
         if (scenario === -1) return;
 
@@ -397,9 +388,13 @@ function create_map_v3(g, map_width, map_height, info_box, data, lines, x, y, bu
         // Garder les stations et temps du trajet selon le scénario
         var stations_scenario = trajets[scenario][0];
         var temps_scenario = trajets[scenario][time_index + 1];
+        var additional_time = Math.ceil(actual_incident[time_index][1]);
 
         // Temps de durée du déplacement
         duration_scenario = d3.sum(temps_scenario.slice(0, index+1));
+
+        if (index > actual_incident[time_index][0])
+            duration_scenario += additional_time;
 
         // Afficher le temps de la durée
         time_panel.select('#row_duration')
@@ -423,7 +418,26 @@ function create_map_v3(g, map_width, map_height, info_box, data, lines, x, y, bu
                     console.log("THOSE INCIDENTS MAKE UP " + actual_incident[time_index][3] + "% OF ALL THE POSSIBLE INCIDENTS IN THIS SCENARIO DURING THAT TIME");
 
                     //TODO : Faire une box contenant les informations à afficher
+                    d3.select("#incident_info")
+                        .append("p")
+                        .text("Un incident est survenu à la station " + stations_scenario[actual_incident[time_index][0]]);
 
+                    d3.select("#incident_info")
+                        .append("p")
+                        .text("Cet incident cause un ralentissement de service de " + additional_time + " minutes");
+
+                    d3.select("#incident_info")
+                        .append("p")
+                        .text(Number.parseFloat(actual_incident[time_index][2]).toPrecision(4) + "% des incidents à la station " + stations_scenario[actual_incident[time_index][0]] + " surviennent à cette heure");
+
+                    d3.select("#incident_info")
+                        .append("p")
+                        .text("Ces incidents représentent " + Number.parseFloat(actual_incident[time_index][3]).toPrecision(4) + "% de tous les incidents possibles du scénario à cette heure")
+
+                    time_panel.select('#row_duration')
+                        .selectAll('td')
+                        .select('#duration_' + time_index)
+                        .text(duration_scenario);
                 }
                 else
                     deltaT = temps_scenario[index + 1] * 1000;
