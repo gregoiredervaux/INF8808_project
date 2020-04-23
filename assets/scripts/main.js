@@ -186,13 +186,9 @@
             };
 
             // Ajouter les boutons de sélection du scénario
-            var scenario_buttons = d3.select('#canvasV3')
+            var scenario_panel = d3.select('#canvasV3')
                 .append('div')
-                .attr('id', 'buttons');
-
-            var time_buttons = d3.select('#canvasV3')
-                .append('div')
-                .attr('id', 'buttons');
+                .attr('id', 'scenario_panel');
 
             var info_box = d3.select('#canvasV3').append("g");
 
@@ -202,10 +198,17 @@
                            .attr('width', map_width + margin.left + margin.right)
                            .attr('height', map_height + margin.top + margin.bottom);
 
+            // Ajouter l'élément graphique de la carte dans le svg container
             var metro_map_v3 = svg_v3.append("g");
-           
+
+            // Ajouter l'affichage pour le temps
+            var time_panel = d3.select('#canvasV3')
+                .append('div')
+                .attr('id', 'time_panel')
+                .attr('style', 'float: right; visibility: hidden');
+    
             // Création de la carte
-            create_map_v3(metro_map_v3, info_box, data_stations, lines, x_map, y_map, scenario_buttons, time_buttons);
+            create_map_v3(metro_map_v3, info_box, data_stations, lines, x_map, y_map, scenario_panel, time_panel);
 
 
             /***** V4 *****/
