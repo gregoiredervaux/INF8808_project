@@ -222,6 +222,7 @@
                                 .attr("transform", "translate(" + margin_v4.left + "," + margin_v4.top + ")")
                                 .attr("id", "left_bar_chart");
 
+
             var bar_count_causes = svg_v4.append("g")
                                 .attr("transform", "translate(" + (margin_v4.left+barChartWidth+barChartMargin.left) + "," + margin_v4.top + ")")
                                 .attr("id","right_bar_chart");
@@ -233,6 +234,12 @@
 
             /***** Création du graphique à barres *****/
             create_bar_count(bar_count, sources, tip_v4, barChartHeight, barChartWidth);
+            bar_count.append("text")
+                .attr("class", "label")
+                .attr("text-anchor", "middle")
+                .attr("y", barChartHeight+40)
+                .attr("x", barChartWidth*0.5)
+                .text('Ligne');
 
             // Fonction que lorsque l'on clique sur une barre à gauche, fait apparaitre le bar chart par cause droite
             display_causes(bar_count_causes, sources, barChartHeight, barChartWidth);

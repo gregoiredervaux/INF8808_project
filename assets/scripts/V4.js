@@ -167,7 +167,7 @@ function transition_bar_charts(g, sources, tip, height, width, bar_count_causes)
       .range(x.range())
       .paddingInner(0.05)
       .paddingOuter(0.05);
-
+    
     g.selectAll("rect")
       .data(sources)
       .attr("x", d => x(d.ligne) + sclBand.step() * 0.05)
@@ -226,7 +226,7 @@ function display_causes(g, sources, height, width) {
     // Lorsque l'on clique sur un rectangle du bar chart de gauche, le bar chart de droite apparait
     all_rects_left.on("click", function(d)    {
 
-        createAxes(g, d, sources, height, width);
+        createAxes(g, height, width);
         create_bar_cause(g, d, sources, height, width);
 
         // On trouve la couleur de la barre du chart de gauche sur laquelle on a cliqué
@@ -261,6 +261,14 @@ function create_bar_cause(g, d, sources, height, width) {
         .range(x.range())
         .paddingInner(0.05)
         .paddingOuter(0.05);
+
+    g.append("line")
+      .attr("x1",0)
+      .attr("y1", height+15)
+      .attr("x2", width)
+      .attr("y2", height+15)
+      .attr("stroke", "black")
+      .attr("stroke-width", 2)
     
     // On retire toutes les barres ************* Addition d'Étienne ***********************
     g.selectAll("rect").remove().exit();
