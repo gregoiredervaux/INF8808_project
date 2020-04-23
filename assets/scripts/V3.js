@@ -41,7 +41,7 @@ var current_scenario = -1;
 var actual_incident = [[], []];
 
 // Création d'une carte complète du métro
-function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
+function create_map_v3(g, map_width, map_height, info_box, data, lines, x, y, button_panel, time_panel)
 {
     var data_by_lines = Object.keys(lines).map(line => {
         return {name: line, stations: lines[line].map(pt_station => {
@@ -345,7 +345,7 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
         var scale_y = 600/(max_y-min_y);
 
         // Maximum scale selon les 2 axes et une valeur max
-        var scale = d3.min([scale_x - 0.5, scale_y- 0.5, 4]);
+        var scale = d3.min([scale_x - 0.7, scale_y - 0.7, 4]);
 
         // Trouver le centre de la zone d'intérêt selon le scale
         var x_mid = min_x + (max_x - min_x)/2;
@@ -357,7 +357,7 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
             .select('g')
             .transition()
             .duration(2000)
-            .attr('transform', 'scale (' + scale + ') translate('+ ((300/scale)-x_mid) + ',' + ((300/scale)-y_mid) + ')');
+            .attr('transform', 'scale (' + scale + ') translate('+ ((map_width/(2*scale))-x_mid) + ',' + ((map_height/(2*scale))-y_mid) + ')');
     }
 
     // Démarre le scénario

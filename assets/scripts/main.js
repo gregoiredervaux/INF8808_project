@@ -187,7 +187,7 @@
                 .attr('style', 'float: right; visibility: hidden');
     
             // Création de la carte
-            create_map_v3(metro_map_v3, info_box, data_stations, lines, x_map, y_map, scenario_panel, time_panel);
+            create_map_v3(metro_map_v3, map_width, map_height, info_box, data_stations, lines, x_map, y_map, scenario_panel, time_panel);
 
 
             /***** V4 *****/
