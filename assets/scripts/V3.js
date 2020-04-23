@@ -75,13 +75,6 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
                 return st.id === lines[line.name][lines[line.name].indexOf(parseInt(station.id)) + 1]
             });
 
-            //Vérifie si une instance de station à multiple ligne est déjà créé ou non
-            is_multi_line = multi_lines_stations.includes(station.name);
-            is_multi_line_init = false;
-
-            if(is_multi_line)
-                is_multi_line_init = !line_conteneur.selectAll(".scenarioLine").select(function(h, j) {return d3.select(this).attr("name") === station.name}).empty();
-
             // Trouver les coordonnées de la station précédente et suivante si elles existent
             if (c0!==undefined) {
                 var cx0 = c0.coordinates_map_stacked ? c0.coordinates_map_stacked.cx : c0.coordinates_map.cx;
@@ -102,6 +95,21 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
                     .attr("stroke-width", 1)
                     .attr("stroke", "grey");
             }
+        }); // line.stations.forEach(station =>
+    }); // data_by_lines.forEach(line =>
+    data_by_lines.forEach(line => {
+        line.stations.forEach(station => {
+            // Coordonnées de la station
+            var cx1 = station.coordinates_map_stacked ? station.coordinates_map_stacked.cx : station.coordinates_map.cx;
+            var cy1 = station.coordinates_map_stacked ? station.coordinates_map_stacked.cy : station.coordinates_map.cy;
+
+            //Vérifie si une instance de station à multiple ligne est déjà créé ou non
+            is_multi_line = multi_lines_stations.includes(station.name);
+            is_multi_line_init = false;
+
+            if(is_multi_line)
+                is_multi_line_init = !line_conteneur.selectAll(".scenarioLine").select(function(h, j) {return d3.select(this).attr("name") === station.name}).empty();
+
             // Création des lignes dynamiques qui montreront le déplacement
             // De façon temporaire avec longueur de 0
             if (!is_multi_line_init)
@@ -115,9 +123,10 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
                     .attr("stroke-width", 2)
                     .attr("stroke", "black")
                     .attr("class", "scenarioLine");
-            }
+            }    
         }); // line.stations.forEach(station =>
     }); // data_by_lines.forEach(line =>
+
     data_by_lines.forEach(line => {
         line.stations.forEach(station => {
             //Vérifie si une instance de station à multiple ligne est déjà créé ou non
@@ -134,7 +143,7 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
                 .attr("cx", (station.coordinates_map_stacked ? x(station.coordinates_map_stacked.cx):x(station.coordinates_map.cx)))
                 .attr("cy", (station.coordinates_map_stacked ? y(station.coordinates_map_stacked.cy):y(station.coordinates_map.cy)))
                 .attr("r", 5)
-                .attr("fill", is_multi_line ? "grey" : line.name)
+                .attr("fill", is_multi_line ? "#505050" : line.name)
                 .attr("fill-opacity", 1)
                 .attr("name", station.name)
                 .attr("class", "scenarioCircle");
