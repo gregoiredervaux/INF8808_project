@@ -407,7 +407,7 @@ function create_map_v3(g, map_width, map_height, data, lines, x, y, button_panel
                 {
                     deltaT = (temps_scenario[index + 1] + actual_incident[time_index][1]) * 1000; // Les minutes passent comme des secondes
 
-                    
+                    //TODO: Faire du CSS pour éviter à avoir à append tout le temps
                     d3.select("#incident_info")
                         .append("p")
                         .text("Un incident est survenu à la station ");
@@ -434,7 +434,7 @@ function create_map_v3(g, map_width, map_height, data, lines, x, y, button_panel
 
                     d3.select("#incident_info")
                         .append("p")
-                        .text("les incidents possibles du scénario à cette heure");
+                        .text("les incidents possibles du scénario.");
 
                     time_panel.select('#row_duration')
                         .selectAll('td')
