@@ -82,34 +82,6 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
                 var cy2 = c2.coordinates_map.cy;
             }
 
-            //Vérifie si une instance de station à multiple ligne est déjà créé ou non
-            is_multi_line = multi_lines_stations.includes(station.name);
-            is_multi_line_init = false;
-
-            if(is_multi_line)
-                is_multi_line_init = !line_conteneur.selectAll(".scenarioCircle").select(function(h, j) {return d3.select(this).attr("name") === station.name}).empty();
-
-            if(!is_multi_line_init)
-            {
-                // Création des points de stations, opaques
-                line_conteneur.append("circle")
-                .attr("cx", x(cx1))
-                .attr("cy", y(cy1))
-                .attr("r", 5)
-                .attr("fill", is_multi_line ? "grey" : line.name)
-                .attr("fill-opacity", 1) // TODO Changer pour un CSS
-                .attr("name", station.name)
-                .attr("class", "scenarioCircle");
-
-                // Création des noms de stations
-                line_conteneur.append("text")
-                .attr("x", x(station.coordinates_map.cx) + 6)
-                .attr("y", y(station.coordinates_map.cy) + 4)
-                .attr("font-size", "9px")
-                .attr("font-family", "Arial") // TODO Changer pour un CSS
-                .text(station.name);
-            }
-
             if (c2!==undefined) {
                 // Création des lignes statiques entre stations, en gris
                 line_conteneur.append("line")
@@ -118,9 +90,8 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
                     .attr("x2", x(cx2))
                     .attr("y2", y(cy2))
                     .attr("stroke-width", 1)
-                    .attr("stroke", "grey"); // TODO changer pour un CSS
+                    .attr("stroke", "grey");
             }
-
             // Création des lignes dynamiques qui montreront le déplacement
             // De façon temporaire avec longueur de 0
             if (!is_multi_line_init)
@@ -134,6 +105,37 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
                     .attr("stroke-width", 2)
                     .attr("stroke", "black")
                     .attr("class", "scenarioLine");
+            }
+        }); // line.stations.forEach(station =>
+    }); // data_by_lines.forEach(line =>
+    data_by_lines.forEach(line => {
+        line.stations.forEach(station => {
+            //Vérifie si une instance de station à multiple ligne est déjà créé ou non
+            is_multi_line = multi_lines_stations.includes(station.name);
+            is_multi_line_init = false;
+
+            if(is_multi_line)
+                is_multi_line_init = !line_conteneur.selectAll(".scenarioCircle").select(function(h, j) {return d3.select(this).attr("name") === station.name}).empty();
+
+            if(!is_multi_line_init)
+            {
+                // Création des points de stations, opaques
+                line_conteneur.append("circle")
+                .attr("cx", x(station.coordinates_map.cx))
+                .attr("cy", y(station.coordinates_map.cy))
+                .attr("r", 5)
+                .attr("fill", is_multi_line ? "grey" : line.name)
+                .attr("fill-opacity", 1)
+                .attr("name", station.name)
+                .attr("class", "scenarioCircle");
+
+                // Création des noms de stations
+                line_conteneur.append("text")
+                .attr("x", x(station.coordinates_map.cx) + 6)
+                .attr("y", y(station.coordinates_map.cy) + 4)
+                .attr("font-size", "9px")
+                .attr("font-family", "Arial")
+                .text(station.name);
             }
         }); // line.stations.forEach(station =>
     }); // data_by_lines.forEach(line =>
@@ -221,6 +223,10 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
         .append('span')
         .attr('id', function(d, i) { return 'mean_time_' + i })
         .text('0')
+
+    // Affichage de l'info-bulle des incidents
+    time_panel.append('div')
+        .attr('id', 'incident_info');
 
     // Chargement du scénario
     function init_scenario(scenario)
@@ -327,7 +333,6 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
         var y_mid = min_y + (max_y - min_y)/2;
 
         // Affecter les transformations de scale et translation
-        // TODO Note: Tout ceci est sans margin left et avec map width / 2 = 300 hardcodé
         d3.select('#canvasV3')
             .select('svg')
             .select('g')
@@ -417,22 +422,16 @@ function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
     // Remise à neuf de la carte
     function clear_scenario()
     {
-        // TODO remettre les boutons à non-clickés
-        // TODO Attention à ne pas faire en double ce qu'on fait dans init_scenario
-
-        line_conteneur.selectAll(".scenarioCircle").each(function(d,i) {
-            d3.select(this).attr("fill-opacity", 0.2);
-        });
-
-        clear_lines();
-    }
-
-    function clear_lines()
-    {
+        // Toutes les lignes en gris
         line_conteneur.selectAll(".scenarioLine").each(function(d,i) {
             d3.select(this).attr("x2", parseFloat(d3.select(this).attr("x1")));
             d3.select(this).attr("y2", parseFloat(d3.select(this).attr("y1")));
             d3.select(this).interrupt();
+        });
+
+        // Toutes les stations en opacité faible
+        line_conteneur.selectAll(".scenarioCircle").each(function(d,i) {
+            d3.select(this).attr("fill-opacity", 0.2);
         });
     }
 
