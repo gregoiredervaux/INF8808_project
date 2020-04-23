@@ -138,7 +138,7 @@ function create_map(g, data, lines,  x, y, pipe, panel) {
             .attr("class", "end_circle")
             .attr("cx", d => x(d.coordinates_map.cx))
             .attr("cy", d => y(d.coordinates_map.cy))
-            .attr("r", d => pipe(d.total_stop_time / 1.2))
+            .attr("r", d => pipe(d.total_stop_time / 1.8))
             .attr("fill", color_value(data.name))
             .attr("fill-opacity", 1);
 
@@ -192,7 +192,7 @@ function create_map(g, data, lines,  x, y, pipe, panel) {
         .on('mouseout', tip.hide);
 
     // Tip quand on passe sur les stations
-    station_container.on("mouseover", (d, i) => showPanel(panel, d.id, data));
+    station_container.on("mouseover", (d, i) => showPanelV2(panel, d.id, data));
     g.call(tip);
 
     return data_by_lines

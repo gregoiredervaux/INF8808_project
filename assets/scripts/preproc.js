@@ -145,14 +145,12 @@ function clean_data(pt_metro, incidents) {
         if (!staked_station.includes(st.name_id) && neighbour.length > 1) {
             staked_station.push(st.name_id);
             neighbour.forEach((st_neighbour, i) => {
-
+                st_neighbour.coordinates_map_stacked = st_neighbour.coordinates_map;
                 st_neighbour.coordinates_map.cx += 10 * Math.cos(2 * Math.PI * i / neighbour.length );
                 st_neighbour.coordinates_map.cy += 10 * Math.sin(2 * Math.PI * i / neighbour.length );
             })
         }
     })
-
-
 }
 
 
