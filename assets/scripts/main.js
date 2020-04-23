@@ -8,8 +8,8 @@
     
     /***** Configuration *****/
 
-    const map_width = 600;
-    const map_height = 600;
+    const map_width = 500;
+    const map_height = 500;
 
     var margin_map = {
         top: 50,
