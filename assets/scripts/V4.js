@@ -150,55 +150,6 @@ function create_bar_count(g, sources, tip, height, width) {
 }
 
 
-function transition_bar_charts(g, sources, tip, height, width, bar_count_causes) {
-    /* TODO:
-         - Réaliser une transition entre l'ancienne position et la nouvelle position des cercles.
-         - Mettre à jour la taille du rayon des cercles.
-         - La transition doit se faire en 1 seconde.
-     */
-    var x = d3.scaleBand().range([0, width]).round(0.05)
-                 .domain(sources.map(d => d.ligne));
-
-    var y = d3.scaleLinear().range([0, height])
-                 .domain([0, d3.max(sources.map(row=>row.stations.map(inci=>inci.incidents.map(k=>k.count).reduce((a,b)=>a+b)).reduce((a,b)=>a+b)))]);
-  
-    var sclBand  = d3.scaleBand()
-      .domain(x.domain())
-      .range(x.range())
-      .paddingInner(0.05)
-      .paddingOuter(0.05);
-    
-    g.selectAll("rect")
-      .data(sources)
-      .attr("x", d => x(d.ligne) + sclBand.step() * 0.05)
-      .attr("width", sclBand.bandwidth())
-      .attr("fill", d => color_value(d.ligne))
-      .attr("stroke", d => color_value(d.ligne))
-      .attr("stroke-width", 2)
-      .on('mouseover', tip.show)
-      .on('mouseout', tip.hide)
-      .transition()
-        .duration(750)
-        .ease(d3.easeLinear)   
-        .attr("y", d => height - y(d.stations.map(inci=>inci.incidents.map(k=>k.count).reduce((a,b)=>a+b)).reduce((a,b)=>a+b)))
-        .attr("height", d => y(d.stations.map(inci=>inci.incidents.map(k=>k.count).reduce((a,b)=>a+b)).reduce((a,b)=>a+b)));
-    
-    g.selectAll("text")        
-        .data(sources)
-        .attr("class","label")
-        .attr("x", d => 0.48*sclBand.bandwidth() + x(d.ligne))
-        .attr("dy", ".75em")
-        .transition()
-            .duration(750)
-            .ease(d3.easeLinear)   
-            .attr("y", d => height - y(d.stations.map(inci=>inci.incidents.map(k=>k.count).reduce((a,b)=>a+b)).reduce((a,b)=>a+b))-20)
-            .text(d => Math.round(d.stations.map(inci=>inci.incidents.map(k=>k.count).reduce((a,b)=>a+b)).reduce((a,b)=>a+b)));
-    
-    // Fonction que lorsque l'on clique sur une barre à gauche, fait apparaitre le bar chart par cause droite
-    display_causes(bar_count_causes, sources, height, width);
-}
-
-
 function getToolTipText(d) {
 
     /**Format à retourner:
@@ -216,18 +167,23 @@ function getToolTipText(d) {
     + "</span>"; 
 }
 
-// Fonction qui affiche un bar chart des causes secondaires pour une ligne en particulier
-// Bar chart s'afficher uniquemment lorsque l'on clique sur une barre du graphique de gauche
+
+
+// Fonction qui fait apparaître, à droite, un bar chart par cause secondaire lorsqu'une barre à gauche (une ligne) est cliquée
+// Ce bar chart ne s'affiche que lorsque l'on clique sur une barre du graphique de gauche
 function display_causes(g, sources, height, width) {
 
     // Trouver tous les rectangles du bar chart de gauche
     var all_rects_left = d3.selectAll("#left_bar_chart").selectAll("rect");
 
+
     // Lorsque l'on clique sur un rectangle du bar chart de gauche, le bar chart de droite apparait
     all_rects_left.on("click", function(d)    {
 
-        createAxes(g, height, width);
+        g.selectAll("text").text("");
+        createAxes(g, height, width);       
         create_bar_cause(g, d, sources, height, width);
+        update_bar_cause(g, d, sources, height, width)
 
         // On trouve la couleur de la barre du chart de gauche sur laquelle on a cliqué
         var color_clicked = d3.select(this).attr("fill"); 
@@ -242,8 +198,7 @@ function display_causes(g, sources, height, width) {
 };
 
 
-
-
+//Fonction qui crée le bar chart des causes secondaires pour une ligne en particulier
 function create_bar_cause(g, d, sources, height, width) {
 
     var cause_set = ["Blessée ou malade","Méfait volontaire","Nuisance involontaire"];
@@ -269,13 +224,8 @@ function create_bar_cause(g, d, sources, height, width) {
       .attr("y2", height+15)
       .attr("stroke", "black")
       .attr("stroke-width", 2)
-    
-    // On retire toutes les barres ************* Addition d'Étienne ***********************
-    g.selectAll("rect").remove().exit();
-    g.selectAll(".tick")
-        .attr("stroke-width",2)
 
-    // On ajoute toutes les barres    
+     // On ajoute toutes les barres    
     g.selectAll("rect")
       .data(sources_right)
       .enter()
@@ -284,24 +234,113 @@ function create_bar_cause(g, d, sources, height, width) {
       .attr("width", sclBand.bandwidth())
       .attr("y", c => height - y(c.count))
       .attr("height", c => y(c.count))
-    
-    // On retire tout le texte du bar chart (sur l'axe et les chiffres au dessus)
-    g.selectAll("text").text("");
 
-    // On remet les nouveaux chiffres au desuss
-    g.selectAll("label")        
+
+    // On remet les nouveaux chiffres au-dessus
+    g.selectAll(".labels")        
       .data(sources_right)
       .enter()
       .append("text")
       .attr("class","label")
+      .attr("dy", ".75em")
       .attr("x", c => 0.48*sclBand.bandwidth() + x(c.name))
-      .attr("y", c => height - y(c.count)-7)
+      .attr("y", c => height - y(c.count)-20)
       .text(c => Math.round(c.count));
 
     // On remet les noms de causes sur l'axe
-    createAxes(g, height, width);
-
+    //createAxes(g, height, width);
 } 
+
+
+//Fonction qui permet de transitionner d'une unité d'indicident (nombre d'arrêt ou temps d'arrêt) à l'autre
+function transition_bar_charts(g, sources, tip, height, width, bar_count_causes) {
+    
+    // On définit les échelles
+    var x = d3.scaleBand().range([0, width]).round(0.05)
+                 .domain(sources.map(d => d.ligne));
+
+    var y = d3.scaleLinear().range([0, height])
+                 .domain([0, d3.max(sources.map(row=>row.stations.map(inci=>inci.incidents.map(k=>k.count).reduce((a,b)=>a+b)).reduce((a,b)=>a+b)))]);
+  
+    var sclBand  = d3.scaleBand()
+      .domain(x.domain())
+      .range(x.range())
+      .paddingInner(0.05)
+      .paddingOuter(0.05);
+    
+    // On met à jour la position et la taille des rectangles
+    g.selectAll("rect")
+      .data(sources)
+      .attr("x", d => x(d.ligne) + sclBand.step() * 0.05)
+      .attr("width", sclBand.bandwidth())
+      .attr("fill", d => color_value(d.ligne))
+      .attr("stroke", d => color_value(d.ligne))
+      .attr("stroke-width", 2)
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
+      .transition().duration(750).ease(d3.easeLinear)   
+        .attr("y", d => height - y(d.stations.map(inci=>inci.incidents.map(k=>k.count).reduce((a,b)=>a+b)).reduce((a,b)=>a+b)))
+        .attr("height", d => y(d.stations.map(inci=>inci.incidents.map(k=>k.count).reduce((a,b)=>a+b)).reduce((a,b)=>a+b)));
+    
+    // on met à jour la position et la valeur du label
+    g.selectAll("text")        
+        .data(sources)
+        .attr("class","label")
+        .attr("x", d => 0.48*sclBand.bandwidth() + x(d.ligne))
+        .attr("dy", ".75em")
+        .transition().duration(750).ease(d3.easeLinear)   
+            .attr("y", d => height - y(d.stations.map(inci=>inci.incidents.map(k=>k.count).reduce((a,b)=>a+b)).reduce((a,b)=>a+b))-20)
+            .text(d => Math.round(d.stations.map(inci=>inci.incidents.map(k=>k.count).reduce((a,b)=>a+b)).reduce((a,b)=>a+b)));
+    
+    // Fonction qui fait apparaître à droite un bar chart par cause secondaire lorsqu'une barre à gauche (une ligne) est cliquée
+    display_causes(bar_count_causes, sources, height, width);
+};
+
+
+
+function update_bar_cause(g, d, sources, height, width) {
+
+    var cause_set = ["Blessée ou malade","Méfait volontaire","Nuisance involontaire"];
+    var sources2 = sources.filter(k=>k.ligne === d.ligne);
+    var sources_right = createSources_rightbar(cause_set, sources2);
+
+    var x = d3.scaleBand().range([0, width]).round(0.05)
+                   .domain(cause_set);
+    
+    var y = d3.scaleLinear().range([0, height])
+        .domain([0, d3.max(sources.map(row=>row.stations.map(inci=>inci.incidents.map(k=>k.count).reduce((a,b)=>a+b)).reduce((a,b)=>a+b)))]);
+
+    var sclBand  = d3.scaleBand()
+        .domain(x.domain())
+        .range(x.range())
+        .paddingInner(0.05)
+        .paddingOuter(0.05);  
+
+    // On ajoute toutes les barres    
+    g.selectAll("rect")
+      .data(sources_right)
+      .attr("x", c => x(c.name) + sclBand.step() * 0.05)
+      .attr("width", sclBand.bandwidth())
+      .transition()
+        .duration(750)
+        .ease(d3.easeLinear)
+        .attr("y", c => height - y(c.count))
+        .attr("height", c => y(c.count))
+    
+    
+    // On remet les nouveaux chiffres au-dessus
+    g.selectAll("labels")        
+      .data(sources_right)
+      .attr("class","label")
+      .attr("dy", ".75em")
+      .attr("x", c => 0.48*sclBand.bandwidth() + x(c.name))
+      .transition()
+        .duration(750)
+        .ease(d3.easeLinear)
+        .attr("y", c => height - y(c.count)-20)
+        .text(c => Math.round(c.count));
+
+}
 
   
 function createAxes(g, height, width) {
