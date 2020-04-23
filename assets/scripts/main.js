@@ -187,6 +187,8 @@
                 .append('div')
                 .attr('id', 'scenario_panel');
 
+            var info_box = d3.select('#canvasV3').append("g");
+
             // Mettre la V3 dans l'élément SVG qui se nomme svg_v3
             var svg_v3 = d3.select('#canvasV3')
                            .append('svg')
@@ -203,7 +205,7 @@
                 .attr('style', 'float: right; visibility: hidden');
     
             // Création de la carte
-            create_map_v3(metro_map_v3, data_stations, lines, x_map, y_map, scenario_panel, time_panel);
+            create_map_v3(metro_map_v3, info_box, data_stations, lines, x_map, y_map, scenario_panel, time_panel);
 
 
             /***** V4 *****/

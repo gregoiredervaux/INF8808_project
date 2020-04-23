@@ -39,6 +39,7 @@ var format_time = d3.timeFormat("%H:%M");
 var parse_time = d3.timeParse("%H:%M");
 
 var time = [parse_time('9:00'), parse_time('17:00')];
+var time_int = [9, 17];
 
 const multi_lines_stations = ["Lionel Groulx", "Snowdon", "Jean Talon", "Berri-UQAM"];
 var is_multi_line = false;
@@ -46,8 +47,11 @@ var is_multi_line_init = false;
 
 var current_scenario = -1;
 
+// Data utilisé à l'affichage
+var actual_incident = [[], []];
+
 // Création d'une carte complète du métro
-function create_map_v3(g, data, lines, x, y, button_panel, time_panel)
+function create_map_v3(g, info_box, data, lines, x, y, button_panel, time_panel)
 {
     var data_by_lines = Object.keys(lines).map(line => {
         return {name: line, stations: lines[line].map(pt_station => {
@@ -59,6 +63,8 @@ function create_map_v3(g, data, lines, x, y, button_panel, time_panel)
     console.log(lines);
     // Création du conteneur d'éléments
     var line_conteneur = g.append("g")
+
+
 
     // Pour chaque ligne du métro
     data_by_lines.forEach(line =>
@@ -237,6 +243,9 @@ function create_map_v3(g, data, lines, x, y, button_panel, time_panel)
         // Remettre la carte à son état initial
         clear_scenario();
 
+        // Prépare les datas liées au scénario
+        calc_incidents(scenario);   
+
         // Afficher le panel du temps
         time_panel.attr('style', 'float: right; visibility: visible');
 
@@ -340,7 +349,9 @@ function create_map_v3(g, data, lines, x, y, button_panel, time_panel)
             .transition()
             .duration(2000)
             .attr('transform', 'scale (' + scale + ') translate('+ ((300/scale)-x_mid) + ',' + ((300/scale)-y_mid) + ')');
-    } // function initScenario(num)
+
+
+    }
 
     // Démarre le scénario
     function start_scenario(time_index, scenario)
@@ -383,14 +394,23 @@ function create_map_v3(g, data, lines, x, y, button_panel, time_panel)
         if (index < all_next_lines.length - 1)
         {
             var transition_line = all_current_lines.find( line => line.attr("name") === stations_scenario[index]);
-            //console.log(transition_line);
-            //console.log("trying " + stations_scenario[index]);
-            //console.log("to " + all_next_lines[index].attr("name"));
     
             if(transition_line != undefined)
             {
-                var deltaT = temps_scenario[index + 1] * 1000;
-                //console.log(index + " out of " + stations_scenario.length);
+                var deltaT = 0;
+                if (index === actual_incident[time_index][0])
+                {
+                    deltaT = (temps_scenario[index + 1] + actual_incident[time_index][1]) * 1000; // Les minutes passent comme des secondes
+                    console.log("INCIDENT AT STATION: " + stations_scenario[actual_incident[time_index][0]]);
+                    console.log("WITH ADDED TIME: +" + actual_incident[time_index][1] + " MINUTES");
+                    console.log(actual_incident[time_index][2] + "% OF INCIDENTS AT " + stations_scenario[actual_incident[time_index][0]] + " OCCUR DURING " + time[time_index]);
+                    console.log("THOSE INCIDENTS MAKE UP " + actual_incident[time_index][3] + "% OF ALL THE POSSIBLE INCIDENTS IN THIS SCENARIO DURING THAT TIME");
+
+                    //TODO : Faire une box contenant les informations à afficher
+
+                }
+                else
+                    deltaT = temps_scenario[index + 1] * 1000;
     
                 transition_line
                     .transition()
@@ -421,6 +441,120 @@ function create_map_v3(g, data, lines, x, y, button_panel, time_panel)
             d3.select(this).attr("x2", parseFloat(d3.select(this).attr("x1")));
             d3.select(this).attr("y2", parseFloat(d3.select(this).attr("y1")));
             d3.select(this).interrupt();
+        });
+    }
+
+    function calc_incidents(scenario)
+    {        
+        var stations_scenario = trajets[scenario][0];
+        var nb_incidents_scenario = [[[ ], [ ]], [[ ], [ ]]];
+        var nb_incidents_total = [];
+        var total_station = 0;
+        var roll = 0;
+        var index = 0;
+        var index_time = 0;
+        var current_station = "";
+
+        var moy_retard_station = []; // temps total/nb incidents at time
+        var per_incidents_at_time = []; // nb incidents at time/nb incidents total
+        var per_incident_at_station = []; // nb incidents at time/total nb incidents at time    
+
+
+        // Pour chacun des temps
+        time_int.forEach(time => {
+
+            index = 0;
+            total_station = 0;
+            current_station = "";
+
+            // Pour chacune des stations
+            data.forEach(station => {
+                // Pour chacune des stations d'un scénario
+                stations_scenario.forEach(station_scenario => {
+                    if (station.name === station_scenario)
+                    {
+                        // Afin de regrouper les stations à multi-lignes en une
+                        if(current_station != station.name && current_station != "")
+                            index++;
+
+
+                        if (isNaN(nb_incidents_scenario[index_time][0][index]) || isNaN(nb_incidents_scenario[index_time][1][index]))
+                        {
+                            nb_incidents_scenario[index_time][0][index] = 0;
+                            nb_incidents_scenario[index_time][1][index] = 0;
+                        }
+                        
+                        // Pour chacun des incidents d'une station
+                        station.incidents.forEach(incident => {
+                            var incident_start = new Date();
+                            incident_start = incident.debut;
+    
+                            // Incrémente le nombre d'incident d'une station de scénario à un temps donné ; Cumule le temps de ces incidents
+                            if (!isNaN(incident_start.getHours()))
+                            {
+                                if (incident_start.getHours() === time)
+                                {
+                                    nb_incidents_scenario[index_time][0][index]++;
+                                    nb_incidents_scenario[index_time][1][index] += incident.time;
+                                }
+                            }
+
+                            // Incrémente le nombre total d'incident d'une station de scénario
+                            if (isNaN(nb_incidents_total[index])) 
+                                nb_incidents_total[index] = 0;
+                            nb_incidents_total[index]++;
+                        });
+    
+                        current_station = station.name;
+                    }
+                });
+            });
+            
+            index = 0;
+            nb_incidents_scenario[index_time][0].forEach(station => {
+                if (station === 0)
+                    moy_retard_station[index] = 0;
+                else
+                    moy_retard_station[index] = nb_incidents_scenario[index_time][1][index] / station;
+
+
+                if (nb_incidents_total[index] === 0)
+                    per_incidents_at_time[index] = 0;
+                else
+                    per_incidents_at_time[index] = station / nb_incidents_total[index] * 100;
+
+                total_station += station;
+                index++;
+            });
+
+            index = 0;
+            nb_incidents_scenario[index_time][0].forEach(station => {
+                per_incident_at_station[index] = station / total_station * 100;
+
+                index++;
+            });
+
+            var found_incident = false;
+            total_station -= nb_incidents_scenario[index_time][0][nb_incidents_scenario[index_time][0].length - 1];
+            roll = Math.floor(Math.random() * total_station);
+            index = 0;
+            nb_incidents_scenario[index_time][0].forEach(station => {
+
+                if(roll < station && !found_incident && index < nb_incidents_scenario[index_time][0].length)
+                {
+                    actual_incident[index_time][0] = index;
+                    actual_incident[index_time][1] = moy_retard_station[index];
+                    actual_incident[index_time][2] = per_incidents_at_time[index];
+                    actual_incident[index_time][3] = per_incident_at_station[index];
+                    found_incident = true;
+                }
+                else
+                    roll -= station;
+
+                index++;
+            });
+
+            index_time++;
         });
     }
 }
