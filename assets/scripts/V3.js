@@ -412,27 +412,35 @@ function create_map_v3(g, map_width, map_height, data, lines, x, y, button_panel
                 if (index === actual_incident[time_index][0])
                 {
                     deltaT = (temps_scenario[index + 1] + actual_incident[time_index][1]) * 1000; // Les minutes passent comme des secondes
-                    console.log("INCIDENT AT STATION: " + stations_scenario[actual_incident[time_index][0]]);
-                    console.log("WITH ADDED TIME: +" + actual_incident[time_index][1] + " MINUTES");
-                    console.log(actual_incident[time_index][2] + "% OF INCIDENTS AT " + stations_scenario[actual_incident[time_index][0]] + " OCCUR DURING " + time[time_index]);
-                    console.log("THOSE INCIDENTS MAKE UP " + actual_incident[time_index][3] + "% OF ALL THE POSSIBLE INCIDENTS IN THIS SCENARIO DURING THAT TIME");
 
-                    //TODO : Faire une box contenant les informations à afficher
+                    
                     d3.select("#incident_info")
                         .append("p")
-                        .text("Un incident est survenu à la station " + stations_scenario[actual_incident[time_index][0]]);
+                        .text("Un incident est survenu à la station ");
 
                     d3.select("#incident_info")
                         .append("p")
-                        .text("Cet incident cause un ralentissement de service de " + additional_time + " minutes");
+                        .text(stations_scenario[actual_incident[time_index][0]] + ", causant un ralentissement");
 
                     d3.select("#incident_info")
                         .append("p")
-                        .text(Number.parseFloat(actual_incident[time_index][2]).toPrecision(4) + "% des incidents à la station " + stations_scenario[actual_incident[time_index][0]] + " surviennent à cette heure");
+                        .text(" de service de " + additional_time + " minutes.");
 
                     d3.select("#incident_info")
                         .append("p")
-                        .text("Ces incidents représentent " + Number.parseFloat(actual_incident[time_index][3]).toPrecision(4) + "% de tous les incidents possibles du scénario à cette heure")
+                        .text(Number.parseFloat(actual_incident[time_index][2]).toPrecision(4) + "% des incidents à la station ");
+
+                    d3.select("#incident_info")
+                        .append("p")
+                        .text(stations_scenario[actual_incident[time_index][0]] + " surviennent à cette heure.");
+
+                    d3.select("#incident_info")
+                        .append("p")
+                        .text("Ces incidents représentent " + Number.parseFloat(actual_incident[time_index][3]).toPrecision(4) + "% de tous ")
+
+                    d3.select("#incident_info")
+                        .append("p")
+                        .text("les incidents possibles du scénario à cette heure");
 
                     time_panel.select('#row_duration')
                         .selectAll('td')
